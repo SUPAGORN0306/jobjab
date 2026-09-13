@@ -16,7 +16,7 @@ import {
   BarChart3,
   Inbox,
 } from 'lucide-react';
-import '../ViewApplicants.css';
+import '../styles/employer/ViewApplicants.css';
 
 export default function ViewApplicants() {
   const { jobId } = useParams();

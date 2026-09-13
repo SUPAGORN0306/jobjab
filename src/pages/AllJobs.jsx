@@ -6,8 +6,8 @@ import { Slider } from "@/components/ui/slider";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import { getCurrentUserId } from '../api';
-import '../AllJobs.css';
-import '../RecommendedCard.css';
+import '../styles/candidate/AllJobs.css';
+import '../styles/home/RecommendedCard.css';
 
 // ============================================
 // SEARCH HELPERS

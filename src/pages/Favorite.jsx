@@ -1,5 +1,5 @@
-import '../Favorite.css';
-import '../RecommendedCard.css';
+import '../styles/candidate/Favorite.css';
+import '../styles/home/RecommendedCard.css';
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { getMatchBadgeClass } from '../utils/matchBadge.js';

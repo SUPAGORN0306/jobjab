@@ -13,10 +13,38 @@ import {
   Sparkles,
   Building2,
   LogOut,
+  Target,
+  Zap,
+  BarChart3,
+  ArrowRight,
+  FileText,
+  Search,
+  Send,
 } from 'lucide-react';
 
 // ============================================
-// JOB LOGO CLASS (ตาม Home)
+// TIME AGO HELPER
+// ============================================
+
+const timeAgo = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  const date = new Date(dateStr);
+  const seconds = Math.floor((new Date() - date) / 1000);
+
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
+// ============================================
+// JOB LOGO CLASS
 // ============================================
 
 const getJobLogoClass = (title) => {
@@ -154,24 +182,25 @@ export default function EmployerDashboard() {
 
   return (
     <div className="employer-container">
-      <section className="employer-hero">
-        <div className="employer-hero-content">
-          <span className="employer-hero-tag">
+      {/* ============ HERO ============ */}
+      <section className="emp-hero">
+        <div className="emp-hero-content">
+          <span className="emp-hero-tag">
             <Sparkles size={14} />
             EMPLOYER DASHBOARD
           </span>
           <h1>
             Welcome back, <span>{user?.name || 'Recruiter'}</span>
           </h1>
-          <p className="employer-hero-subtitle">
+          <p className="emp-hero-subtitle">
             <Building2 size={14} />
             {user?.company || 'Your Company'}
             {user?.industry && ` · ${user.industry}`}
           </p>
 
-          <div className="employer-hero-actions">
+          <div className="emp-hero-actions">
             <button
-              className="employer-hero-btn primary"
+              className="emp-btn-primary"
               onClick={() => setShowPostForm(true)}
             >
               <Plus size={16} />
@@ -179,7 +208,7 @@ export default function EmployerDashboard() {
             </button>
 
             <button
-              className="employer-hero-btn secondary"
+              className="emp-btn-glass"
               onClick={handleLogout}
             >
               <LogOut size={16} />
@@ -189,41 +218,42 @@ export default function EmployerDashboard() {
         </div>
       </section>
 
-      {error && <div className="employer-error">{error}</div>}
+      {error && <div className="emp-error">{error}</div>}
 
-      <section className="employer-stats-grid">
-        <div className="employer-stat-card">
-          <div className="stat-icon">
-            <Briefcase size={20} />
+      {/* ============ STATS ============ */}
+      <section className="emp-stats-grid">
+        <div className="emp-stat-card">
+          <div className="emp-stat-icon">
+            <Briefcase size={22} />
           </div>
-          <div className="stat-content">
-            <h3>Active Postings</h3>
-            <p>{jobs.length}</p>
-            <span className="stat-detail">{activeJobs} active</span>
+          <div className="emp-stat-content">
+            <span className="emp-stat-label">Active Postings</span>
+            <span className="emp-stat-value">{jobs.length}</span>
+            <span className="emp-stat-detail">{activeJobs} active</span>
           </div>
         </div>
 
-        <div className="employer-stat-card">
-          <div className="stat-icon">
-            <Users size={20} />
+        <div className="emp-stat-card">
+          <div className="emp-stat-icon">
+            <Users size={22} />
           </div>
-          <div className="stat-content">
-            <h3>Total Applicants</h3>
-            <p>{totalApplicants}</p>
-            <span className="stat-detail">
+          <div className="emp-stat-content">
+            <span className="emp-stat-label">Total Applicants</span>
+            <span className="emp-stat-value">{totalApplicants}</span>
+            <span className="emp-stat-detail">
               across {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
             </span>
           </div>
         </div>
 
-        <div className="employer-stat-card">
-          <div className="stat-icon">
-            <TrendingUp size={20} />
+        <div className="emp-stat-card">
+          <div className="emp-stat-icon">
+            <TrendingUp size={22} />
           </div>
-          <div className="stat-content">
-            <h3>Jobs with Applicants</h3>
-            <p>{jobsWithApplicants}</p>
-            <span className="stat-detail">
+          <div className="emp-stat-content">
+            <span className="emp-stat-label">Jobs with Applicants</span>
+            <span className="emp-stat-value">{jobsWithApplicants}</span>
+            <span className="emp-stat-detail">
               {jobs.length > 0
                 ? `${Math.round((jobsWithApplicants / jobs.length) * 100)}% conversion`
                 : 'No jobs yet'}
@@ -231,31 +261,38 @@ export default function EmployerDashboard() {
           </div>
         </div>
 
-        <div className="employer-stat-card">
-          <div className="stat-icon">
-            <CheckCircle size={20} />
+        <div className="emp-stat-card">
+          <div className="emp-stat-icon emp-stat-icon-success">
+            <CheckCircle size={22} />
           </div>
-          <div className="stat-content">
-            <h3>Status</h3>
-            <p>Active</p>
-            <span className="stat-detail">Account is active</span>
+          <div className="emp-stat-content">
+            <span className="emp-stat-label">Status</span>
+            <span className="emp-stat-value-success">Active</span>
+            <span className="emp-stat-detail">Account is active</span>
           </div>
         </div>
       </section>
 
+      {/* ============ POST FORM ============ */}
       {showPostForm && (
-        <section className="employer-section">
-          <div className="section-header-row">
+        <section className="emp-section emp-section-form">
+          <div className="emp-section-header">
             <h2>
               <Plus size={18} />
               Post a New Job
             </h2>
+            <button
+              className="emp-btn-glass"
+              onClick={() => setShowPostForm(false)}
+            >
+              Cancel
+            </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="job-post-form">
-            <div className="job-form-grid">
+          <form onSubmit={handleSubmit} className="emp-form">
+            <div className="emp-form-grid">
               <select
-                className="field-input"
+                className="emp-field"
                 required
                 value={form.job_title}
                 onChange={(e) => handleChange('job_title', e.target.value)}
@@ -274,7 +311,7 @@ export default function EmployerDashboard() {
                 required
                 value={form.company_name}
                 onChange={(e) => handleChange('company_name', e.target.value)}
-                className="field-input"
+                className="emp-field"
               />
 
               <input
@@ -282,13 +319,13 @@ export default function EmployerDashboard() {
                 placeholder="Location"
                 value={form.location}
                 onChange={(e) => handleChange('location', e.target.value)}
-                className="field-input"
+                className="emp-field"
               />
 
               <select
                 value={form.employment_type}
                 onChange={(e) => handleChange('employment_type', e.target.value)}
-                className="field-input"
+                className="emp-field"
               >
                 <option value="Full-time">Full-time</option>
                 <option value="Part-time">Part-time</option>
@@ -299,7 +336,7 @@ export default function EmployerDashboard() {
               <select
                 value={form.experience_level}
                 onChange={(e) => handleChange('experience_level', e.target.value)}
-                className="field-input"
+                className="emp-field"
               >
                 <option value="Junior">Junior</option>
                 <option value="Mid">Mid</option>
@@ -312,7 +349,7 @@ export default function EmployerDashboard() {
                 placeholder="Salary Min (USD)"
                 value={form.salary_min}
                 onChange={(e) => handleChange('salary_min', e.target.value)}
-                className="field-input"
+                className="emp-field"
               />
 
               <input
@@ -320,7 +357,7 @@ export default function EmployerDashboard() {
                 placeholder="Salary Max (USD)"
                 value={form.salary_max}
                 onChange={(e) => handleChange('salary_max', e.target.value)}
-                className="field-input"
+                className="emp-field"
               />
 
               <input
@@ -328,7 +365,7 @@ export default function EmployerDashboard() {
                 placeholder="Industry"
                 value={form.industry}
                 onChange={(e) => handleChange('industry', e.target.value)}
-                className="field-input"
+                className="emp-field"
               />
 
               <input
@@ -336,7 +373,7 @@ export default function EmployerDashboard() {
                 placeholder="Skills Required (comma separated)"
                 value={form.skills_required}
                 onChange={(e) => handleChange('skills_required', e.target.value)}
-                className="field-input field-full-width"
+                className="emp-field emp-field-full"
               />
 
               <input
@@ -344,7 +381,7 @@ export default function EmployerDashboard() {
                 placeholder="Tools Preferred"
                 value={form.tools_preferred}
                 onChange={(e) => handleChange('tools_preferred', e.target.value)}
-                className="field-input field-full-width"
+                className="emp-field emp-field-full"
               />
 
               <textarea
@@ -352,7 +389,7 @@ export default function EmployerDashboard() {
                 rows={3}
                 value={form.about_role}
                 onChange={(e) => handleChange('about_role', e.target.value)}
-                className="field-input field-full-width"
+                className="emp-field emp-field-full"
               />
 
               <textarea
@@ -360,7 +397,7 @@ export default function EmployerDashboard() {
                 rows={3}
                 value={form.responsibilities}
                 onChange={(e) => handleChange('responsibilities', e.target.value)}
-                className="field-input field-full-width"
+                className="emp-field emp-field-full"
               />
 
               <textarea
@@ -368,21 +405,20 @@ export default function EmployerDashboard() {
                 rows={3}
                 value={form.requirements}
                 onChange={(e) => handleChange('requirements', e.target.value)}
-                className="field-input field-full-width"
+                className="emp-field emp-field-full"
               />
             </div>
 
-            <div className="job-form-actions">
-              <button
-                type="button"
-                className="cancel-job-btn"
-                onClick={() => setShowPostForm(false)}
-              >
-                Cancel
-              </button>
+            <div className="emp-form-actions">
+            <button
+              className="emp-btn-glass"
+              onClick={() => setShowPostForm(false)}
+            >
+              Cancel
+            </button>
               <button
                 type="submit"
-                className="publish-job-btn"
+                className="emp-btn-primary emp-btn-full"
                 disabled={submitting}
               >
                 {submitting ? 'Publishing...' : 'Publish Job'}
@@ -392,43 +428,45 @@ export default function EmployerDashboard() {
         </section>
       )}
 
-      <section className="employer-section">
-        <div className="section-header-row">
+      {/* ============ JOB LIST ============ */}
+      <section className="emp-section">
+        <div className="emp-section-header">
           <h2>
             <Briefcase size={18} />
             Your Job Postings ({jobs.length})
           </h2>
           {!showPostForm && (
             <button
-              className="post-job-btn"
+              className="emp-btn-glass emp-btn-sm"
               onClick={() => setShowPostForm(true)}
             >
               <Plus size={14} />
-              Post a New Job
+              Post New Job
             </button>
           )}
         </div>
 
         {jobs.length === 0 ? (
-          <div className="empty-jobs">
-            <div className="empty-jobs-icon">
+          <div className="emp-empty">
+            <div className="emp-empty-icon">
               <Briefcase size={40} />
             </div>
-            <p className="empty-jobs-title">No jobs posted yet</p>
-            <p className="empty-jobs-sub">
-              Click "Post a New Job" to create your first listing
+            <p className="emp-empty-title">No jobs posted yet</p>
+            <p className="emp-empty-sub">
+              Click "Post New Job" to create your first listing
             </p>
           </div>
         ) : (
-          <div className="job-list-grid">
+          <div className="emp-job-list">
             {jobs.map((job) => (
-              <div className="job-post-card" key={job.id}>
-                <div className={`job-post-logo ${getJobLogoClass(job.job_title)}`}>
+              <div className="emp-job-card" key={job.id}>
+                <div className={`emp-job-logo ${getJobLogoClass(job.job_title)}`}>
                   {job.job_title?.charAt(0) || 'J'}
                 </div>
-                <div className="job-info">
+
+                <div className="emp-job-info">
                   <h3>{job.job_title}</h3>
-                  <div className="job-meta">
+                  <div className="emp-job-meta">
                     <span>
                       <MapPin size={12} />
                       {job.location || 'N/A'}
@@ -444,16 +482,14 @@ export default function EmployerDashboard() {
                     </span>
                     <span>
                       <Calendar size={12} />
-                      {job.posted_date
-                        ? new Date(job.posted_date).toLocaleDateString()
-                        : 'N/A'}
+                      {timeAgo(job.posted_date)}
                     </span>
                   </div>
                 </div>
 
-                <div className="job-post-actions">
+                <div className="emp-job-actions">
                   <button
-                    className="view-applicants-btn"
+                    className="emp-btn-glass emp-btn-sm"
                     onClick={() =>
                       navigate(`/employer/jobs/${job.id}/applicants`)
                     }
@@ -461,7 +497,7 @@ export default function EmployerDashboard() {
                     <Users size={14} />
                     View Applicants ({job.applicant_count})
                   </button>
-                  <span className="job-status-badge">{job.status}</span>
+                  <span className="emp-badge-active">{job.status}</span>
                 </div>
               </div>
             ))}
@@ -469,14 +505,122 @@ export default function EmployerDashboard() {
         )}
       </section>
 
-      <section className="employer-cta">
-        <div className="employer-cta-content">
+      {/* ============ LANDING 1: WHY JOBJAB ============ */}
+      <section className="emp-landing">
+        <div className="emp-landing-grid">
+          <div className="emp-landing-image">
+            <img src="/employer.jpg" alt="Hire talent" />
+            <div className="emp-landing-badge">For Employers</div>
+          </div>
+
+          <div className="emp-landing-content">
+            <span className="emp-landing-tag">
+              <Target size={14} />
+              WHY JOBJAB
+            </span>
+            <h2>Find the right talent, faster</h2>
+            <p className="emp-landing-desc">
+              Our AI-powered match score helps you find candidates who truly fit your
+              requirements — no more screening hundreds of unqualified resumes.
+            </p>
+
+            <div className="emp-landing-features">
+              <div className="emp-landing-feature">
+                <div className="emp-landing-icon">
+                  <Target size={20} />
+                </div>
+                <div>
+                  <h4>Smart match score</h4>
+                  <p>AI ranks candidates by skills, experience, and industry fit.</p>
+                </div>
+              </div>
+              <div className="emp-landing-feature">
+                <div className="emp-landing-icon">
+                  <Zap size={20} />
+                </div>
+                <div>
+                  <h4>Real-time applications</h4>
+                  <p>Get notified instantly when new candidates apply.</p>
+                </div>
+              </div>
+              <div className="emp-landing-feature">
+                <div className="emp-landing-icon">
+                  <BarChart3 size={20} />
+                </div>
+                <div>
+                  <h4>Track pipeline</h4>
+                  <p>Move candidates from applied to interview to hired.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ LANDING 2: HOW IT WORKS ============ */}
+      <section className="emp-landing emp-landing-reverse">
+        <div className="emp-landing-grid">
+          <div className="emp-landing-content">
+            <span className="emp-landing-tag">
+              <Sparkles size={14} />
+              HOW IT WORKS
+            </span>
+            <h2>Post a job in 3 simple steps</h2>
+            <p className="emp-landing-desc">
+              From posting to hiring — we make the process effortless. Post jobs,
+              review applicants, and build your dream team.
+            </p>
+
+            <div className="emp-landing-steps">
+              <div className="emp-landing-step">
+                <span className="emp-step-number">01</span>
+                <div>
+                  <h4>Post your job</h4>
+                  <p>Fill in the details — title, skills, salary, and requirements.</p>
+                </div>
+              </div>
+              <div className="emp-landing-step">
+                <span className="emp-step-number">02</span>
+                <div>
+                  <h4>Review applicants</h4>
+                  <p>See candidates ranked by match score for your job.</p>
+                </div>
+              </div>
+              <div className="emp-landing-step">
+                <span className="emp-step-number">03</span>
+                <div>
+                  <h4>Hire the best fit</h4>
+                  <p>Schedule interviews and track candidates through your pipeline.</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              className="emp-btn-primary"
+              onClick={() => setShowPostForm(true)}
+            >
+              <Plus size={16} />
+              Post a Job
+              <ArrowRight size={16} />
+            </button>
+          </div>
+
+          <div className="emp-landing-image">
+            <img src="/job-seeker.jpg" alt="How it works" />
+            <div className="emp-landing-badge">How It Works</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ CTA ============ */}
+      <section className="emp-cta">
+        <div className="emp-cta-content">
           <h2>Ready to hire your next team member?</h2>
           <p>
             Post a job and reach thousands of qualified candidates on JOBJAB.
           </p>
           <button
-            className="employer-cta-btn"
+            className="emp-btn-primary"
             onClick={() => setShowPostForm(true)}
           >
             <Plus size={16} />

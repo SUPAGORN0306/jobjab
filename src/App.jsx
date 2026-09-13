@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Home, Heart, FileText, User } from "lucide-react";
-import './index.css';
+// import './index.css';   // ย้ายไป styles/global.css ที่ main.jsx
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export default function App() {

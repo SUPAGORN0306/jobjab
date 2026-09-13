@@ -26,8 +26,8 @@ import {
   Wrench,
 } from 'lucide-react';
 
-import '../Home.css';
-import '../RecommendedCard.css';
+import '../styles/home/Home.css';
+import '../styles/home/RecommendedCard.css';
 
 // ============================================
 // SEARCH HELPERS

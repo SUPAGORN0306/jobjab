@@ -1,7 +1,7 @@
 import { API_BASE } from '../utils/apiUrl';
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "../JobDetail.css";
+import "../styles/candidate/JobDetail.css";
 import { getCurrentUserId } from '../api';
 
 const getJobLogoClass = (title) => {

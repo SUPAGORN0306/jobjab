@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchEmployerJobs } from '../api';
-import { Users, Mail, MapPin, Inbox, Briefcase } from 'lucide-react';
+import {
+  Users,
+  Mail,
+  MapPin,
+  Inbox,
+  Briefcase,
+  Eye,
+  ArrowRight,
+} from 'lucide-react';
 import { API_BASE } from '../utils/apiUrl';
-
-// ============================================
-// JOB LOGO CLASS
-// ============================================
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -21,7 +26,52 @@ const getJobLogoClass = (title) => {
   }
 };
 
+// ============================================
+// STATUS COLOR MAP
+// ============================================
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'applied':
+      return {
+        bg: 'rgba(56, 189, 248, 0.15)',
+        border: 'rgba(56, 189, 248, 0.5)',
+        color: '#38bdf8',
+        bgActive: 'rgba(56, 189, 248, 0.25)',
+      };
+    case 'reviewing':
+      return {
+        bg: 'rgba(240, 209, 84, 0.12)',
+        border: 'rgba(240, 209, 84, 0.45)',
+        color: '#f0d154',
+        bgActive: 'rgba(240, 209, 84, 0.25)',
+      };
+    case 'interview':
+      return {
+        bg: 'rgba(128, 255, 213, 0.12)',
+        border: 'rgba(128, 255, 213, 0.45)',
+        color: '#80ffd5',
+        bgActive: 'rgba(128, 255, 213, 0.25)',
+      };
+    case 'rejected':
+      return {
+        bg: 'rgba(239, 68, 68, 0.12)',
+        border: 'rgba(239, 68, 68, 0.45)',
+        color: '#fca5a5',
+        bgActive: 'rgba(239, 68, 68, 0.22)',
+      };
+    default:
+      return {
+        bg: 'rgba(255, 255, 255, 0.05)',
+        border: 'rgba(255, 255, 255, 0.15)',
+        color: '#d3dae4',
+        bgActive: 'rgba(255, 255, 255, 0.12)',
+      };
+  }
+};
+
 export default function EmployerApplicants() {
+  const navigate = useNavigate();
   const [all, setAll] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -80,21 +130,21 @@ export default function EmployerApplicants() {
 
   return (
     <div className="employer-container">
-      <section className="employer-hero">
-        <div className="employer-hero-content">
-          <span className="employer-hero-tag">
+      <section className="emp-hero">
+        <div className="emp-hero-content">
+          <span className="emp-hero-tag">
             <Users size={14} />
             ALL APPLICANTS
           </span>
           <h1>Applicants Overview</h1>
-          <p className="employer-hero-subtitle">
+          <p className="emp-hero-subtitle">
             {all.length} total {all.length === 1 ? 'application' : 'applications'}
           </p>
         </div>
       </section>
 
-      <section className="employer-section">
-        <div className="section-header-row">
+      <section className="emp-section">
+        <div className="emp-section-header">
           <h2>
             <Users size={18} />
             Filter by Status
@@ -109,43 +159,44 @@ export default function EmployerApplicants() {
             marginBottom: '20px',
           }}
         >
-          {['all', 'applied', 'reviewing', 'interview', 'rejected'].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className="post-job-btn"
-              style={{
-                background:
-                  filter === f ? 'rgba(240, 209, 84, 0.25)' : 'rgba(255,255,255,0.05)',
-                color: filter === f ? '#f0d154' : '#d8d8d8',
-                border:
-                  filter === f
-                    ? '1px solid #f0d154'
-                    : '1px solid rgba(255,255,255,0.2)',
-              }}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)} ({counts[f]})
-            </button>
-          ))}
+          {['all', 'applied', 'reviewing', 'interview', 'rejected'].map((f) => {
+            const colors = getStatusColor(f);
+            const isActive = filter === f;
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className="emp-filter-chip"
+                style={{
+                  background: isActive ? colors.bgActive : colors.bg,
+                  borderColor: isActive ? colors.color : colors.border,
+                  color: colors.color,
+                  boxShadow: isActive ? `0 4px 12px ${colors.bgActive}` : 'none',
+                }}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)} ({counts[f]})
+              </button>
+            );
+          })}
         </div>
 
         {filtered.length === 0 ? (
-          <div className="empty-jobs">
-            <div className="empty-jobs-icon">
+          <div className="emp-empty">
+            <div className="emp-empty-icon">
               <Inbox size={40} />
             </div>
-            <p className="empty-jobs-title">No applicants</p>
+            <p className="emp-empty-title">No applicants</p>
           </div>
         ) : (
           <div className="job-list-grid">
             {filtered.map((app) => (
-              <div className="job-post-card" key={app.id}>
-                <div className={`job-post-logo ${getJobLogoClass(app.job_title)}`}>
-                {app.job_title?.charAt(0) || 'J'}
+              <div className="emp-job-card" key={app.id}>
+                <div className={`emp-job-logo ${getJobLogoClass(app.job_title)}`}>
+                  {app.job_title?.charAt(0) || 'J'}
                 </div>
-                    <div className="job-info">
+                <div className="emp-job-info">
                   <h3>{app.full_name}</h3>
-                  <div className="job-meta">
+                  <div className="emp-job-meta">
                     <span>
                       <Mail size={12} />
                       {app.email}
@@ -160,8 +211,20 @@ export default function EmployerApplicants() {
                     </span>
                   </div>
                 </div>
-                <div className="job-post-actions">
-                  <span className="job-status-badge">{app.status}</span>
+                <div className="emp-job-actions">
+                  <span className="emp-badge-active">{app.status}</span>
+
+                  <button
+                    className="emp-btn-glass emp-btn-sm"
+                    onClick={() =>
+                      navigate(`/employer/jobs/${app.job_id}/applicants`)
+                    }
+                    title="View full profile"
+                  >
+                    <Eye size={14} />
+                    View
+                    <ArrowRight size={14} />
+                  </button>
                 </div>
               </div>
             ))}

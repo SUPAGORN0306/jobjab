@@ -49,21 +49,21 @@ export default function EmployerJobs() {
 
   return (
     <div className="employer-container">
-      <section className="employer-hero">
-        <div className="employer-hero-content">
-          <span className="employer-hero-tag">
+      <section className="emp-hero">
+        <div className="emp-hero-content">
+          <span className="emp-hero-tag">
             <Briefcase size={14} />
             MY JOBS
           </span>
           <h1>All Job Postings</h1>
-          <p className="employer-hero-subtitle">
+          <p className="emp-hero-subtitle">
             {jobs.length} total {jobs.length === 1 ? 'job' : 'jobs'}
           </p>
         </div>
       </section>
 
-      <section className="employer-section">
-        <div className="section-header-row">
+      <section className="emp-section">
+        <div className="emp-section-header">
           <h2>
             <Briefcase size={18} />
             Job List ({filtered.length})
@@ -73,7 +73,7 @@ export default function EmployerJobs() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className="post-job-btn"
+                className="emp-btn-glass emp-btn-sm"
                 style={{
                   background:
                     filter === f ? 'rgba(240, 209, 84, 0.25)' : 'rgba(255,255,255,0.05)',
@@ -91,22 +91,22 @@ export default function EmployerJobs() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="empty-jobs">
-            <div className="empty-jobs-icon">
+          <div className="emp-empty">
+            <div className="emp-empty-icon">
               <Briefcase size={40} />
             </div>
-            <p className="empty-jobs-title">No jobs found</p>
+            <p className="emp-empty-title">No jobs found</p>
           </div>
         ) : (
           <div className="job-list-grid">
             {filtered.map((job) => (
-              <div className="job-post-card" key={job.id}>
-                <div className={`job-post-logo ${getJobLogoClass(job.job_title)}`}>
+              <div className="emp-job-card" key={job.id}>
+                <div className={`emp-job-logo ${getJobLogoClass(job.job_title)}`}>
                 {job.job_title?.charAt(0) || 'J'}
                 </div>
-                <div className="job-info">
+                <div className="emp-job-info">
                   <h3>{job.job_title}</h3>
-                  <div className="job-meta">
+                  <div className="emp-job-meta">
                     <span>
                       <MapPin size={12} />
                       {job.location || 'N/A'}
@@ -122,9 +122,9 @@ export default function EmployerJobs() {
                     </span>
                   </div>
                 </div>
-                <div className="job-post-actions">
+                <div className="emp-job-actions">
                   <button
-                    className="view-applicants-btn"
+                    className="emp-btn-glass emp-btn-sm"
                     onClick={() =>
                       navigate(`/employer/jobs/${job.id}/applicants`)
                     }

@@ -7,7 +7,7 @@ import ResumeUploader from '../components/ResumeUploader';
 
 import { Briefcase, GraduationCap, X } from 'lucide-react';
 
-import '../Edit.css';
+import '../styles/candidate/Edit.css';
 
 export default function Edit() {
   const navigate = useNavigate();

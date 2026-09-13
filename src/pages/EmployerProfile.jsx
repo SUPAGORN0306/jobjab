@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { fetchFullProfile, fetchEmployerJobs, getCurrentUserId } from '../api';
 import { API_ORIGIN } from '../utils/apiUrl';
+import '../styles/candidate/Profile.css';
 import {
   Building2,
   Mail,
@@ -10,8 +11,6 @@ import {
   MapPin,
   Briefcase,
   Users,
-  Edit,
-  LogOut,
   UserCheck,
 } from 'lucide-react';
 
@@ -96,45 +95,64 @@ export default function EmployerProfile() {
 
   return (
     <div className="employer-container">
-      {/* ============ HEADER ============ */}
-      <div className="employer-profile-header">
-        <div>
-          <h1>Company profile</h1>
+      {/* ============ HERO ============ */}
+      <section className="emp-hero">
+        <div className="emp-hero-content">
+          <span className="emp-hero-tag">
+            <Building2 size={14} />
+            COMPANY PROFILE
+          </span>
+          <h1>{user?.company || 'Your Company'}</h1>
+          <p className="emp-hero-subtitle">
+            {profile?.industry || 'Industry N/A'}
+            {profile?.location && ` · ${profile.location}`}
+          </p>
 
           <div className="employer-role-badge">
             <span className="role-dot"></span>
             Employer mode
           </div>
-        </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {hasMultipleRoles && (
+          <div className="emp-hero-actions">
+            {hasMultipleRoles && (
+              <button
+                className="edit-profile-btn"
+                onClick={handleSwitchRole}
+                style={{
+                  background: 'rgba(128, 255, 213, 0.15)',
+                  borderColor: 'rgba(128, 255, 213, 0.5)',
+                  color: '#80ffd5',
+                }}
+              >
+                Switch to Job Seeker
+              </button>
+            )}
+
             <button
-              className="employer-btn switch"
-              onClick={handleSwitchRole}
+              className="edit-profile-btn"
+              onClick={() => navigate('/employer/profile/edit')}
             >
-              Switch to Job Seeker
+              Edit Profile
             </button>
-          )}
 
-          <button
-            className="employer-btn"
-            onClick={() => navigate('/employer/profile/edit')}
-          >
-            <Edit size={14} />
-            Edit Profile
-          </button>
-
-          <button className="employer-btn danger" onClick={handleLogout}>
-            <LogOut size={14} />
-            Logout
-          </button>
+            <button
+              className="edit-profile-btn"
+              onClick={handleLogout}
+              style={{
+                background: 'rgba(239, 68, 68, 0.15)',
+                borderColor: 'rgba(239, 68, 68, 0.5)',
+                color: '#fca5a5',
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* ============ PROFILE GRID ============ */}
+      {/* ============ PROFILE CONTENT ============ */}
       <div className="employer-profile-grid">
-        {/* ============ LEFT CARD ============ */}
+        {/* LEFT CARD */}
         <div className="employer-profile-left">
           <div
             className="employer-avatar-wrapper"
@@ -166,9 +184,9 @@ export default function EmployerProfile() {
           </div>
         </div>
 
-        {/* ============ RIGHT COLUMN ============ */}
+        {/* RIGHT COLUMN */}
         <div className="employer-profile-right">
-          {/* Contact details */}
+          {/* Company details */}
           <div className="employer-profile-card">
             <h3 className="employer-section-title">Company details</h3>
             <div className="employer-contact-grid">
@@ -177,8 +195,10 @@ export default function EmployerProfile() {
                   <Mail size={12} />
                   Email
                 </span>
-                <div className="employer-field-box">
-                  {profile?.email || '-'}
+                <div
+                  className={`employer-field-box ${!profile?.email ? 'empty' : ''}`}
+                >
+                  {profile?.email || 'Not provided'}
                 </div>
               </div>
 
@@ -187,8 +207,10 @@ export default function EmployerProfile() {
                   <Phone size={12} />
                   Phone
                 </span>
-                <div className="employer-field-box">
-                  {profile?.phone || '-'}
+                <div
+                  className={`employer-field-box ${!profile?.phone ? 'empty' : ''}`}
+                >
+                  {profile?.phone || 'Not provided'}
                 </div>
               </div>
 
@@ -197,8 +219,10 @@ export default function EmployerProfile() {
                   <MapPin size={12} />
                   Location
                 </span>
-                <div className="employer-field-box">
-                  {profile?.location || '-'}
+                <div
+                  className={`employer-field-box ${!profile?.location ? 'empty' : ''}`}
+                >
+                  {profile?.location || 'Not provided'}
                 </div>
               </div>
 
@@ -207,14 +231,18 @@ export default function EmployerProfile() {
                   <UserCheck size={12} />
                   Contact person
                 </span>
-                <div className="employer-field-box">
-                  {profile?.full_name || '-'}
+                <div
+                  className={`employer-field-box ${!profile?.full_name ? 'empty' : ''}`}
+                >
+                  {profile?.full_name || 'Not provided'}
                 </div>
               </div>
 
               <div className="employer-contact-field full-width">
                 <span className="employer-field-label">Bio / About</span>
-                <div className="employer-field-box">
+                <div
+                  className={`employer-field-box ${!profile?.bio ? 'empty' : ''}`}
+                >
                   {profile?.bio || 'No bio added yet'}
                 </div>
               </div>

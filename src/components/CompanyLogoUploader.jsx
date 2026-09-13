@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Trash2, Building2 } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { API_ORIGIN } from '../utils/apiUrl';
-import './AvatarUploader.css';
+import '../styles/components/AvatarUploader.css';
 
 export default function CompanyLogoUploader({
   currentImage,
@@ -10,12 +10,16 @@ export default function CompanyLogoUploader({
 }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentImage);
+  const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setError(null);
+
+    // Preview
     const reader = new FileReader();
     reader.onload = (ev) => setPreview(ev.target.result);
     reader.readAsDataURL(file);
@@ -37,7 +41,7 @@ export default function CompanyLogoUploader({
       setPreview(data.image_url);
       onUploadSuccess?.(data.image_url);
     } catch (err) {
-      alert('Upload failed: ' + err.message);
+      setError(err.message);
       setPreview(currentImage);
     } finally {
       setUploading(false);
@@ -45,7 +49,7 @@ export default function CompanyLogoUploader({
     }
   };
 
-  const handleRemove = async () => {
+  const handleRemove = () => {
     if (!window.confirm('Remove company logo?')) return;
     setPreview(null);
     onUploadSuccess?.(null);
@@ -53,52 +57,63 @@ export default function CompanyLogoUploader({
 
   return (
     <div className="avatar-uploader">
-      <div
-        className="avatar-preview"
-        style={{ borderRadius: '16px', overflow: 'hidden' }}
-      >
+      {/* Preview */}
+      <div className="avatar-preview-wrapper" style={{ borderRadius: '16px' }}>
         {preview ? (
           <img
             src={preview}
             alt="Company Logo"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            className="avatar-preview"
           />
         ) : (
-          <Building2 size={32} style={{ color: '#f0d154' }} />
+          <div className="avatar-placeholder">
+            <Building2 size={40} style={{ color: '#f0d154' }} />
+          </div>
         )}
       </div>
 
+      {/* Hidden input */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/gif,image/webp"
         onChange={handleFileSelect}
         style={{ display: 'none' }}
       />
 
-      <div className="avatar-actions">
+      {/* Upload button */}
+      <button
+        type="button"
+        className="avatar-upload-btn"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={uploading}
+      >
+        {uploading ? 'Uploading...' : preview ? 'Change Logo' : 'Upload Logo'}
+      </button>
+
+      {/* Remove button (ใช้ avatar-upload-btn style) */}
+      {preview && (
         <button
           type="button"
-          className="avatar-btn"
-          onClick={() => fileInputRef.current?.click()}
+          className="avatar-upload-btn"
+          onClick={handleRemove}
           disabled={uploading}
+          style={{
+            background: 'rgba(239, 68, 68, 0.12)',
+            borderColor: 'rgba(239, 68, 68, 0.3)',
+            color: '#fca5a5',
+          }}
         >
-          <Upload size={12} />
-          {uploading ? 'Uploading...' : preview ? 'Change' : 'Upload Logo'}
+          Remove Logo
         </button>
+      )}
 
-        {preview && (
-          <button
-            type="button"
-            className="avatar-btn remove"
-            onClick={handleRemove}
-            disabled={uploading}
-          >
-            <Trash2 size={12} />
-            Remove
-          </button>
-        )}
-      </div>
+      {/* Hint */}
+      <p className="avatar-hint">
+        JPG, PNG, GIF, WEBP — Max 5 MB
+      </p>
+
+      {error && <p className="avatar-error">{error}</p>}
     </div>
   );
 }

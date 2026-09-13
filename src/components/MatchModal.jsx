@@ -8,7 +8,7 @@ import {
   Briefcase,
   Building2,
 } from 'lucide-react';
-import '../MatchModal.css';
+import '../styles/components/MatchModal.css';
 
 export default function MatchModal({ job, onClose }) {
   const navigate = useNavigate();

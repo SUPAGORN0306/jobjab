@@ -2,7 +2,7 @@ import { API_ORIGIN } from '../utils/apiUrl';
 import React, { useState, useCallback, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
-import './AvatarUploader.css';
+import '../styles/components/AvatarUploader.css';
 
 export default function AvatarUploader({
   currentImage,

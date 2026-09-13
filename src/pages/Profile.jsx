@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchFullProfile } from '../api';
 import { useAuth } from '../context/AuthContext';
-import '../Profile.css';
+import '../styles/candidate/Profile.css';
 
 export default function Profile() {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { API_ORIGIN, resolveFileUrl } from '../utils/apiUrl';
 import React, { useRef, useState } from 'react';
 import { FileText, Upload, Trash2, Eye, X, CheckCircle, AlertCircle } from 'lucide-react';
-import '../ResumeUploader.css';
+import '../styles/components/ResumeUploader.css';
 
 export default function ResumeUploader({
   currentResume,

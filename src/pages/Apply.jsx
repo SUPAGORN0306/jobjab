@@ -12,7 +12,7 @@ import {
   FileText,
 } from 'lucide-react';
 
-import '../Apply.css';
+import '../styles/candidate/Apply.css';
 
 export default function Apply() {
   const { id } = useParams();

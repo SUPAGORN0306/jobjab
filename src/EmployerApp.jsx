@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Briefcase, Users, User } from 'lucide-react';
-import './EmployerApp.css';
+import './styles/employer/EmployerLayout.css';
 
 export default function EmployerApp() {
   const location = useLocation();

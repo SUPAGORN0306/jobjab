@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUserApplications} from '../api';
-import '../AppStatus.css';
+import '../styles/candidate/AppStatus.css';
 
 export default function AppStatus() {
   const [applications, setApplications] = useState([]);

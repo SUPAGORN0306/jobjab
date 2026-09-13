@@ -26,7 +26,8 @@ import EmployerProfileEdit from './pages/EmployerProfileEdit.jsx';
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-import './index.css';
+import './styles/global.css';
+import './styles/tabbar.css';
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
