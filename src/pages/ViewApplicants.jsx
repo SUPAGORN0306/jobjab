@@ -5,42 +5,20 @@ import {
   fetchApplicationSnapshot,
   updateApplicationStatus,
 } from '../api';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  FileText,
+  Wrench,
+  Briefcase,
+  GraduationCap,
+  BarChart3,
+  Inbox,
+} from 'lucide-react';
 import '../ViewApplicants.css';
 
 export default function ViewApplicants() {
-  const handleResumeClick = async (e, url, filename) => {
-    e.preventDefault();
-    if (!url) return;
-
-    try {
-      // ดึงไฟล์เป็น blob
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Fetch failed');
-
-      const blob = await response.blob();
-
-      // ตรวจสอบนามสกุล
-      let finalFilename = filename || 'resume';
-      if (!/\.(pdf|doc|docx)$/i.test(finalFilename)) {
-        finalFilename = `${finalFilename}.pdf`;
-      }
-
-      // สร้าง blob URL + download
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = finalFilename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error('Resume download failed:', err);
-      // Fallback: เปิดใน tab ใหม่
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  };
-
   const { jobId } = useParams();
   const navigate = useNavigate();
 
@@ -149,11 +127,12 @@ export default function ViewApplicants() {
         </p>
       </div>
 
-      {error && <div className="applicants-error">❌ {error}</div>}
+      {error && <div className="applicants-error">{error}</div>}
 
       {applications.length === 0 ? (
         <div className="empty-applicants">
-          <p className="empty-title">📭 ยังไม่มีผู้สมัคร</p>
+          <Inbox size={40} style={{ color: '#8c9bae', marginBottom: '12px' }} />
+          <p className="empty-title">ยังไม่มีผู้สมัคร</p>
           <p className="empty-sub">รอผู้สมัครสนใจงานนี้</p>
         </div>
       ) : (
@@ -236,42 +215,56 @@ export default function ViewApplicants() {
               <p className="modal-loading">Loading snapshot...</p>
             ) : snapshot ? (
               <div className="modal-body">
+                {/* === CONTACT === */}
                 <section className="modal-section">
-                  <h3>📞 Contact</h3>
+                  <h3>
+                    <Mail size={16} /> Contact
+                  </h3>
                   <div className="modal-grid">
                     <div>
-                      <span className="modal-label">Email</span>
+                      <span className="modal-label">
+                        <Mail size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                        Email
+                      </span>
                       <span className="modal-value">{snapshot.application.email}</span>
                     </div>
                     <div>
-                      <span className="modal-label">Phone</span>
+                      <span className="modal-label">
+                        <Phone size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                        Phone
+                      </span>
                       <span className="modal-value">{snapshot.application.phone || '-'}</span>
                     </div>
                     <div>
-                      <span className="modal-label">Location</span>
+                      <span className="modal-label">
+                        <MapPin size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                        Location
+                      </span>
                       <span className="modal-value">{snapshot.application.location || '-'}</span>
                     </div>
                     <div>
-                      <span className="modal-label">Resume</span>
+                      <span className="modal-label">
+                        <FileText size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                        Resume
+                      </span>
                       <span className="modal-value">
                         {snapshot.application.resume_filename ? (
                           snapshot.application.user_resume_url ? (
                             <a
-                              href={snapshot.application.user_resume_url}
-                              onClick={(e) =>
-                                handleResumeClick(
-                                  e,
-                                  snapshot.application.user_resume_url,
-                                  snapshot.application.resume_filename
-                                )
-                              }
+                              href={`https://docs.google.com/viewer?url=${encodeURIComponent(
+                                snapshot.application.user_resume_url
+                              )}&embedded=true`}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="resume-link"
                             >
-                              📄 {snapshot.application.resume_filename}
+                              <FileText size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                              {snapshot.application.resume_filename}
                             </a>
                           ) : (
                             <span style={{ color: '#8896a9' }}>
-                              📄 {snapshot.application.resume_filename} (no file)
+                              <FileText size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                              {snapshot.application.resume_filename} (no file)
                             </span>
                           )
                         ) : (
@@ -282,18 +275,24 @@ export default function ViewApplicants() {
                   </div>
                 </section>
 
+                {/* === COVER LETTER === */}
                 {snapshot.application.cover_letter && (
                   <section className="modal-section">
-                    <h3>✉️ Cover Letter</h3>
+                    <h3>
+                      <FileText size={16} /> Cover Letter
+                    </h3>
                     <p className="cover-letter">
                       {snapshot.application.cover_letter}
                     </p>
                   </section>
                 )}
 
+                {/* === SKILLS === */}
                 {snapshot.skills?.length > 0 && (
                   <section className="modal-section">
-                    <h3>🛠️ Skills ({snapshot.skills.length})</h3>
+                    <h3>
+                      <Wrench size={16} /> Skills ({snapshot.skills.length})
+                    </h3>
                     <div className="skills-list">
                       {snapshot.skills.map((s, i) => (
                         <span className="skill-tag" key={i}>
@@ -307,9 +306,12 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
+                {/* === EXPERIENCE === */}
                 {snapshot.experiences?.length > 0 && (
                   <section className="modal-section">
-                    <h3>💼 Experience ({snapshot.experiences.length})</h3>
+                    <h3>
+                      <Briefcase size={16} /> Experience ({snapshot.experiences.length})
+                    </h3>
                     <div className="timeline">
                       {snapshot.experiences.map((exp, i) => (
                         <div className="timeline-item" key={i}>
@@ -333,9 +335,12 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
+                {/* === EDUCATION === */}
                 {snapshot.educations?.length > 0 && (
                   <section className="modal-section">
-                    <h3>🎓 Education ({snapshot.educations.length})</h3>
+                    <h3>
+                      <GraduationCap size={16} /> Education ({snapshot.educations.length})
+                    </h3>
                     <div className="timeline">
                       {snapshot.educations.map((edu, i) => (
                         <div className="timeline-item" key={i}>
@@ -357,8 +362,11 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
+                {/* === UPDATE STATUS === */}
                 <section className="modal-section">
-                  <h3>📊 Update Status</h3>
+                  <h3>
+                    <BarChart3 size={16} /> Update Status
+                  </h3>
                   <div className="modal-status-row">
                     {['applied', 'reviewing', 'interview', 'rejected'].map((s) => (
                       <button
