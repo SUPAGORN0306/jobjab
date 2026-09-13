@@ -1,113 +1,85 @@
-# JOBJAB — AI-Powered Job Matching Platform
+cat > /mnt/d/JobMarket/frontend/README.md << 'README_EOF'
+# JOBJAB — Job Matching Platform
 
-A full-stack web application that connects job seekers with employers in the technology industry. The platform features an algorithmic match scoring system that evaluates candidate-job fit based on skills, experience, and industry alignment, providing personalized job recommendations instead of generic search results.
+React frontend for the JOBJAB job matching platform. Handles user interface, authentication flows, profile management, job browsing, application submission, and the employer dashboard.
 
-## Live Demo
+## Live Application
 
-- **Frontend Application:** https://jobjab-one.vercel.app
+- **Frontend:** https://jobjab-one.vercel.app
 - **Backend API:** https://jobjab-api.onrender.com
 
 ## Overview
 
-JOBJAB provides a complete recruitment workflow for both job seekers and employers. Candidates can create detailed profiles, upload resumes, browse job listings, and submit applications. Employers can post job openings, review applications, and manage candidate status through a dedicated dashboard.
+This is the frontend application for JOBJAB, a job matching platform connecting job seekers with employers in the technology industry. The application provides an intuitive interface for browsing jobs, managing profiles, submitting applications, and viewing personalized match scores.
 
-The core feature is the match scoring algorithm that ranks job listings for each authenticated candidate. Rather than displaying jobs in chronological order, the platform surfaces the most relevant opportunities first based on the candidate's profile.
+The interface features a dark mode design optimized for extended use, responsive layouts supporting desktop and mobile devices, and real-time match score visualization.
 
 ## Features
 
-### For Job Seekers
+### Authentication
 
-- Multi-role authentication supporting candidate and employer accounts
-- Personalized match score displayed for every job listing
-- Comprehensive profile management covering skills, work experience, and education
-- Resume and profile image upload with cloud storage
-- Job application submission with customizable cover letter
-- Favorites system for saving interesting positions
-- Application tracking with status updates (applied, reviewing, interview, rejected)
+- User registration with role selection (candidate or employer)
+- Login with email and password
+- Multi-role support allowing users to switch between candidate and employer modes
+- Persistent session via localStorage
 
-### For Employers
+### Job Seeker Interface
 
-- Job posting interface with structured requirements
-- Applicant management dashboard with filtering
-- Application status workflow management
-- Detailed candidate profile viewing with resume access
-- Job performance metrics and applicant counts
+- Job browsing with personalized match scores
+- Detailed job view with matched and missing skills highlighted
+- Profile management with skills, experience, and education
+- Resume and profile image upload
+- Job application submission with editable cover letter
+- Application tracking with status indicators
+- Favorites management
 
-### Platform Features
+### Employer Interface
 
-- Dark mode interface designed for extended use
-- Responsive layout supporting desktop, tablet, and mobile devices
-- Cloud-based file storage with automatic image optimization
-- RESTful API architecture with consistent response formats
+- Job posting form with structured fields
+- Employer dashboard with job statistics
+- Applicant viewing with full candidate profiles
+- Application status management
+- Resume access for candidates
 
 ## Technology Stack
 
-### Frontend
+### Core
 
-- React 18 with Vite build tool
+- React 18
+- Vite build tool
 - React Router for client-side navigation
-- Context API for authentication state management
+- Context API for state management
+
+### UI
+
 - CSS Modules for component-scoped styling
 - Lucide React for iconography
-- Deployed on Vercel with automatic HTTPS and CDN distribution
+- Custom dark mode design system
 
-### Backend
+### Utilities
 
-- Python 3.12 with Flask framework
-- SQLAlchemy ORM with raw SQL for complex queries
-- PostgreSQL database hosted on Neon (serverless)
-- bcrypt for password hashing with 12 rounds
-- Cloudinary SDK for file storage
-- Gunicorn as production WSGI server
-- Deployed on Render with automatic deployments from GitHub
+- Axios-free fetch API with centralized client functions
+- Environment-based API URL resolution
+- Client-side image cropping for avatars
 
 ### Infrastructure
 
-- Vercel for frontend hosting, SSL, and edge caching
-- Render for backend API hosting
-- Neon for serverless PostgreSQL database
-- Cloudinary for file storage and image transformation
-- UptimeRobot for continuous availability monitoring
+- Vercel for hosting with automatic HTTPS and edge CDN
+- Automatic deployments from GitHub main branch
 
-## Match Score Algorithm
+## Match Score Display
 
-The match score evaluates candidate-job fit using three weighted criteria that combine into a single overall score.
-Overall Score = (Skills Match × 0.50) + (Experience Match × 0.30) + (Industry Match × 0.20)
+Each job listing displays a personalized match score calculated by the backend.
 
+Overall Score = (Skills Match x 0.50) + (Experience Match x 0.30) + (Industry Match x 0.20)
 
-### Skills Match (50% weight)
+### Score Presentation
 
-Measures the percentage of required job skills that appear in the candidate's profile. Uses substring matching to handle related skill names.
-
-### Experience Match (30% weight)
-
-Compares the candidate's total years of work experience against the job's required experience level.
-
-| Job Level | Required Years | Scoring |
-|-----------|----------------|---------|
-| Entry     | 0              | Full score |
-| Junior    | 0              | Full score |
-| Mid       | 2              | Scaled |
-| Senior    | 5              | Scaled |
-| Lead      | 7              | Scaled |
-
-Candidates exceeding the requirement receive a maximum score of 100. Candidates below the requirement receive a proportional score.
-
-### Industry Match (20% weight)
-
-Evaluates industry alignment between the candidate and job posting:
-
-- Exact industry match: 100 points
-- Related industry (predefined mappings): 75 points
-- Different industry: 40 points
-- Missing data on either side: 50 points (neutral)
-
-### Score Breakdown
-
-Each job listing displays the three component scores along with two lists:
-
-- **Matched Skills:** Skills the candidate has that match the job requirements
-- **Missing Skills:** Skills the job requires that the candidate does not have
+- Overall score displayed as a percentage badge on each job card
+- Detailed breakdown modal showing three component scores
+- Matched skills highlighted in green
+- Missing skills highlighted in red
+- Skill gap analysis to guide learning priorities
 
 ## Getting Started
 
@@ -116,120 +88,159 @@ Each job listing displays the three component scores along with two lists:
 - Node.js 18 or higher
 - Backend API running (see backend repository)
 
-### Frontend Setup
+### Installation
 
 Clone the repository and install dependencies:
 
-```bash
-git clone https://github.com/SUPAGORN0306/jobjab.git
-cd jobjab
-npm install
+    git clone https://github.com/SUPAGORN0306/jobjab.git
+    cd jobjab
+    npm install
+
+### Configuration
 
 Create a .env file in the project root:
-VITE_API_URL=http://localhost:5000
 
-Start the development server:
-npm run dev
+    VITE_API_URL=http://localhost:5000
+
+### Running the Development Server
+
+Start the Vite development server:
+
+    npm run dev
+
 The application will be available at http://localhost:5173.
 
-Backend Setup
-For full setup including the backend API, refer to the backend repository:
+### Building for Production
 
-https://github.com/SUPAGORN0306/jobjab-backend
+Create an optimized production build:
 
-Production Deployment
+    npm run build
+
+Preview the production build locally:
+
+    npm run preview
+
+## Production Deployment
+
 Pushing to the main branch triggers automatic deployment on Vercel.
 
-Environment variables must be configured in the Vercel dashboard for production deployments:
+Environment variables must be configured in the Vercel dashboard:
 
-Variable	Value
-VITE_API_URL	https://jobjab-api.onrender.com
-API Reference
-Authentication
-Method	Endpoint	Description
-POST	/api/auth/register	Create a new user account
-POST	/api/auth/login	Authenticate existing user
-POST	/api/auth/add-role	Add a secondary role to an existing account
-Jobs
-Method	Endpoint	Description
-GET	/api/jobs	List all jobs with match scores
-GET	/api/jobs/:id	Retrieve detailed job information
-GET	/api/match-score/:job_id	Get standalone match score calculation
-Profile
-Method	Endpoint	Description
-GET	/api/profile/:id	Retrieve basic profile information
-GET	/api/profile/:id/full	Retrieve complete profile with skills, experience, and education
-PUT	/api/profile/:id	Update profile information
-POST	/api/upload/resume	Upload resume file to Cloudinary
-DELETE	/api/resume/:id	Delete existing resume
-POST	/api/upload/avatar	Upload profile image to Cloudinary
-Applications
-Method	Endpoint	Description
-POST	/api/applications	Submit job application
-GET	/api/applications/user/:id	Retrieve applications submitted by a user
-GET	/api/applications/:id/detail	Get detailed application information
-GET	/api/employer/jobs/:id/applications	Retrieve all applications for a specific job
-PUT	/api/employer/applications/:id/status	Update application status
-Employer
-Method	Endpoint	Description
-GET	/api/employer/jobs	Retrieve jobs posted by the authenticated employer
-POST	/api/employer/jobs	Create a new job posting
-Utilities
-Method	Endpoint	Description
-GET	/api/skills	Retrieve available skills for autocomplete
-GET	/api/favorites	Retrieve user's favorite jobs
-POST	/api/favorites/toggle	Add or remove a job from favorites
-Technical Highlights
-Query Optimization
-The match score calculation was refactored to eliminate an N+1 query problem. Loading a list of 50 jobs with personalized match scores initially required over 200 database queries. The refactored version loads the user's profile data once per request and reuses it across all job calculations, reducing the total to 5 queries per page load.
+| Variable     | Value                           |
+|--------------|---------------------------------|
+| VITE_API_URL | https://jobjab-api.onrender.com |
 
-Environment Configuration
+## Application Routes
+
+### Public Routes
+
+| Route      | Component | Description                        |
+|------------|-----------|------------------------------------|
+| /          | Landing   | Welcome page with login and signup |
+| /login     | Login     | User authentication                |
+| /signup    | Signup    | New user registration              |
+
+### Authenticated Routes (Job Seeker)
+
+| Route          | Component | Description                               |
+|----------------|-----------|-------------------------------------------|
+| /home          | Home      | Personalized job recommendations          |
+| /jobs          | AllJobs   | Full job listing with filters             |
+| /job/:id       | JobDetail | Detailed job view with match breakdown    |
+| /apply/:id     | Apply     | Application form with editable profile    |
+| /profile       | Profile   | User profile overview                     |
+| /profile/edit  | Edit      | Profile editing interface                 |
+| /status        | AppStatus | Application tracking                      |
+| /favorites     | Favorite  | Saved jobs                                |
+
+### Authenticated Routes (Employer)
+
+| Route                    | Component          | Description                    |
+|--------------------------|--------------------|--------------------------------|
+| /employer/dashboard      | EmployerDashboard  | Job statistics and overview    |
+| /employer/post-job       | EmployerApp        | Create new job posting         |
+| /employer/jobs/:id       | ViewApplicants     | View applicants for a job      |
+
+## Technical Highlights
+
+### Centralized API Client
+
+All backend communication is handled through a single module that exports typed functions for each endpoint. This pattern ensures consistent error handling and simplifies the process of updating endpoints or adding authentication headers in the future.
+
+### Environment-Based Configuration
+
 The API base URL is resolved at build time from the VITE_API_URL environment variable, allowing the same codebase to work in development (localhost) and production (Vercel deployment) without modification.
 
-File Storage Architecture
-All uploaded files are stored on Cloudinary rather than the local filesystem, ensuring persistence across deployments and server restarts. The integration provides automatic image optimization and format conversion.
+### Image Handling
 
-Availability Monitoring
-The backend API is monitored by UptimeRobot with 14-minute interval pings, preventing cold start delays on the free hosting tier.
+Profile images are processed client-side using the react-easy-crop library before upload, allowing users to crop and position their avatar. The backend then stores the optimized image on Cloudinary.
 
-Project Structure
-jobjab/
-├── public/                    # Static assets
-├── screenshots/               # Application screenshots
-├── src/
-│   ├── api.js                 # Centralized API client functions
-│   ├── components/            # Reusable UI components
-│   │   ├── AvatarUploader.jsx
-│   │   ├── MatchModal.jsx
-│   │   ├── ProtectedRoute.jsx
-│   │   └── ResumeUploader.jsx
-│   ├── context/
-│   │   └── AuthContext.jsx    # Authentication state provider
-│   ├── pages/                 # Route-level components
-│   │   ├── AllJobs.jsx
-│   │   ├── Apply.jsx
-│   │   ├── Edit.jsx
-│   │   ├── EmployerDashboard.jsx
-│   │   ├── Home.jsx
-│   │   ├── JobDetail.jsx
-│   │   ├── Login.jsx
-│   │   ├── Profile.jsx
-│   │   └── ViewApplicants.jsx
-│   └── utils/
-│       ├── apiUrl.js          # API URL resolution helper
-│       └── cropImage.js       # Image cropping utility
-├── .env.example
-├── package.json
-└── vite.config.js
+### Match Score Visualization
 
-Author
+Match scores are visualized through a combination of percentage badges, color coding (green for high matches, yellow for medium, red for low), and a detailed breakdown modal. Matched and missing skills are shown side by side to help candidates understand their fit for each role.
+
+### Responsive Design
+
+All pages use CSS Grid and Flexbox layouts that adapt from desktop (three-column layouts) to tablet (two-column) to mobile (single-column). The navigation collapses into a hamburger menu on smaller screens.
+
+## Project Structure
+
+    jobjab/
+    ├── public/                    # Static assets
+    │   ├── home.svg
+    │   ├── heart.svg
+    │   └── human.svg
+    ├── src/
+    │   ├── api.js                 # Centralized API client functions
+    │   ├── components/            # Reusable UI components
+    │   │   ├── AvatarUploader.jsx
+    │   │   ├── MatchModal.jsx
+    │   │   ├── ProtectedRoute.jsx
+    │   │   └── ResumeUploader.jsx
+    │   ├── context/
+    │   │   └── AuthContext.jsx    # Authentication state provider
+    │   ├── pages/                 # Route-level components
+    │   │   ├── AllJobs.jsx
+    │   │   ├── Apply.jsx
+    │   │   ├── AppStatus.jsx
+    │   │   ├── Edit.jsx
+    │   │   ├── EmployerDashboard.jsx
+    │   │   ├── Favorite.jsx
+    │   │   ├── Home.jsx
+    │   │   ├── JobDetail.jsx
+    │   │   ├── Login.jsx
+    │   │   ├── Profile.jsx
+    │   │   └── ViewApplicants.jsx
+    │   └── utils/
+    │       ├── apiUrl.js          # API URL resolution helper
+    │       └── cropImage.js       # Image cropping utility
+    ├── .env.example
+    ├── index.html
+    ├── package.json
+    └── vite.config.js
+
+## Environment Variables
+
+| Variable     | Description                    | Example                |
+|--------------|--------------------------------|------------------------|
+| VITE_API_URL | Backend API base URL           | http://localhost:5000  |
+
+## Author
+
 Supagorn
 
-GitHub: @SUPAGORN0306
+- GitHub: @SUPAGORN0306
+- Frontend Repository: jobjab
+- Backend Repository: jobjab-backend
 
-Frontend Repository: jobjab
+## License
 
-Backend Repository: jobjab-backend
-
-License
 This project is licensed under the MIT License.
+README_EOF
+
+echo ""
+echo "=== File created ==="
+wc -l /mnt/d/JobMarket/frontend/README.md
+echo ""
+echo "=== First 5 lines ==="
+head -5 /mnt/d/JobMarket/frontend/README.md
