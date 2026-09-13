@@ -8,6 +8,39 @@ import {
 import '../ViewApplicants.css';
 
 export default function ViewApplicants() {
+  const handleResumeClick = async (e, url, filename) => {
+    e.preventDefault();
+    if (!url) return;
+
+    try {
+      // ดึงไฟล์เป็น blob
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Fetch failed');
+
+      const blob = await response.blob();
+
+      // ตรวจสอบนามสกุล
+      let finalFilename = filename || 'resume';
+      if (!/\.(pdf|doc|docx)$/i.test(finalFilename)) {
+        finalFilename = `${finalFilename}.pdf`;
+      }
+
+      // สร้าง blob URL + download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = finalFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error('Resume download failed:', err);
+      // Fallback: เปิดใน tab ใหม่
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const { jobId } = useParams();
   const navigate = useNavigate();
 
@@ -225,8 +258,13 @@ export default function ViewApplicants() {
                           snapshot.application.user_resume_url ? (
                             <a
                               href={snapshot.application.user_resume_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              onClick={(e) =>
+                                handleResumeClick(
+                                  e,
+                                  snapshot.application.user_resume_url,
+                                  snapshot.application.resume_filename
+                                )
+                              }
                               className="resume-link"
                             >
                               📄 {snapshot.application.resume_filename}
