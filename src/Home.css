@@ -141,6 +141,10 @@ html, body {
 /* TABBAR (Sidebar)                              */
 /* ============================================ */
 
+/* ============================================ */
+/* TABBAR (Sidebar)                              */
+/* ============================================ */
+
 .tabbar {
   position: fixed;
   top: 50%;
@@ -152,7 +156,7 @@ html, body {
   justify-content: center;
   gap: 12px;
   width: 56px;
-  min-height: 300px;
+  min-height: 240px;
   padding: 18px 13px;
   background: linear-gradient(
     to bottom,
@@ -189,12 +193,28 @@ html, body {
 }
 
 .tabbar a {
-  text-align: left;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #5a6f88;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
 }
 
 .tabbar a:hover {
-  background-color: rgba(225, 225, 225, 0.55);
+  background: rgba(225, 225, 225, 0.55);
+  color: #0b2118;
+}
+
+.tabbar a.active {
+  background: linear-gradient(135deg, #80ffd5 0%, #38bdf8 100%);
+  color: #0b2118;
+  box-shadow: 0 4px 12px rgba(128, 255, 213, 0.4);
 }
 
 /* ============================================ */
@@ -1142,7 +1162,7 @@ html, body {
     gap: 12px !important;
     min-width: 0 !important;
     min-height: 0 !important;
-    width: 300px !important;
+    width: 280px !important;
     height: 56px !important;
     padding: 13px 18px !important;
     backdrop-filter: blur(10px) !important;
@@ -1151,25 +1171,23 @@ html, body {
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.6) !important,
-      0 40px 15px rgba(0, 0, 0, 0.25) !important;
+      0 4px 15px rgba(0, 0, 0, 0.25) !important;
     z-index: 2000 !important;
     box-sizing: border-box !important;
   }
 
   .tabbar a {
-    border-radius: 8px;
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
     text-decoration: none !important;
   }
 
   .tabbar a:hover {
-    background-color: rgba(255, 255, 255, 0.55) !important;
-  }
-
-  .tabbar a img {
-    width: 30px !important;
-    height: 30px !important;
+    background-color: rgba(225, 225, 225, 0.55) !important;
   }
 
   .tabbar::before {

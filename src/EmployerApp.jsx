@@ -1,33 +1,41 @@
 import React from 'react';
-import { Outlet, Link } from "react-router-dom";
-import './index.css';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Briefcase, Users, User } from 'lucide-react';
+import './EmployerApp.css';
 
 export default function EmployerApp() {
+  const location = useLocation();
+
+  const tabs = [
+    { path: '/employer/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/employer/jobs', icon: Briefcase, label: 'My Jobs' },
+    { path: '/employer/applicants', icon: Users, label: 'Applicants' },
+    { path: '/employer/profile', icon: User, label: 'Profile' },
+  ];
+
   return (
     <div className="app-layout">
       <div className="page-background"></div>
 
-      {/* แถบเมนูด้านซ้ายสำหรับฝั่ง Employer */}
-      <div className="tabbar">
-        {/* หน้าแดชบอร์ดหลัก / ภาพรวมโพสต์ */}
-        <Link to="/employer/dashboard" title="Dashboard">
-          <img src="/home.svg" alt="Dashboard" />
-        </Link>
-        
-        {/* หน้าสร้างประกาศงานใหม่ */}
-        <Link to="/employer/post-job" title="Post Job">
-          <img src="/status.svg" alt="Post Job" />
-        </Link>
-        
-        {/* หน้าโปรไฟล์บริษัท / จัดการบัญชี */}
-        <Link to="/employer/profile" title="Company Profile">
-          <img src="/human.svg" alt="Company Profile" />
-        </Link>
-      </div>   
+      <div className="employer-tabbar">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = location.pathname.startsWith(tab.path);
+          return (
+            <Link
+              key={tab.path}
+              to={tab.path}
+              title={tab.label}
+              className={`employer-tab ${isActive ? 'active' : ''}`}
+            >
+              <Icon size={22} />
+            </Link>
+          );
+        })}
+      </div>
 
-      {/* พื้นที่แสดงผลหน้าย่อยต่างๆ ผ่าน Outlet */}
       <div className="main-content-area">
-        <Outlet /> 
+        <Outlet />
       </div>
     </div>
   );
