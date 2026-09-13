@@ -221,9 +221,24 @@ export default function ViewApplicants() {
                     <div>
                       <span className="modal-label">Resume</span>
                       <span className="modal-value">
-                        {snapshot.application.resume_filename
-                          ? `📄 ${snapshot.application.resume_filename}`
-                          : '-'}
+                        {snapshot.application.resume_filename ? (
+                          snapshot.application.user_resume_url ? (
+                            <a
+                              href={snapshot.application.user_resume_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="resume-link"
+                            >
+                              📄 {snapshot.application.resume_filename}
+                            </a>
+                          ) : (
+                            <span style={{ color: '#8896a9' }}>
+                              📄 {snapshot.application.resume_filename} (no file)
+                            </span>
+                          )
+                        ) : (
+                          '-'
+                        )}
                       </span>
                     </div>
                   </div>

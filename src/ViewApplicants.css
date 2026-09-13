@@ -527,3 +527,21 @@
     padding: 10px;
   }
 }
+
+/* ============================================ */
+/* Resume Link                                   */
+/* ============================================ */
+
+.resume-link {
+  color: #80ffd5;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(128, 255, 213, 0.4);
+  transition: all 0.2s ease;
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+.resume-link:hover {
+  color: #a3ffe3;
+  border-bottom-color: #a3ffe3;
+}
