@@ -1,10 +1,10 @@
-import { API_ORIGIN, resolveFileUrl } from '../utils/apiUrl';
 import React, { useRef, useState } from 'react';
 import { FileText, Upload, Trash2, Eye, X, CheckCircle, AlertCircle } from 'lucide-react';
-import '../styles/components/ResumeUploader.css';
+import { API_BASE } from '../utils/apiUrl';
 
 export default function ResumeUploader({
   currentResume,
+  currentFilename,
   userId,
   onUploadSuccess,
   onDeleteSuccess,
@@ -13,14 +13,11 @@ export default function ResumeUploader({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [showResumeModal, setShowResumeModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const MAX_SIZE = 5 * 1024 * 1024;
-  const ALLOWED_TYPES = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  ];
+  const ALLOWED_TYPES = ['application/pdf'];
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
@@ -30,7 +27,7 @@ export default function ResumeUploader({
     if (!file) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError('Invalid file type. Allowed: PDF, DOC, DOCX');
+      setError('Invalid file type. Only PDF allowed');
       return;
     }
 
@@ -46,7 +43,7 @@ export default function ResumeUploader({
       formData.append('resume', file);
       formData.append('user_id', userId);
 
-      const res = await fetch(`${API_ORIGIN}/api/upload/resume`, {
+      const res = await fetch(`${API_BASE}/upload/resume`, {
         method: 'POST',
         body: formData,
       });
@@ -84,7 +81,7 @@ export default function ResumeUploader({
       setIsDeleting(true);
       setError(null);
 
-      const res = await fetch(`${API_ORIGIN}/api/resume/${userId}`, {
+      const res = await fetch(`${API_BASE}/resume/${userId}`, {
         method: 'DELETE',
       });
 
@@ -109,16 +106,17 @@ export default function ResumeUploader({
   };
 
   const handleView = () => {
-    if (currentResume) {
-      const url = currentResume.startsWith('http')
-        ? currentResume
-        : resolveFileUrl(currentResume);
-      window.open(url, '_blank');
-    }
+    if (!currentResume) return;
+    setShowResumeModal(true);
   };
 
   const filename = currentResume
-    ? currentResume.split('/').pop()
+    ? (currentFilename || 'resume.pdf')
+    : null;
+
+  // ⭐ Google Docs Viewer URL
+  const googleDocsUrl = currentResume
+    ? `https://docs.google.com/viewer?url=${encodeURIComponent(currentResume)}&embedded=true`
     : null;
 
   return (
@@ -190,12 +188,12 @@ export default function ResumeUploader({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,.doc,.docx"
+        accept=".pdf,application/pdf"
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
 
-      <p className="resume-hint">PDF, DOC, DOCX — Max 5 MB</p>
+      <p className="resume-hint">PDF only — Max 5 MB</p>
 
       {error && (
         <div className="resume-message resume-message-error">
@@ -215,6 +213,73 @@ export default function ResumeUploader({
         <div className="resume-message resume-message-success">
           <CheckCircle size={14} />
           <span>{success}</span>
+        </div>
+      )}
+
+      {/* ⭐ Resume Modal — Google Docs Viewer */}
+      {showResumeModal && googleDocsUrl && (
+        <div
+          onClick={() => setShowResumeModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            zIndex: 3000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff',
+              width: '100%',
+              maxWidth: '900px',
+              height: '90vh',
+              borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '16px 20px',
+                borderBottom: '1px solid #000',
+              }}
+            >
+              <strong style={{ fontSize: '16px' }}>Resume Preview</strong>
+              <button
+                onClick={() => setShowResumeModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#666',
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* ⭐ Google Docs Viewer */}
+            <iframe
+              src={googleDocsUrl}
+              title="Resume Preview"
+              style={{
+                flex: 1,
+                width: '100%',
+                border: 'none',
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

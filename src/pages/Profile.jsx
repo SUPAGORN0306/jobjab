@@ -65,7 +65,7 @@ export default function Profile() {
     return (
       <div className="profile-container">
         <p style={{ padding: '40px 0', textAlign: 'center', color: '#e74c3c' }}>
-          ❌ Error: {error}
+          Error: {error}
         </p>
       </div>
     );
@@ -79,66 +79,50 @@ export default function Profile() {
 
   const calculateStrength = () => {
     let score = 0;
-    if (profile?.full_name) score += 20;
+    if (profile?.full_name) score += 15;
     if (profile?.email) score += 10;
     if (profile?.phone) score += 10;
     if (profile?.location) score += 10;
     if (profile?.bio) score += 10;
-    if (profile?.profile_image) score += 10;
+    if (profile?.profile_image) score += 5;
+    if (profile?.resume_url) score += 15;
     if (skills.length > 0) score += 10;
     if (experiences.length > 0) score += 10;
-    if (educations.length > 0) score += 10;
+    if (educations.length > 0) score += 5;
     return Math.min(score, 100);
   };
+
   const strength = calculateStrength();
 
   const hasMultipleRoles = user?.roles?.length > 1;
+
+  const resumeFilename = profile?.resume_url
+    ? profile.resume_url.split('/').pop()
+    : null;
 
   return (
     <div className="profile-container">
       <div className="profile-header">
         <div>
           <h1>User profile</h1>
-          {/* Active Role Badge */}
           <div
-            className={`profile-role-badge ${activeRole === 'employer' ? 'employer' : 'candidate'}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              marginTop: '6px',
-              padding: '4px 10px',
-              background: activeRole === 'employer'
-                ? 'rgba(128, 255, 213, 0.15)'
-                : 'rgba(56, 189, 248, 0.15)',
-              border: activeRole === 'employer'
-                ? '1px solid rgba(128, 255, 213, 0.4)'
-                : '1px solid rgba(56, 189, 248, 0.4)',
-              borderRadius: '20px',
-              fontSize: '0.7rem',
-              fontWeight: '600',
-              color: activeRole === 'employer' ? '#80ffd5' : '#38bdf8',
-            }}
+            className={`profile-role-badge ${
+              activeRole === 'employer' ? 'employer' : 'candidate'
+            }`}
           >
-            <span
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                background: activeRole === 'employer' ? '#80ffd5' : '#38bdf8',
-              }}
-            ></span>
+            <span className="dot"></span>
             {activeRole === 'employer' ? 'Employer mode' : 'Job Seeker mode'}
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {/* Switch Role (ถ้ามี 2 roles) */}
           {hasMultipleRoles && (
             <button
               className="edit-profile-btn"
               onClick={() =>
-                handleSwitchRole(activeRole === 'employer' ? 'candidate' : 'employer')
+                handleSwitchRole(
+                  activeRole === 'employer' ? 'candidate' : 'employer'
+                )
               }
               style={{
                 background: 'rgba(128, 255, 213, 0.15)',
@@ -172,25 +156,25 @@ export default function Profile() {
       </div>
 
       <div className="profile-grid">
-        {/* LEFT CARD */}
         <div className="profile-card-left">
-         <div className="avatar-wrapper" style={{ overflow: 'hidden', padding: 0 }}>
-          {profile?.profile_image ? (
-            <img
-              src={
-                profile.profile_image.startsWith('http')
-                  ? profile.profile_image
-                  : resolveFileUrl(profile.profile_image)
-              }
-              alt="Avatar"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          ) : (
-            <span style={{ fontSize: '28px', fontWeight: 'bold' }}>
-              {profile?.full_name?.charAt(0) || 'U'}
-            </span>
-          )}
-        </div>
+          <div className="avatar-wrapper" style={{ overflow: 'hidden', padding: 0 }}>
+            {profile?.profile_image ? (
+              <img
+                src={
+                  profile.profile_image.startsWith('http')
+                    ? profile.profile_image
+                    : resolveFileUrl(profile.profile_image)
+                }
+                alt="Avatar"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <span style={{ fontSize: '28px', fontWeight: 'bold' }}>
+                {profile?.full_name?.charAt(0) || 'U'}
+              </span>
+            )}
+          </div>
+
           <div className="profile-info">
             <h2>{profile?.full_name || profile?.username}</h2>
             <p>
@@ -225,9 +209,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN */}
         <div className="profile-right-column">
-          {/* Contact */}
           <div className="profile-card-right">
             <h3 className="section-title">Contact details</h3>
             <div className="contact-grid">
@@ -247,10 +229,26 @@ export default function Profile() {
                 <span className="field-label">Bio</span>
                 <div className="field-box">{profile?.bio || '-'}</div>
               </div>
+              <div className="contact-field full-width">
+                <span className="field-label">Resume</span>
+                <div className="field-box">
+                  {profile?.resume_url ? (
+                    <a
+                      href={profile.resume_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="resume-view-link"
+                    >
+                      {resumeFilename}
+                    </a>
+                  ) : (
+                    '-'
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Experience */}
           <div className="profile-card-right">
             <h3 className="section-title">Experience</h3>
             <div className="experience-list">
@@ -278,7 +276,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Education */}
           <div className="profile-card-right">
             <h3 className="section-title">Education</h3>
             <div className="experience-list">

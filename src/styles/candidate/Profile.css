@@ -318,3 +318,23 @@
 .profile-role-badge.candidate .dot {
   background: #38bdf8;
 }
+
+/* ============================================ */
+/* Resume View Link                              */
+/* ============================================ */
+
+.resume-view-link {
+  color: #1c4551;
+  text-decoration: underline;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 100%;
+  transition: color 0.2s ease;
+}
+
+.resume-view-link:hover {
+  color: #38bdf8;
+}

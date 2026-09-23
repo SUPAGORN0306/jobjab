@@ -1,30 +1,107 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { API_BASE } from "../utils/apiUrl";
+import { getCurrentUserId } from "../api";
 
 const FavoritesContext = createContext(null);
 
-// ครอบ <App /> ไว้ที่ main.jsx เพื่อให้ทุกหน้า (Home, Favorite, ฯลฯ)
-// อ่าน/แก้ไข รายการ favorite ชุดเดียวกันได้ผ่าน useFavorites()
 export function FavoritesProvider({ children }) {
-  // เก็บ "ข้อมูลงานเต็มทั้งใบ" ของที่ถูกกดหัวใจไว้ (ไม่ใช่แค่ id)
-  // เพื่อให้หน้า Favorite เอาไปแสดงผลได้ทันที ไม่ต้องไปหาข้อมูลจากที่อื่นซ้ำ
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const isFavorited = (jobId) => favorites.some((job) => job.id === jobId);
+  // ⭐ โหลด favorites จาก API ตอน mount
+  useEffect(() => {
+    const loadFavorites = async () => {
+      const userId = getCurrentUserId();
 
-  // ส่ง "ข้อมูลงานทั้งก้อน" เข้ามา (object เดียวกับที่อยู่ใน RECOMMENDED_JOBS)
-  // ถ้ามีอยู่แล้ว -> เอาออก (unfavorite), ถ้ายังไม่มี -> เพิ่มเข้าไป (favorite)
-  const toggleFavorite = (job) => {
-    setFavorites((prev) => {
-      const exists = prev.some((j) => j.id === job.id);
-      if (exists) {
-        return prev.filter((j) => j.id !== job.id);
+      // Guest → ไม่โหลด
+      if (!userId || userId === 1) {
+        setLoading(false);
+        return;
       }
-      return [...prev, job];
-    });
+
+      try {
+        const res = await fetch(`${API_BASE}/favorites?user_id=${userId}`);
+        if (!res.ok) throw new Error('Failed to load favorites');
+        const data = await res.json();
+
+        // ⭐ แปลงข้อมูลจาก DB เป็นรูปแบบที่ UI ใช้
+        const mapped = (data.favorites || []).map((f) => ({
+          id: f.job_id,                        // ⭐ ใช้ job_id เป็น id หลัก
+          favorite_id: f.id,                   // ⭐ เก็บ favorite_id
+          title: f.job_title,
+          company: f.company_name,
+          job_title: f.job_title,
+          company_name: f.company_name,
+          location: f.location,
+          salary_min: f.salary_min,
+          salary_max: f.salary_max,
+          industry: f.industry,
+          experience_level: f.experience_level,
+          employment_type: f.employment_type,
+          skills_required: f.skills_required,
+          match_score: 0,
+        }));
+
+        setFavorites(mapped);
+      } catch (err) {
+        console.error('Error loading favorites:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFavorites();
+  }, []);
+
+  const isFavorited = (jobId) => {
+    return favorites.some((job) => job.id === jobId || job.job_id === jobId);
+  };
+
+  // ⭐ toggleFavorite — เรียก API
+  const toggleFavorite = async (job) => {
+    const userId = getCurrentUserId();
+
+    // ⭐ Guest → alert
+    if (!userId || userId === 1) {
+      alert('Please login first to save favorites');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/favorites/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          job_id: job.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to toggle favorite');
+      }
+
+      if (data.favorited) {
+        // ⭐ เพิ่มเข้า state
+        setFavorites((prev) => [...prev, job]);
+      } else {
+        // ⭐ ลบออกจาก state
+        setFavorites((prev) =>
+          prev.filter((f) => f.id !== job.id && f.job_id !== job.id)
+        );
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+      alert(err.message || 'Failed to update favorite. Please try again.');
+    }
   };
 
   return (
-    <FavoritesContext.Provider value={{ favorites, isFavorited, toggleFavorite }}>
+    <FavoritesContext.Provider
+      value={{ favorites, isFavorited, toggleFavorite, loading }}
+    >
       {children}
     </FavoritesContext.Provider>
   );

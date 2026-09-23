@@ -23,7 +23,8 @@ export default function Edit() {
     bio: '',
     industry: '',
     profile_image: null,
-    resume_url: null,        // ⭐ เพิ่ม
+    resume_url: null,   
+    resume_filename: null,     
   });
 
   // Skills / Exp / Edu
@@ -43,12 +44,20 @@ export default function Edit() {
   };
 
   // === Resume ===
-  const handleResumeUploaded = (newResumeUrl) => {
-    setProfile((prev) => ({ ...prev, resume_url: newResumeUrl }));
+  const handleResumeUploaded = (newResumeUrl, newFilename) => {
+    setProfile((prev) => ({
+      ...prev,
+      resume_url: newResumeUrl,
+      resume_filename: newFilename || null,
+    }));
   };
 
   const handleResumeDeleted = () => {
-    setProfile((prev) => ({ ...prev, resume_url: null }));
+    setProfile((prev) => ({
+      ...prev,
+      resume_url: null,
+      resume_filename: null,
+    }));
   };
 
   // === Load ===
@@ -69,7 +78,8 @@ export default function Edit() {
           bio: p.bio || '',
           industry: p.industry || '',
           profile_image: p.profile_image || null,
-          resume_url: p.resume_url || null,        // ⭐ เพิ่ม
+          resume_url: p.resume_url || null,        
+          resume_filename: p.resume_filename || null, 
         });
         setSkills(profileData.skills || []);
         setExperiences(profileData.experiences || []);
@@ -363,7 +373,7 @@ export default function Edit() {
               value={profile.industry}
               onChange={(e) => handleProfileChange('industry', e.target.value)}
             >
-              <option value="">-- Select Industry --</option>
+              <option value="">Select Industry</option>
               <option value="Tech">Tech</option>
               <option value="Finance">Finance</option>
               <option value="Healthcare">Healthcare</option>
@@ -387,10 +397,11 @@ export default function Edit() {
             />
           </div>
 
-          {/* ⭐ Resume ⭐ */}
+          {/* Resume */}
           <div className="edit-field">
             <ResumeUploader
               currentResume={profile.resume_url}
+              currentFilename={profile.resume_filename}
               userId={getCurrentUserId()}
               onUploadSuccess={handleResumeUploaded}
               onDeleteSuccess={handleResumeDeleted}

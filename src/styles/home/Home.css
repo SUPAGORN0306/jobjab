@@ -1,104 +1,23 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-
-@theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-@layer base {
-  {
-    @apply border-border outline-ring/50;
-    box-sizing: border-box;
-  }
-  body {
-    @apply bg-background text-foreground;
-    margin: 0;
-  }
-  html {
-    @apply font-sans;
-  }
-}
-
 html, body {
   width: 100%;
   min-width: 0;
   overflow-x: hidden;
+}
+
+/* Background */
+.page-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 375px;
+  min-height: 667px;
+  background-image: url('/bg-3night.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
 }
 
 /* ============================================ */
@@ -113,7 +32,7 @@ html, body {
   width: 100%;
   max-width: 1080px;
   min-height: 100vh;
-  padding: 10px 0px 0px 0px;
+  padding: 70px 70px -10px 40px;    
   overflow-x: hidden;
   position: relative;
   box-sizing: border-box;
@@ -135,86 +54,6 @@ html, body {
   width: 150%;
   height: 150%;
   object-fit: contain;
-}
-
-/* ============================================ */
-/* TABBAR (Sidebar)                              */
-/* ============================================ */
-
-/* ============================================ */
-/* TABBAR (Sidebar)                              */
-/* ============================================ */
-
-.tabbar {
-  position: fixed;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 56px;
-  min-height: 240px;
-  padding: 18px 13px;
-  background: linear-gradient(
-    to bottom,
-    rgba(217, 235, 249, 0.4) 0%,
-    rgba(160, 200, 230, 0.2) 100%
-  );
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(100, 140, 180, 0.4),
-    0 10px 25px rgba(0, 30, 60, 0.3),
-    0 4px 10px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  box-sizing: border-box;
-}
-
-.tabbar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 45%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  border-radius: 40px;
-  pointer-events: none;
-}
-
-.tabbar a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  color: #5a6f88;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  position: relative;
-  z-index: 1;
-}
-
-.tabbar a:hover {
-  background: rgba(225, 225, 225, 0.55);
-  color: #0b2118;
-}
-
-.tabbar a.active {
-  background: linear-gradient(135deg, #80ffd5 0%, #38bdf8 100%);
-  color: #0b2118;
-  box-shadow: 0 4px 12px rgba(128, 255, 213, 0.4);
 }
 
 /* ============================================ */
@@ -479,7 +318,7 @@ html, body {
 }
 
 /* ============================================ */
-/* SALARY FILTER (COMPACT)                       */
+/* SALARY FILTER                                 */
 /* ============================================ */
 
 .salary-filter-container {
@@ -596,6 +435,7 @@ html, body {
 
 .sort-wrapper {
   min-width: 180px;
+  
 }
 
 .sort-trigger {
@@ -805,7 +645,7 @@ html, body {
 }
 
 /* ============================================ */
-/* ⭐ LANDING SECTIONS ⭐                        */
+/* LANDING SECTIONS                              */
 /* ============================================ */
 
 .landing-section {
@@ -1109,7 +949,7 @@ html, body {
   display: flex;
   gap: 12px;
   margin-top: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
 }
 
@@ -1146,85 +986,27 @@ html, body {
 }
 
 /* ============================================ */
-/* RESPONSIVE — TABBAR                           */
+/* RESPONSIVE — TABLET (max-width: 1080px)      */
 /* ============================================ */
-
-@media (max-width: 1100px) {
-  .tabbar {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    width: 280px !important;
-    height: 56px !important;
-    padding: 13px 18px !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border-radius: 40px !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.6) !important,
-      0 4px 15px rgba(0, 0, 0, 0.25) !important;
-    z-index: 2000 !important;
-    box-sizing: border-box !important;
-  }
-
-  .tabbar a {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 12px !important;
-    text-decoration: none !important;
-  }
-
-  .tabbar a:hover {
-    background-color: rgba(225, 225, 225, 0.55) !important;
-  }
-
-  .tabbar::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 45% !important;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.5) 0%,
-      rgba(255, 255, 255, 0.05) 100%
-    ) !important;
-    border-radius: 40px 40px 0 0 !important;
-    pointer-events: none !important;
-  }
-} 
 
 @media (max-width: 1080px) {
   .container {
     align-items: center !important;
     margin: 0 auto !important;
-    padding: 0px 40px 0px 40px !important;
+    padding: 30px 40px 100px 40px !important;
     padding-top: 90px !important;
   }
 
   .logo {
     margin: 0 !important;
-    width: 233px !important;
-    height: 133px !important;
+    width:  150px !important;
+    height: 150px !important;
     display: flex !important;
     overflow: hidden !important;
     justify-content: center !important;
     z-index: 1001 !important;
     pointer-events: none !important;
-    margin-top: -20px !important;
+    margin-top: -95px !important;
     margin-bottom: -25px !important;
   }
 
@@ -1239,6 +1021,10 @@ html, body {
     background-color: #f2E199;
   }
 }
+
+/* ============================================ */
+/* RESPONSIVE — TABLET (max-width: 900px)       */
+/* ============================================ */
 
 @media (max-width: 900px) {
   .landing-grid {
@@ -1283,43 +1069,149 @@ html, body {
 
   .landing-cta-btn {
     width: 100%;
+    flex-wrap: nowrap !important;   
     text-align: center;
   }
 }
 
+/* ============================================ */
+/* RESPONSIVE — TABLET (max-width: 768px)       */
+/* ============================================ */
+
 @media (max-width: 768px) {
+  /* ⭐ Container */
+  .container {
+    padding: 0 20px !important;
+    padding-top: 80px !important;
+  }
+
+  /* ⭐ Logo */
+  .logo {
+    width: 100px !important;
+    height: 100px !important;
+    margin: -85px 0 0px 0 !important;
+    justify-content: center !important;
+  }
+
+  /* ⭐ Hero */
+  .top-page-1 {
+    font-size: 1.8rem !important;
+    margin: -15px 0 16px 0 !important;
+    text-align: center;
+  }
+
+  .top-page-1 h2 {
+    font-size: 1.8rem !important;
+  }
+
+  .top-page-1 p {
+    font-size: 0.82rem !important;
+    padding: 8px 14px;
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  /* ⭐ Stats */
   .home-stats {
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 12px 20px;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    padding: 14px 20px !important;
+    width: 100%;
+    border-radius: 18px !important;
+    margin: -4px 0 20px 0 !important;
   }
 
   .home-stat-divider {
-    display: none;
+    display: none !important;
   }
 
   .home-stat-value {
-    font-size: 1.2rem;
+    font-size: 1.1rem !important;
   }
 
+  .home-stat-label {
+    font-size: 0.62rem !important;
+  }
+
+  /* ⭐ Trending */
   .trending-section {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100%;
   }
 
+  .trending-chips {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100%;
+  }
+
+  .trending-chip {
+    padding: 6px 12px !important;
+    font-size: 0.68rem !important;
+  }
+
+  /* ⭐ Search + Filter */
+  .search-filter-section {
+    max-width: 750px !important;
+    margin-left: auto !important;                /* ⭐ เพิ่ม */
+    margin-right: auto !important;
+    padding: 18px !important;
+    border-radius: 26px !important;
+    gap: 12px !important;
+  }
+
+  .search-input {
+    padding: 14px 16px !important;
+    padding-right: 115px !important;
+    font-size: 0.88rem !important;
+    border-radius: 16px !important;
+  }
+
+  .search-input:focus {
+    font-size: 0.92rem !important;
+  }
+
+  .search-btn {
+    padding: 10px 22px !important;
+    font-size: 0.82rem !important;
+    border-radius: 12px !important;
+  }
+
+  /* ⭐ Filter — 2 คอลัมน์ */
+  .filter-navbar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* ⭐ Salary */
+  .salary-title,
+  .salary-display-value {
+    font-size: 0.78rem !important;
+  }
+
+  /* ⭐ Recommend header */
   .recommend-header-row {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
   }
 
   .recommend-title-group {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .recommend-title-group h4 {
+    font-size: 0.95rem !important;
   }
 
   .sort-wrapper {
-    width: 100%;
+    min-width: 0 !important;
+    width: 100% !important;
   }
 
   .sort-trigger {
@@ -1327,24 +1219,125 @@ html, body {
   }
 
   .recommend-actions {
-    width: 100%;
-    justify-content: space-between;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* ⭐⭐ Horizontal scroll — ยังเลื่อนซ้าย-ขวา + การ์ดเล็กลง */
+  .horizontal-scroll-wrapper {
+    padding: 0 !important;
   }
 
   .horizontal-scroll {
-    grid-auto-columns: 260px;
-    gap: 12px;
+    display: grid !important;
+    grid-template-rows: none !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: 200px !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 4px 16px 16px 16px !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
   }
 
-  .horizontal-scroll-wrapper {
-    padding: 0 30px;
+  .scroll-arrow {
+    display: none !important;
   }
 
+  .horizontal-card {
+    scroll-snap-align: start !important;
+    height: 100% !important;
+    width: auto !important;
+  }
+
+  .horizontal-card .Recommended-card {
+    flex: unset !important;
+    min-height: unset !important;
+    height: 100% !important;
+  }
+
+  /* ⭐ See all */
   .see-all-btn {
-    font-size: 0.75rem;
-    padding: 10px 22px;
+    font-size: 0.78rem !important;
+    padding: 11px 22px !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ⭐ Landing */
+  .landing-section {
+    margin-top: 50px !important;
+    padding: 0 4px !important;
+  }
+
+  .landing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .landing-image {
+    height: 240px !important;
+  }
+
+  .landing-content h2 {
+    font-size: 1.4rem !important;
+  }
+
+  .landing-description {
+    font-size: 0.85rem !important;
+  }
+
+  .landing-why {
+    margin-top: 60px !important;
+  }
+
+  .landing-why-header h2 {
+    font-size: 1.4rem !important;
+  }
+
+  .landing-why-header p {
+    font-size: 0.85rem !important;
+  }
+
+  .landing-why-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .landing-cta {
+    margin: 60px 0 40px 0 !important;
+    padding: 36px 24px !important;
+    border-radius: 24px !important;
+  }
+
+  .landing-cta h2 {
+    font-size: 1.4rem !important;
+  }
+
+  .landing-cta p {
+    font-size: 0.85rem !important;
+  }
+
+  .landing-cta-buttons {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .landing-cta-btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 13px 20px !important;
+    font-size: 0.82rem !important;
   }
 }
+
+/* ============================================ */
+/* RESPONSIVE — MOBILE (max-width: 500px)       */
+/* ============================================ */
 
 @media (max-width: 500px) {
   .landing-why-grid {
@@ -1361,5 +1354,767 @@ html, body {
 
   .landing-section {
     margin-top: 60px;
+  }
+}
+
+/* ============================================ */
+/* RESPONSIVE — MOBILE (max-width: 430px)       */
+/* ============================================ */
+
+@media (max-width: 430px) {
+  .container {
+    padding: 0 14px !important;
+    padding-top: 72px !important;
+  }
+
+  .logo {
+    width: 160px !important;
+    height: 90px !important;
+    margin: -8px 0 -6px 0 !important;
+  }
+
+  .top-page-1 {
+    font-size: 1.4rem !important;
+    margin: -10px 0 14px 0 !important;
+  }
+
+  .top-page-1 h2 {
+    font-size: 1.4rem !important;
+  }
+
+  .top-page-1 p {
+    font-size: 0.72rem !important;
+    padding: 6px 12px;
+  }
+
+  /* Stats */
+  .home-stats {
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    gap: 8px !important;
+  }
+
+  .home-stat-value {
+    font-size: 0.95rem !important;
+  }
+
+  .home-stat-label {
+    font-size: 0.55rem !important;
+    letter-spacing: 0.3px;
+  }
+
+  /* Trending */
+  .trending-chip {
+    padding: 5px 10px !important;
+    font-size: 0.62rem !important;
+  }
+
+  /* Search */
+  .search-filter-section {
+    padding: 14px !important;
+    border-radius: 20px !important;
+    gap: 10px !important;
+  }
+
+  .search-input {
+    padding: 12px 14px !important;
+    padding-right: 100px !important;
+    font-size: 0.78rem !important;
+    border-radius: 14px !important;
+  }
+
+  .search-input:focus {
+    font-size: 0.82rem !important;
+  }
+
+  .search-btn {
+    padding: 9px 16px !important;
+    font-size: 0.72rem !important;
+    border-radius: 10px !important;
+    right: 5px !important;
+  }
+
+  /* Filter */
+  .filter-navbar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .salary-title,
+  .salary-display-value {
+    font-size: 0.7rem !important;
+  }
+
+  /* Recommend */
+  .recommend-title-group h4 {
+    font-size: 0.85rem !important;
+  }
+
+  .recommend-count {
+    font-size: 0.7rem !important;
+  }
+
+  .clear-filters-text {
+    padding: 6px 16px !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* ⭐⭐ Horizontal scroll — การ์ดเล็กลงอีก */
+  .horizontal-scroll {
+    grid-auto-columns: 180px !important;
+    gap: 10px !important;
+    padding: 4px 14px 14px 14px !important;
+  }
+
+  /* See all */
+  .see-all-btn {
+    font-size: 0.72rem !important;
+    padding: 5px 18px !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Landing */
+  .landing-section {
+    margin-top: 40px !important;
+  }
+
+  .landing-image {
+    height: 180px !important;
+  }
+
+  .landing-content h2 {
+    font-size: 1.15rem !important;
+  }
+
+  .landing-description {
+    font-size: 0.78rem !important;
+  }
+
+  .landing-why-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-why-header h2 {
+    font-size: 1.15rem !important;
+  }
+
+  .landing-why-header p {
+    font-size: 0.78rem !important;
+  }
+
+  .landing-cta {
+    padding: 26px 18px !important;
+    border-radius: 20px !important;
+  }
+
+  .landing-cta h2 {
+    font-size: 1.15rem !important;
+  }
+
+  .landing-cta p {
+    font-size: 0.78rem !important;
+  }
+
+  .landing-cta-btn {
+    padding: 11px 16px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ FILTER DROPDOWN OVERRIDE (shadcn) ⭐       */
+/* ============================================ */
+
+/* 📲 TABLET — max-width: 768px */
+@media (max-width: 768px) {
+  /* Filter dropdown — เล็กลง */
+  .filter-item button[role="combobox"],
+  .filter-item [data-slot="select-trigger"] {
+    padding: 7px 14px !important;
+    font-size: 0.75rem !important;
+    border-radius: 20px !important;
+    height: auto !important;
+    min-height: 36px !important;
+  }
+
+  .filter-item button[role="combobox"] span,
+  .filter-item [data-slot="select-trigger"] span {
+    font-size: 0.75rem !important;
+  }
+
+  /* Sort dropdown */
+  .sort-trigger,
+  .sort-trigger[data-slot="select-trigger"] {
+    padding: 8px 14px !important;
+    font-size: 0.72rem !important;
+    min-height: 36px !important;
+  }
+
+  .sort-trigger span,
+  .sort-trigger[data-slot="select-trigger"] span {
+    font-size: 0.72rem !important;
+  }
+
+  /* ⭐ horizontal scroll — การ์ดเล็กลง */
+  .horizontal-scroll {
+    grid-auto-columns: 160px !important;          /* ⭐ จาก 200px → 160px */
+    gap: 10px !important;
+    padding: 4px 14px 14px 14px !important;
+  }
+
+  /* Scrollbar บางลง */
+  .horizontal-scroll::-webkit-scrollbar {
+    height: 6px !important;
+  }
+}
+
+/* 📱 MOBILE — max-width: 430px */
+@media (max-width: 430px) {
+  .filter-item button[role="combobox"],
+  .filter-item [data-slot="select-trigger"] {
+    padding: 6px 10px !important;
+    font-size: 0.68rem !important;
+    border-radius: 16px !important;
+    min-height: 32px !important;
+  }
+
+  .filter-item button[role="combobox"] span,
+  .filter-item [data-slot="select-trigger"] span {
+    font-size: 0.68rem !important;
+  }
+
+  .sort-trigger,
+  .sort-trigger[data-slot="select-trigger"] {
+    padding: 7px 12px !important;
+    font-size: 0.65rem !important;
+    min-height: 32px !important;
+  }
+
+  .sort-trigger span,
+  .sort-trigger[data-slot="select-trigger"] span {
+    font-size: 0.65rem !important;
+  }
+
+  /* ⭐ horizontal scroll — การ์ดเล็กลงอีก */
+  .horizontal-scroll {
+    grid-auto-columns: 145px !important;         
+    gap: 8px !important;
+    padding: 4px 12px 12px 12px !important;
+  }
+}
+
+/* ============================================ */
+/* ABOUT LINK (ท้ายหน้า Home)                    */
+/* ============================================ */
+
+.about-link-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 50px 0 100px 0;
+  width: 100%;
+}
+
+.about-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d3dae4;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.about-link-btn:hover {
+  background: rgba(240, 209, 84, 0.15);
+  border-color: rgba(240, 209, 84, 0.4);
+  color: #f0d154;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(240, 209, 84, 0.2);
+}
+
+.about-link-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.about-link-btn:hover svg:last-child {
+  transform: translateX(4px);
+}
+
+@media (max-width: 430px) {
+  .about-link-wrapper {
+    margin: 40px 0 30px 0;
+  }
+
+  .about-link-btn {
+    font-size: 0.75rem;
+    padding: 10px 18px;
+    gap: 6px;
+  }
+
+  .see-all-btn {
+    font-size: 0.72rem !important;
+    padding: 5px 18px !important;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    display: none !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ Mobile — เหลือแค่ Search Input ⭐           */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  /* ซ่อน filter dropdowns */
+  .filter-navbar {
+    display: none !important;
+  }
+
+  /* ซ่อน salary slider */
+  .salary-filter-container {
+    display: none !important;
+  }
+
+  /* ปรับ search input ให้เต็มพื้นที่ */
+  .search-filter-section {
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .search-input {
+    padding-right: 95px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .search-btn {
+    padding: 10px 20px !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ SEE ALL — ย่อเล็ก (Mobile) ⭐               */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  .see-all-wrapper {
+    margin-top: 16px !important;
+  }
+
+  .see-all-btn {
+    /* ⭐ ย่อขนาด */
+    padding: 8px 18px !important;
+    font-size: 0.72rem !important;
+    border-radius: 10px !important;
+    
+    /* ⭐ ไม่ให้เต็มความกว้าง */
+    width: auto !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    
+    /* ⭐ ลด gap */
+    gap: 5px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .see-all-wrapper {
+    margin-top: 12px !important;
+  }
+
+  .see-all-btn {
+    padding: 6px 14px !important;
+    font-size: 0.68rem !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ MOBILE — ซ่อน Hero + Stats ⭐               */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  /* ⭐ ซ่อน Hero */
+  .top-page-1 {
+    display: none !important;
+  }
+
+  /* ⭐ ซ่อน Stats */
+  .home-stats {
+    display: none !important;
+  }
+
+  /* ⭐ Container — ปรับ padding-top */
+  .container {
+    padding: 16px 16px 0px 16px !important;
+  }
+
+  /* ⭐ Search — ขึ้นบนสุด */
+  .search-filter-section {
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 12px 14px 0px 14px !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ MOBILE POLISH — Trending + Tabbar ⭐        */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  /* ⭐ Trending — 1 แถว scroll แนวนอน (ไม่ wrap) */
+  .trending-chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;         /* ⭐ ห้าม wrap */
+    overflow-x: auto !important;          /* ⭐ scroll แนวนอน */
+    width: 100% !important;
+    padding-bottom: 6px !important;
+    gap: 6px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .trending-chips::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .trending-chip {
+    flex-shrink: 0 !important;            /* ⭐ ไม่หด */
+  }
+
+  /* ⭐ Trending section — column */
+  .trending-section {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ Mobile — ซ่อนปุ่ม Search ⭐                */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  .search-btn {
+    display: none !important;
+  }
+
+  /* ⭐ ปรับ input ให้เต็มพื้นที่ (ลบ padding-right ที่เคยเผื่อปุ่ม) */
+  .search-input {
+    padding-right: 20px !important;
+    padding: 12px 16px !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ MOBILE HERO + SEARCH-FILTER ⭐              */
+/* ============================================ */
+
+/* ซ่อนบน desktop */
+.mobile-hero {
+  display: none;
+}
+
+.mobile-search-row {
+  display: none;
+}
+
+/* ============================================ */
+/* 📱 MOBILE — max-width: 768px                 */
+/* ============================================ */
+
+@media (max-width: 768px) {
+
+  /* ⭐ ซ่อน Hero เดิม + Stats เดิม */
+  .top-page-1,
+  .home-stats {
+    display: none !important;
+  }
+
+  /* ⭐ Mobile Hero ใหม่ */
+  .mobile-hero {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin: 0 0 20px 0;
+    padding: 0 2px;
+  }
+
+  .mobile-hero h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: -0.3px;
+  }
+
+  .mobile-hero h1 span {
+    color: #f0d154;
+  }
+
+  /* ⭐ ซ่อน search-filter-section เดิม */
+  .search-filter-section {
+    display: none !important;
+  }
+
+  /* ⭐ Mobile Search + Filter row ใหม่ */
+  .mobile-search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .mobile-search-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .mobile-search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8896a9;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .mobile-search-input {
+    width: 100%;
+    padding: 14px 16px 14px 42px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    outline: none;
+    color: #0d1b3e;
+    transition: all 0.2s;
+    box-sizing: border-box;
+  }
+
+  .mobile-search-input::placeholder {
+    color: #8896a9;
+  }
+
+  .mobile-search-input:focus {
+    border-color: #f0d154;
+    box-shadow: 0 0 20px rgba(240, 209, 84, 0.2);
+  }
+
+  .mobile-filter-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
+    border: none;
+    color: #1C274C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(240, 209, 84, 0.3);
+    position: relative;
+  }
+
+  .mobile-filter-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* ⭐ Filter badge (จำนวน filters ที่ active) */
+  .mobile-filter-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  }
+
+  /* ⭐ Trending — 1 แถว scroll */
+  .trending-section {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  .trending-chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    padding-bottom: 4px !important;
+    gap: 6px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .trending-chips::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .trending-chip {
+    flex-shrink: 0 !important;
+  }
+
+  /* ⭐ Container — เผื่อระยะ tabbar */
+  .container {
+    padding: 20px 16px 140px 16px !important;
+  }
+}
+
+/* ============================================ */
+/* 📱 MOBILE SMALL — max-width: 430px            */
+/* ============================================ */
+
+@media (max-width: 430px) {
+  .container {
+    padding: 70px 70px 130px 14px !important;
+  }
+
+  .mobile-hero h1 {
+    font-size: 1.4rem;
+  }
+
+  .mobile-search-input {
+    padding: 12px 14px 12px 40px;
+    font-size: 0.82rem;
+  }
+
+  .mobile-filter-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .trending-chip {
+    padding: 5px 10px !important;
+    font-size: 0.62rem !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ SORT + HEADER — ย่อใน Mobile ⭐            */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  /* ⭐ Header row — จัดใหม่ */
+  .recommend-header-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* ⭐ Title + Sort แถวเดียว */
+  .recommend-title-group {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .recommend-title-group h4 {
+    font-size: 0.9rem !important;
+    flex: 1 !important;
+    margin: 0 !important;
+  }
+
+  /* ⭐ Sort — ย่อ */
+  .sort-wrapper {
+    width: auto !important;
+    min-width: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sort-trigger {
+    width: auto !important;
+    padding: 6px 12px !important;
+    font-size: 0.7rem !important;
+    min-height: 32px !important;
+    border-radius: 10px !important;
+  }
+
+  .sort-trigger span {
+    font-size: 0.7rem !important;
+  }
+
+  /* ⭐ "Showing 20 of 2002" — เล็กลง */
+  .recommend-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .recommend-count {
+    font-size: 0.68rem !important;
+  }
+
+  .clear-filters-text {
+    padding: 5px 14px !important;
+    font-size: 0.68rem !important;
+  }
+}
+
+/* ============================================ */
+/* 📱 MOBILE SMALL — 430px                       */
+/* ============================================ */
+
+@media (max-width: 430px) {
+  .recommend-title-group h4 {
+    font-size: 0.82rem !important;
+  }
+
+  .sort-trigger {
+    padding: 5px 10px !important;
+    font-size: 0.65rem !important;
+    min-height: 30px !important;
+  }
+
+  .sort-trigger span {
+    font-size: 0.65rem !important;
+  }
+
+  .recommend-count {
+    font-size: 0.62rem !important;
+  }
+
+  .clear-filters-text {
+    padding: 4px 12px !important;
+    font-size: 0.62rem !important;
   }
 }

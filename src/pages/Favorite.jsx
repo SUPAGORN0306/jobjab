@@ -20,7 +20,15 @@ const getJobLogoClass = (title) => {
 
 export default function Favorite() {
   const navigate = useNavigate();
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, loading } = useFavorites();
+
+  const formatSalary = (job) => {
+    if (job.salary) return job.salary;
+    if (job.salary_min && job.salary_max) {
+      return `$${job.salary_min.toLocaleString()} - $${job.salary_max.toLocaleString()}`;
+    }
+    return 'N/A';
+  };
 
   return (
     <div className="status-container">
@@ -35,67 +43,85 @@ export default function Favorite() {
           <span>{favorites.length} saved jobs</span>
         </div>
 
-        {favorites.length === 0 ? (
+        {loading && (
+          <p style={{ fontSize: '0.85rem', color: '#8c9bae' }}>
+            Loading favorites...
+          </p>
+        )}
+
+        {!loading && favorites.length === 0 && (
           <p style={{ fontSize: '0.85rem', color: '#8c9bae' }}>
             No favorites yet — heart a job on the Home page to save it here.
           </p>
-        ) : (
+        )}
+
+        {!loading && favorites.length > 0 && (
           <div className="Recommended-cards-grid">
-            {favorites.map((job) => (
-              <div
-                className="Recommended-card"
-                key={job.id}
-                onClick={() => navigate(`/job/${job.id}`)}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="Recommended-card-top">
-                  <div className="Recommended-company-info">
-                    <div className={`Recommended-logo ${getJobLogoClass(job.title)}`}>
-                      {job.title?.charAt(0) || 'J'}
+            {favorites.map((job) => {
+              const jobId = job.id || job.job_id;
+              const title = job.job_title || job.title;
+              const company = job.company_name || job.company;
+
+              return (
+                <div
+                  className="Recommended-card"
+                  key={jobId}
+                  onClick={() => navigate(`/job/${jobId}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="Recommended-card-top">
+                    <div className="Recommended-company-info">
+                      <div className={`Recommended-logo ${getJobLogoClass(title)}`}>
+                        {title?.charAt(0) || 'J'}
+                      </div>
+                      <div>
+                        <h4>{title}</h4>
+                        <span>{company}</span>
+                      </div>
                     </div>
+                    <span
+                      className="Recommended-favorite-btn is-favorited"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(job);
+                      }}
+                    >
+                      ♥
+                    </span>
+                  </div>
+
+                  <div className="Recommended-tags">
+                    {[
+                      job.employment_type || job.type,
+                      job.experience_level || job.level,
+                      job.work_mode || job.workMode,
+                    ]
+                      .filter(Boolean)
+                      .map((tag, idx) => (
+                        <span key={idx}>{tag}</span>
+                      ))}
+                  </div>
+
+                  <div className="Recommended-card-bottom">
                     <div>
-                      <h4>{job.title}</h4>
-                      <span>{job.company}</span>
+                      <div className="Recommended-salary">
+                        {formatSalary(job)}
+                      </div>
+                      <div className="Recommended-applicants">
+                        {job.applicants || ''}
+                      </div>
+                    </div>
+                    <div
+                      className={`Recommended-match-badge ${getMatchBadgeClass(
+                        job.match_score || job.match || 0
+                      )}`}
+                    >
+                      {job.match_score || job.match || 0}%
                     </div>
                   </div>
-                  <span
-                    className="Recommended-favorite-btn is-favorited"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(job);
-                    }}
-                  >
-                    ♥
-                  </span>
                 </div>
-
-                <div className="Recommended-tags">
-                  {[job.type, job.level, job.work_mode || job.workMode]
-                    .filter(Boolean)
-                    .map((tag, idx) => (
-                      <span key={idx}>{tag}</span>
-                    ))}
-                </div>
-
-                <div className="Recommended-card-bottom">
-                  <div>
-                    <div className="Recommended-salary">
-                      {job.salary || 'N/A'}
-                    </div>
-                    <div className="Recommended-applicants">
-                      {job.applicants || ''}
-                    </div>
-                  </div>
-                  <div
-                    className={`Recommended-match-badge ${getMatchBadgeClass(
-                      job.match_score || job.match || 0
-                    )}`}
-                  >
-                    {job.match_score || job.match || 0}%
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

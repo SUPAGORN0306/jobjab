@@ -1,18 +1,20 @@
-import { resolveFileUrl } from '../utils/apiUrl';
+import { resolveFileUrl, API_BASE } from '../utils/apiUrl';
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { fetchJobDetail, fetchFullProfile, submitApplication, fetchSkills } from '../api';
+import { fetchJobDetail, fetchFullProfile, submitApplication, fetchSkills, getCurrentUserId } from '../api';
 
-// Lucide Icons
 import {
   Briefcase,
   GraduationCap,
   AlertCircle,
   X,
   FileText,
+  Upload,
 } from 'lucide-react';
 
 import '../styles/candidate/Apply.css';
+
+const PENDING_APP_KEY = 'pendingApplication';
 
 export default function Apply() {
   const { id } = useParams();
@@ -28,13 +30,17 @@ export default function Apply() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const wrapperRef = useRef(null);
 
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [resumeUploadError, setResumeUploadError] = useState(null);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
     location: '',
     resumeFilename: '',
-    resumeUrl: null,           // ⭐ เพิ่ม
+    resumeUrl: null,
     coverLetter: '',
     avatar: null,
     skills: [],
@@ -42,36 +48,58 @@ export default function Apply() {
     educations: [],
   });
 
-  // === Load data ===
+  const userId = getCurrentUserId();
+  const isGuest = !userId || userId === 1;
+
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
+
+        const pendingRaw = localStorage.getItem(PENDING_APP_KEY);
+        const pending = pendingRaw ? JSON.parse(pendingRaw) : null;
+
         const [jobData, profileData, skillsData] = await Promise.all([
           fetchJobDetail(id),
-          fetchFullProfile(),
+          isGuest
+            ? Promise.resolve({ profile: {}, skills: [], experiences: [], educations: [] })
+            : fetchFullProfile(),
           fetchSkills(),
         ]);
 
         setJob(jobData.job);
         setAllSkills(skillsData.skills || []);
 
-        const p = profileData.profile || {};
-        setFormData({
-          fullName: p.full_name || '',
-          email: p.email || '',
-          phone: p.phone || '',
-          location: p.location || '',
-          resumeFilename: p.resume_url 
-            ? p.resume_url.split('/').pop()
-            : 'No resume uploaded',
-          resumeUrl: p.resume_url || null,        // ⭐ เพิ่ม
-          coverLetter: '',
-          avatar: p.profile_image || null,
-          skills: profileData.skills || [],
-          experiences: profileData.experiences || [],
-          educations: profileData.educations || [],
-        });
+        if (pending && String(pending.jobId) === String(id)) {
+          setFormData({
+            fullName: pending.formData.fullName || '',
+            email: pending.formData.email || '',
+            phone: pending.formData.phone || '',
+            location: pending.formData.location || '',
+            resumeFilename: pending.formData.resumeFilename || '',
+            resumeUrl: pending.formData.resumeUrl || null,
+            coverLetter: pending.formData.coverLetter || '',
+            avatar: pending.formData.avatar || null,
+            skills: pending.formData.skills || [],
+            experiences: pending.formData.experiences || [],
+            educations: pending.formData.educations || [],
+          });
+        } else {
+          const p = profileData.profile || {};
+          setFormData({
+            fullName: p.full_name || '',
+            email: p.email || '',
+            phone: p.phone || '',
+            location: p.location || '',
+            resumeFilename: p.resume_filename || (p.resume_url ? 'resume.pdf' : ''),
+            resumeUrl: p.resume_url || null,
+            coverLetter: '',
+            avatar: p.profile_image || null,
+            skills: profileData.skills || [],
+            experiences: profileData.experiences || [],
+            educations: profileData.educations || [],
+          });
+        }
       } catch (err) {
         console.error('Error:', err);
         setError(err.message);
@@ -80,9 +108,8 @@ export default function Apply() {
       }
     };
     load();
-  }, [id]);
+  }, [id, isGuest]);
 
-  // === Close suggestions on outside click ===
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -97,7 +124,57 @@ export default function Apply() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // === Skills ===
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext !== 'pdf') {
+      setResumeUploadError('Only PDF files are allowed');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setResumeUploadError('File size must be under 5MB');
+      return;
+    }
+
+    try {
+      setUploadingResume(true);
+      setResumeUploadError(null);
+
+      const fd = new FormData();
+      fd.append('resume', file);
+      fd.append('user_id', userId);
+
+      const res = await fetch(`${API_BASE}/upload/resume`, {
+        method: 'POST',
+        body: fd,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      setFormData((prev) => ({
+        ...prev,
+        resumeUrl: data.resume_url,
+        resumeFilename: data.filename || file.name,
+      }));
+    } catch (err) {
+      setResumeUploadError(err.message);
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
+  const handleRemoveResume = () => {
+    setFormData((prev) => ({
+      ...prev,
+      resumeUrl: null,
+      resumeFilename: '',
+    }));
+    setResumeUploadError(null);
+  };
+
   const existingSkillNames = formData.skills.map((s) =>
     (s.skill_name || '').toLowerCase()
   );
@@ -122,10 +199,7 @@ export default function Apply() {
     }
     setFormData((prev) => ({
       ...prev,
-      skills: [
-        ...prev.skills,
-        { skill_name: trimmed, skill_level: 'Intermediate' },
-      ],
+      skills: [...prev.skills, { skill_name: trimmed, skill_level: 'Intermediate' }],
     }));
     setNewSkill('');
   };
@@ -144,14 +218,10 @@ export default function Apply() {
     }
   };
 
-  // === Experience ===
   const canAddExperience = () => {
     if (formData.experiences.length === 0) return true;
     const last = formData.experiences[formData.experiences.length - 1];
-    return (
-      last.job_title?.trim().length > 0 &&
-      last.company_name?.trim().length > 0
-    );
+    return last.job_title?.trim().length > 0 && last.company_name?.trim().length > 0;
   };
 
   const handleAddExperience = () => {
@@ -191,7 +261,6 @@ export default function Apply() {
     });
   };
 
-  // === Education ===
   const canAddEducation = () => {
     if (formData.educations.length === 0) return true;
     const last = formData.educations[formData.educations.length - 1];
@@ -235,17 +304,11 @@ export default function Apply() {
     });
   };
 
-  // === View Resume ===
   const handleViewResume = () => {
-    if (formData.resumeUrl) {
-      const url = formData.resumeUrl.startsWith('http')
-        ? formData.resumeUrl
-        : resolveFileUrl(formData.resumeUrl);
-      window.open(url, '_blank');
-    }
+    if (!formData.resumeUrl) return;
+    setShowResumeModal(true);
   };
 
-  // === Submit ===
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -257,8 +320,26 @@ export default function Apply() {
       alert('Please enter your email');
       return;
     }
+
+    if (isGuest) {
+      localStorage.setItem(
+        PENDING_APP_KEY,
+        JSON.stringify({
+          jobId: id,
+          formData: { ...formData },
+          timestamp: Date.now(),
+        })
+      );
+      alert(
+        'Please login to submit your application.\n' +
+        'Your information has been saved and will be restored after login.'
+      );
+      navigate('/login');
+      return;
+    }
+
     if (!formData.resumeUrl) {
-      alert('Please upload a resume in your profile first');
+      alert('Please upload your resume first');
       return;
     }
 
@@ -272,6 +353,7 @@ export default function Apply() {
         phone: formData.phone,
         location: formData.location,
         resumeFilename: formData.resumeFilename,
+        resumeUrl: formData.resumeUrl,
         coverLetter: formData.coverLetter,
         skills: formData.skills.map((s) => ({
           name: s.skill_name,
@@ -302,6 +384,7 @@ export default function Apply() {
       };
 
       const result = await submitApplication(payload);
+      localStorage.removeItem(PENDING_APP_KEY);
       alert(`Success!\n${result.message}\nApplication ID: ${result.application_id}`);
       navigate('/status');
     } catch (err) {
@@ -311,7 +394,6 @@ export default function Apply() {
     }
   };
 
-  // === Loading ===
   if (loading) {
     return (
       <div className="apply-container">
@@ -333,6 +415,16 @@ export default function Apply() {
 
   return (
     <div className="apply-container">
+      {isGuest && (
+        <div className="guest-banner">
+          <AlertCircle size={16} />
+          <div>
+            <strong>You're browsing as Guest</strong>
+            <p>Fill the form → Submit → Login → Your info will be saved</p>
+          </div>
+        </div>
+      )}
+
       <div className="apply-nav-row">
         <Link to={`/job/${id}`} className="back-link">
           <span className="back-arrow">‹</span> Back to job details
@@ -349,7 +441,6 @@ export default function Apply() {
       </div>
 
       <form onSubmit={handleSubmit} className="apply-grid">
-        {/* ============ LEFT — Preview ============ */}
         <div className="apply-card-left">
           <div className="avatar-wrapper" style={{ overflow: 'hidden', padding: 0 }}>
             {formData.avatar ? (
@@ -398,14 +489,10 @@ export default function Apply() {
             {formData.skills.length > 0 ? (
               <>
                 {formData.skills.slice(0, 6).map((s, i) => (
-                  <span className="skill-tag" key={i}>
-                    {s.skill_name}
-                  </span>
+                  <span className="skill-tag" key={i}>{s.skill_name}</span>
                 ))}
                 {formData.skills.length > 6 && (
-                  <span className="skills-more">
-                    +{formData.skills.length - 6} more
-                  </span>
+                  <span className="skills-more">+{formData.skills.length - 6} more</span>
                 )}
               </>
             ) : (
@@ -414,16 +501,12 @@ export default function Apply() {
           </div>
         </div>
 
-        {/* ============ RIGHT — Form ============ */}
         <div className="apply-right-column">
-          {/* === Contact === */}
           <div className="apply-card-right">
             <h3 className="section-title">Contact Details</h3>
             <div className="contact-grid">
               <div className="contact-field">
-                <span className="field-label">
-                  Full name <span className="required">*</span>
-                </span>
+                <span className="field-label">Full name <span className="required">*</span></span>
                 <input
                   type="text"
                   className="field-input-editable"
@@ -433,9 +516,7 @@ export default function Apply() {
                 />
               </div>
               <div className="contact-field">
-                <span className="field-label">
-                  Email <span className="required">*</span>
-                </span>
+                <span className="field-label">Email <span className="required">*</span></span>
                 <input
                   type="email"
                   className="field-input-editable"
@@ -462,31 +543,69 @@ export default function Apply() {
                   onChange={(e) => handleChange('location', e.target.value)}
                 />
               </div>
-              <div className="contact-field full-width">
-                <span className="field-label">
-                  Resume <span className="required">*</span>
-                </span>
-                {formData.resumeUrl ? (
-                  <div className="field-box resume-display">
-                    <span className="file-name">
-                      <FileText size={14} />
-                      {formData.resumeFilename}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleViewResume}
-                      className="upload-link"
-                    >
-                      View
-                    </button>
-                  </div>
-                ) : (
-                  <div className="field-box resume-warning">
-                    <AlertCircle size={14} />
-                    <span>No resume uploaded — please add one in your profile</span>
-                  </div>
-                )}
-              </div>
+
+              {!isGuest && (
+                <div className="contact-field full-width">
+                  <span className="field-label">Resume <span className="required">*</span></span>
+
+                  {formData.resumeUrl ? (
+                    <div className="resume-uploaded-box">
+                      <div className="resume-file-info">
+                        <FileText size={16} />
+                        <span className="resume-filename">{formData.resumeFilename}</span>
+                      </div>
+                      <div className="resume-actions">
+                        <button type="button" onClick={handleViewResume} className="resume-action-btn view">
+                          View
+                        </button>
+                        <label className="resume-action-btn change">
+                          Change
+                          <input
+                            type="file"
+                            accept=".pdf,application/pdf"
+                            onChange={handleResumeUpload}
+                            style={{ display: 'none' }}
+                            disabled={uploadingResume}
+                          />
+                        </label>
+                        <button type="button" onClick={handleRemoveResume} className="resume-action-btn remove">
+                          <X size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="resume-upload-box">
+                      <input
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        onChange={handleResumeUpload}
+                        style={{ display: 'none' }}
+                        disabled={uploadingResume}
+                      />
+                      {uploadingResume ? (
+                        <>
+                          <div className="resume-upload-spinner"></div>
+                          <span>Uploading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload size={20} />
+                          <span>Click to upload resume</span>
+                          <span className="resume-upload-hint">PDF only · Max 5MB</span>
+                        </>
+                      )}
+                    </label>
+                  )}
+
+                  {resumeUploadError && (
+                    <div className="resume-upload-error">
+                      <AlertCircle size={14} />
+                      {resumeUploadError}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="contact-field full-width">
                 <span className="field-label">Cover Letter</span>
                 <textarea
@@ -500,7 +619,6 @@ export default function Apply() {
             </div>
           </div>
 
-          {/* === Skills === */}
           <div className="apply-card-right">
             <h3 className="section-title">
               Skills
@@ -512,7 +630,7 @@ export default function Apply() {
                 <input
                   type="text"
                   className="field-input-editable skill-input"
-                  placeholder="Type a skill, e.g. Python, React..."
+                  placeholder="Type a skill..."
                   value={newSkill}
                   onChange={(e) => {
                     setNewSkill(e.target.value);
@@ -526,7 +644,6 @@ export default function Apply() {
                   className={`skill-add-btn ${!canAddSkill ? 'disabled' : ''}`}
                   onClick={() => canAddSkill && addSkill(newSkill)}
                   disabled={!canAddSkill}
-                  title={!canAddSkill ? 'Type a skill first' : 'Add skill'}
                 >
                   + Add
                 </button>
@@ -563,14 +680,11 @@ export default function Apply() {
                   </span>
                 ))
               ) : (
-                <span className="skills-empty-text">
-                  No skills yet — type above to add
-                </span>
+                <span className="skills-empty-text">No skills yet — type above to add</span>
               )}
             </div>
           </div>
 
-          {/* === Experience === */}
           <div className="apply-card-right">
             <div className="section-header-row">
               <h3 className="section-title">
@@ -583,7 +697,6 @@ export default function Apply() {
                 className={`add-item-btn ${!canAddExperience() ? 'disabled' : ''}`}
                 onClick={handleAddExperience}
                 disabled={!canAddExperience()}
-                title={!canAddExperience() ? 'Fill required fields first' : 'Add another experience'}
               >
                 + Add
               </button>
@@ -594,12 +707,8 @@ export default function Apply() {
                 <div className="empty-icon-wrapper">
                   <Briefcase size={28} />
                 </div>
-                <p className="empty-text">
-                  No experience yet? That's totally fine!
-                </p>
-                <p className="empty-subtext">
-                  You can skip this section and focus on your skills.
-                </p>
+                <p className="empty-text">No experience yet? That's totally fine!</p>
+                <p className="empty-subtext">You can skip this section.</p>
               </div>
             ) : (
               <div className="items-list">
@@ -619,40 +728,30 @@ export default function Apply() {
 
                     <div className="item-grid">
                       <div className="field-wrap">
-                        <span className="field-mini-label">
-                          Job Title <span className="required">*</span>
-                        </span>
+                        <span className="field-mini-label">Job Title <span className="required">*</span></span>
                         <input
                           className="field-input-editable"
                           placeholder="e.g. Data Analyst"
                           value={exp.job_title || ''}
-                          onChange={(e) =>
-                            handleExperienceChange(idx, 'job_title', e.target.value)
-                          }
+                          onChange={(e) => handleExperienceChange(idx, 'job_title', e.target.value)}
                         />
                       </div>
                       <div className="field-wrap">
-                        <span className="field-mini-label">
-                          Company <span className="required">*</span>
-                        </span>
+                        <span className="field-mini-label">Company <span className="required">*</span></span>
                         <input
                           className="field-input-editable"
                           placeholder="e.g. Acme Inc."
                           value={exp.company_name || ''}
-                          onChange={(e) =>
-                            handleExperienceChange(idx, 'company_name', e.target.value)
-                          }
+                          onChange={(e) => handleExperienceChange(idx, 'company_name', e.target.value)}
                         />
                       </div>
                       <div className="field-wrap field-full">
                         <span className="field-mini-label">Location</span>
                         <input
                           className="field-input-editable"
-                          placeholder="e.g. Bangkok, Thailand"
+                          placeholder="e.g. Bangkok"
                           value={exp.location || ''}
-                          onChange={(e) =>
-                            handleExperienceChange(idx, 'location', e.target.value)
-                          }
+                          onChange={(e) => handleExperienceChange(idx, 'location', e.target.value)}
                         />
                       </div>
 
@@ -663,9 +762,7 @@ export default function Apply() {
                             className="field-input-editable"
                             type="date"
                             value={exp.start_date || ''}
-                            onChange={(e) =>
-                              handleExperienceChange(idx, 'start_date', e.target.value)
-                            }
+                            onChange={(e) => handleExperienceChange(idx, 'start_date', e.target.value)}
                           />
                         </div>
                         <span className="date-sep">→</span>
@@ -675,9 +772,7 @@ export default function Apply() {
                             className="field-input-editable"
                             type="date"
                             value={exp.end_date || ''}
-                            onChange={(e) =>
-                              handleExperienceChange(idx, 'end_date', e.target.value)
-                            }
+                            onChange={(e) => handleExperienceChange(idx, 'end_date', e.target.value)}
                             disabled={exp.is_current}
                           />
                         </div>
@@ -688,9 +783,7 @@ export default function Apply() {
                       <input
                         type="checkbox"
                         checked={exp.is_current || false}
-                        onChange={(e) =>
-                          handleExperienceChange(idx, 'is_current', e.target.checked)
-                        }
+                        onChange={(e) => handleExperienceChange(idx, 'is_current', e.target.checked)}
                       />
                       <span>Currently working here</span>
                     </label>
@@ -700,9 +793,7 @@ export default function Apply() {
                       rows={2}
                       placeholder="Description (optional)"
                       value={exp.description || ''}
-                      onChange={(e) =>
-                        handleExperienceChange(idx, 'description', e.target.value)
-                      }
+                      onChange={(e) => handleExperienceChange(idx, 'description', e.target.value)}
                     />
                   </div>
                 ))}
@@ -710,7 +801,6 @@ export default function Apply() {
             )}
           </div>
 
-          {/* === Education === */}
           <div className="apply-card-right">
             <div className="section-header-row">
               <h3 className="section-title">
@@ -723,7 +813,6 @@ export default function Apply() {
                 className={`add-item-btn ${!canAddEducation() ? 'disabled' : ''}`}
                 onClick={handleAddEducation}
                 disabled={!canAddEducation()}
-                title={!canAddEducation() ? 'Fill Institution first' : 'Add another education'}
               >
                 + Add
               </button>
@@ -734,12 +823,8 @@ export default function Apply() {
                 <div className="empty-icon-wrapper">
                   <GraduationCap size={28} />
                 </div>
-                <p className="empty-text">
-                  Self-taught? That's totally fine!
-                </p>
-                <p className="empty-subtext">
-                  You can skip this section.
-                </p>
+                <p className="empty-text">Self-taught? That's totally fine!</p>
+                <p className="empty-subtext">You can skip this section.</p>
               </div>
             ) : (
               <div className="items-list">
@@ -759,16 +844,12 @@ export default function Apply() {
 
                     <div className="item-grid">
                       <div className="field-wrap field-full">
-                        <span className="field-mini-label">
-                          Institution <span className="required">*</span>
-                        </span>
+                        <span className="field-mini-label">Institution <span className="required">*</span></span>
                         <input
                           className="field-input-editable"
                           placeholder="e.g. Chulalongkorn University"
                           value={edu.institution || ''}
-                          onChange={(e) =>
-                            handleEducationChange(idx, 'institution', e.target.value)
-                          }
+                          onChange={(e) => handleEducationChange(idx, 'institution', e.target.value)}
                         />
                       </div>
                       <div className="field-wrap">
@@ -777,9 +858,7 @@ export default function Apply() {
                           className="field-input-editable"
                           placeholder="e.g. Bachelor"
                           value={edu.degree || ''}
-                          onChange={(e) =>
-                            handleEducationChange(idx, 'degree', e.target.value)
-                          }
+                          onChange={(e) => handleEducationChange(idx, 'degree', e.target.value)}
                         />
                       </div>
                       <div className="field-wrap">
@@ -788,9 +867,7 @@ export default function Apply() {
                           className="field-input-editable"
                           placeholder="e.g. Computer Science"
                           value={edu.field_of_study || ''}
-                          onChange={(e) =>
-                            handleEducationChange(idx, 'field_of_study', e.target.value)
-                          }
+                          onChange={(e) => handleEducationChange(idx, 'field_of_study', e.target.value)}
                         />
                       </div>
                       <div className="field-wrap field-full">
@@ -801,9 +878,7 @@ export default function Apply() {
                           step="0.01"
                           placeholder="e.g. 3.50"
                           value={edu.gpa || ''}
-                          onChange={(e) =>
-                            handleEducationChange(idx, 'gpa', e.target.value)
-                          }
+                          onChange={(e) => handleEducationChange(idx, 'gpa', e.target.value)}
                         />
                       </div>
 
@@ -814,9 +889,7 @@ export default function Apply() {
                             className="field-input-editable"
                             type="date"
                             value={edu.start_date || ''}
-                            onChange={(e) =>
-                              handleEducationChange(idx, 'start_date', e.target.value)
-                            }
+                            onChange={(e) => handleEducationChange(idx, 'start_date', e.target.value)}
                           />
                         </div>
                         <span className="date-sep">→</span>
@@ -826,9 +899,7 @@ export default function Apply() {
                             className="field-input-editable"
                             type="date"
                             value={edu.end_date || ''}
-                            onChange={(e) =>
-                              handleEducationChange(idx, 'end_date', e.target.value)
-                            }
+                            onChange={(e) => handleEducationChange(idx, 'end_date', e.target.value)}
                             disabled={edu.is_current}
                           />
                         </div>
@@ -839,9 +910,7 @@ export default function Apply() {
                       <input
                         type="checkbox"
                         checked={edu.is_current || false}
-                        onChange={(e) =>
-                          handleEducationChange(idx, 'is_current', e.target.checked)
-                        }
+                        onChange={(e) => handleEducationChange(idx, 'is_current', e.target.checked)}
                       />
                       <span>Currently studying here</span>
                     </label>
@@ -851,7 +920,6 @@ export default function Apply() {
             )}
           </div>
 
-          {/* === Actions === */}
           <div className="apply-actions-row">
             <button
               type="button"
@@ -865,11 +933,82 @@ export default function Apply() {
               className="submit-btn-custom"
               disabled={submitting}
             >
-              {submitting ? 'Submitting...' : 'Submit Application'}
+              {isGuest
+                ? 'Login to Submit'
+                : submitting
+                  ? 'Submitting...'
+                  : 'Submit Application'}
             </button>
           </div>
         </div>
       </form>
+
+      {/* ⭐ Resume Preview Modal — Google Docs Viewer */}
+      {showResumeModal && formData.resumeUrl && (
+        <div
+          onClick={() => setShowResumeModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.75)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff',
+              width: '100%',
+              maxWidth: '900px',
+              height: '90vh',
+              borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '16px 20px',
+                borderBottom: '1px solid #eee',
+              }}
+            >
+              <strong style={{ fontSize: '16px', color: '#000'}}>Resume Preview</strong>
+              <button
+                onClick={() => setShowResumeModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#666',
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* ⭐ Google Docs Viewer */}
+            <iframe
+              src={`https://docs.google.com/viewer?url=${encodeURIComponent(formData.resumeUrl)}&embedded=true`}
+              title="Resume Preview"
+              style={{
+                flex: 1,
+                width: '100%',
+                border: 'none',
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

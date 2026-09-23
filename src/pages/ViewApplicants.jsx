@@ -32,6 +32,11 @@ export default function ViewApplicants() {
   const [snapshotLoading, setSnapshotLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
+  // ⭐ Resume viewer
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [resumeUrl, setResumeUrl] = useState(null);
+  const [resumeApplicantName, setResumeApplicantName] = useState('');
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -103,6 +108,17 @@ export default function ViewApplicants() {
     }
   };
 
+  // ⭐ เปิด resume preview — ใช้ URL ตรง
+  const handleViewResume = (url, applicantName = '') => {
+    if (!url) {
+      alert('No resume available for this applicant');
+      return;
+    }
+    setResumeUrl(url);
+    setResumeApplicantName(applicantName);
+    setShowResumeModal(true);
+  };
+
   if (loading) {
     return (
       <div className="applicants-container">
@@ -132,8 +148,8 @@ export default function ViewApplicants() {
       {applications.length === 0 ? (
         <div className="empty-applicants">
           <Inbox size={40} style={{ color: '#8c9bae', marginBottom: '12px' }} />
-          <p className="empty-title">ยังไม่มีผู้สมัคร</p>
-          <p className="empty-sub">รอผู้สมัครสนใจงานนี้</p>
+          <p className="empty-title">No Applicant</p>
+          <p className="empty-sub">Wait for application</p>
         </div>
       ) : (
         <div className="applicants-grid">
@@ -194,7 +210,7 @@ export default function ViewApplicants() {
         </div>
       )}
 
-      {/* MODAL */}
+      {/* DETAIL MODAL */}
       {selectedApp && (
         <div className="modal-overlay" onClick={() => setSelectedApp(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -215,7 +231,6 @@ export default function ViewApplicants() {
               <p className="modal-loading">Loading snapshot...</p>
             ) : snapshot ? (
               <div className="modal-body">
-                {/* === CONTACT === */}
                 <section className="modal-section">
                   <h3>
                     <Mail size={16} /> Contact
@@ -248,34 +263,35 @@ export default function ViewApplicants() {
                         Resume
                       </span>
                       <span className="modal-value">
-                        {snapshot.application.resume_filename ? (
-                          snapshot.application.user_resume_url ? (
-                            <a
-                              href={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                                snapshot.application.user_resume_url
-                              )}&embedded=true`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="resume-link"
-                            >
-                              <FileText size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                              {snapshot.application.resume_filename}
-                            </a>
-                          ) : (
-                            <span style={{ color: '#8896a9' }}>
-                              <FileText size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                              {snapshot.application.resume_filename} (no file)
-                            </span>
-                          )
+                        {(snapshot.application.resume_url || snapshot.application.user_resume_url) ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const url = snapshot.application.resume_url || snapshot.application.user_resume_url;
+                              handleViewResume(url, snapshot.application.full_name);
+                            }}
+                            className="resume-link"
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#60a5fa',
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                              padding: 0,
+                              font: 'inherit',
+                            }}
+                          >
+                            <FileText size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                            {snapshot.application.resume_filename || 'View Resume'}
+                          </button>
                         ) : (
-                          '-'
+                          <span style={{ color: '#8896a9' }}>No resume uploaded</span>
                         )}
                       </span>
                     </div>
                   </div>
                 </section>
 
-                {/* === COVER LETTER === */}
                 {snapshot.application.cover_letter && (
                   <section className="modal-section">
                     <h3>
@@ -287,7 +303,6 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
-                {/* === SKILLS === */}
                 {snapshot.skills?.length > 0 && (
                   <section className="modal-section">
                     <h3>
@@ -306,7 +321,6 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
-                {/* === EXPERIENCE === */}
                 {snapshot.experiences?.length > 0 && (
                   <section className="modal-section">
                     <h3>
@@ -335,7 +349,6 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
-                {/* === EDUCATION === */}
                 {snapshot.educations?.length > 0 && (
                   <section className="modal-section">
                     <h3>
@@ -362,7 +375,6 @@ export default function ViewApplicants() {
                   </section>
                 )}
 
-                {/* === UPDATE STATUS === */}
                 <section className="modal-section">
                   <h3>
                     <BarChart3 size={16} /> Update Status
@@ -398,6 +410,80 @@ export default function ViewApplicants() {
                 </section>
               </div>
             ) : null}
+          </div>
+        </div>
+      )}
+
+      {/* ⭐ RESUME PREVIEW MODAL — Google Docs Viewer */}
+      {showResumeModal && resumeUrl && (
+        <div
+          onClick={() => setShowResumeModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff',
+              width: '100%',
+              maxWidth: '900px',
+              height: '90vh',
+              borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '16px 20px',
+                borderBottom: '1px solid #eee',
+              }}
+            >
+              <div>
+                <strong style={{ fontSize: '16px' ,color: '#000'}}>Resume Preview</strong>
+                {resumeApplicantName && (
+                  <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>
+                    {resumeApplicantName}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => setShowResumeModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#666',
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* ⭐ Google Docs Viewer */}
+            <iframe
+              src={`https://docs.google.com/viewer?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
+              title="Resume Preview"
+              style={{
+                flex: 1,
+                width: '100%',
+                border: 'none',
+              }}
+            />
           </div>
         </div>
       )}

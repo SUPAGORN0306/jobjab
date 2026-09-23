@@ -2,11 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
+import Splash from './pages/Splash.jsx';
 import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx'; 
 import App from './App.jsx';
 import EmployerApp from './EmployerApp.jsx';
 
 import Home from './pages/Home.jsx';
+import About from './pages/About.jsx';
 import Favorite from './pages/Favorite.jsx';
 import Apply from './pages/Apply.jsx';
 import AppStatus from './pages/AppStatus.jsx';
@@ -17,7 +20,6 @@ import EmployerDashboard from './pages/EmployerDashboard.jsx';
 import AllJobs from './pages/AllJobs.jsx';
 import ViewApplicants from './pages/ViewApplicants.jsx';
 
-// ⭐ หน้า Employer ใหม่
 import EmployerJobs from './pages/EmployerJobs.jsx';
 import EmployerApplicants from './pages/EmployerApplicants.jsx';
 import EmployerProfile from './pages/EmployerProfile.jsx';
@@ -30,7 +32,9 @@ import './styles/global.css';
 import './styles/tabbar.css';
 
 const router = createBrowserRouter([
-  { path: "/", element: <Login /> },
+  { path: "/", element: <Splash /> }, 
+  { path: "/login", element: <Login /> },        
+  { path: "/signup", element: <Signup /> },       
   {
     path: "/",
     element: (
@@ -47,6 +51,7 @@ const router = createBrowserRouter([
       { path: "profile/edit", element: <Edit /> },
       { path: "job/:id", element: <JobDetail /> },
       { path: "job/:id/apply", element: <Apply /> },
+      { path: "about", element: <About /> }, 
     ],
   },
   {
@@ -61,7 +66,7 @@ const router = createBrowserRouter([
       { path: "jobs", element: <EmployerJobs /> },
       { path: "applicants", element: <EmployerApplicants /> },
       { path: "profile", element: <EmployerProfile /> },
-      { path: "profile/edit", element: <EmployerProfileEdit /> },   // ⭐ เพิ่ม
+      { path: "profile/edit", element: <EmployerProfileEdit /> },
       { path: "jobs/:jobId/applicants", element: <ViewApplicants /> },
     ],
   },

@@ -1,7 +1,7 @@
 .recommend-list {
   margin-top: 30px;
 }
- 
+
 .recommend-list-header {
   display: flex;
   justify-content: space-between;
@@ -9,56 +9,33 @@
   margin-bottom: 20px;
   padding: 0 4px;
 }
- 
+
 .recommend-list-header h4 {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0;
 }
- 
+
 .recommend-list-header span {
   font-size: 0.75rem;
   color: #8c9bae;
 }
- 
+
 .Recommended-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-/* การ์ดในหน้า Home ถูกห่อด้วย <Link> เพื่อกดแล้วไปหน้ารายละเอียดงาน — ล้าง style ลิงก์ default ทิ้ง */
-/* .Recommended-card-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  cursor: pointer;
-} */
-
 .Recommended-card-link {
   text-decoration: none;
   color: inherit;
-  display: flex;               /* เปลี่ยนเป็น flex */
-  flex-direction: column;      /* จัดเรียงแนวตั้ง */
+  display: flex;
+  flex-direction: column;
   cursor: pointer;
-  height: 100%;                /* บังคับให้สูงเต็มแถว */
+  height: 100%;
 }
-/*  
-.Recommended-card {
-  background: rgba(220, 220, 220, 0.15);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  padding: 12px 16px;
-  display: flex; 
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 12px;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-} */
 
 .Recommended-card {
   background: rgba(220, 220, 220, 0.15);
@@ -67,35 +44,34 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   padding: 12px 16px;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 12px;
   transition: all 0.2s ease;
   box-sizing: border-box;
-  flex: 1;                     /* ให้การ์ดยืดขยายความสูงตามลิงก์จนเต็มแถว */
+  flex: 1;
 }
 
- 
 .Recommended-card:hover {
   background: rgba(220, 220, 220, 0.22);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-3px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
- 
+
 .Recommended-card-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
- 
+
 .Recommended-company-info {
   display: flex;
   align-items: center;
   gap: 12px;
 }
- 
+
 .Recommended-logo {
   width: 34px;
   height: 34px;
@@ -109,36 +85,36 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
- 
+
 .Recommended-company-info h4 {
   margin: 0 0 2px 0;
   font-size: 0.95rem;
   color: #ffffff;
   font-weight: 600;
 }
- 
+
 .Recommended-company-info span {
   font-size: 0.78rem;
   color: #94a3b8;
 }
- 
+
 .Recommended-favorite-btn {
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: color 0.2s;
 }
- 
+
 .Recommended-favorite-btn:hover {
   color: #ef4444;
 }
- 
+
 .Recommended-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
- 
+
 .Recommended-tags span {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -148,7 +124,7 @@
   color: #dbe2ea;
   font-weight: 500;
 }
- 
+
 .Recommended-card-bottom {
   display: flex;
   justify-content: space-between;
@@ -157,13 +133,13 @@
   padding-top: 12px;
   margin-top: 4px;
 }
- 
+
 .Recommended-salary {
   font-size: 0.95rem;
   font-weight: 700;
   color: #fbbf24;
 }
- 
+
 .Recommended-applicants {
   font-size: 0.8rem;
   color: #cacdd2;
@@ -177,25 +153,25 @@
   font-weight: 700;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
- 
+
 .green-badge {
   background-color: rgba(39, 174, 96, 0.15);
   color: #2ecc71;
   border: 1px solid rgba(39, 174, 96, 0.3);
 }
- 
+
 .blue-badge {
   background-color: rgba(56, 189, 248, 0.15);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.3);
 }
- 
+
 .yellow-badge {
   background-color: rgba(251, 191, 36, 0.15);
   color: #fbbf24;
   border: 1px solid rgba(251, 191, 36, 0.3);
 }
- 
+
 .red-badge {
   background-color: rgba(239, 68, 68, 0.15);
   color: #ef4444;
@@ -206,14 +182,9 @@
   color: #ef4444;
 }
 
-/* responsive: ใช้ร่วมกันทั้งหน้า Home และ Favorite เพราะทั้งคู่ใช้การ์ดชุดเดียวกัน */
-@media (max-width: 1080px) {
-  .Recommended-cards-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-  }
-}
-
+/* ============================================ */
+/* LOGO COLORS                                   */
+/* ============================================ */
 
 .logo-ai-product-manager { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
 .logo-ai-researcher { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
@@ -223,3 +194,571 @@
 .logo-ml-engineer { background: linear-gradient(135deg, #06b6d4, #0e7490); }
 .logo-nlp-engineer { background: linear-gradient(135deg, #6366f1, #4338ca); }
 .logo-quant-researcher { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+
+/* ============================================ */
+/* 📲 TABLET — max-width: 1080px                */
+/* ============================================ */
+
+@media (max-width: 1080px) {
+  .Recommended-cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+/* ============================================ */
+/* 📲 TABLET — max-width: 768px                 */
+/* ============================================ */
+
+/* @media (max-width: 768px) {
+  .Recommended-card {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    gap: 6px !important;
+  }
+
+  .Recommended-company-info {
+    gap: 6px !important;
+  }
+
+  .Recommended-logo {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .Recommended-company-info h4 {
+    font-size: 0.7rem !important;
+    margin-bottom: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .Recommended-company-info span {
+    font-size: 0.58rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .Recommended-favorite-btn {
+    font-size: 0.85rem !important;
+  }
+
+  .Recommended-tags {
+    gap: 3px !important;
+  }
+
+  .Recommended-tags span {
+    padding: 1px 5px !important;
+    font-size: 0.52rem !important;
+    border-radius: 8px !important;
+  }
+
+  .Recommended-card-bottom {
+    padding-top: 6px !important;
+    margin-top: 2px !important;
+  }
+
+  .Recommended-salary {
+    font-size: 0.65rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .Recommended-applicants {
+    font-size: 0.55rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .Recommended-match-badge {
+    padding: 2px 6px !important;
+    font-size: 0.6rem !important;
+    border-radius: 6px !important;
+  }
+} */
+
+/* ============================================ */
+/* 📱 MOBILE — max-width: 430px                 */
+/* ============================================ */
+
+@media (max-width: 430px) {
+  .Recommended-card {
+    padding: 7px 8px !important;
+    border-radius: 9px !important;
+    gap: 5px !important;
+  }
+
+  .Recommended-company-info {
+    gap: 5px !important;
+  }
+
+  .Recommended-logo {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 7px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .Recommended-company-info h4 {
+    font-size: 0.65rem !important;
+    margin-bottom: 0 !important;
+    line-height: 1.15 !important;
+  }
+
+  .Recommended-company-info span {
+    font-size: 0.52rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .Recommended-favorite-btn {
+    font-size: 0.8rem !important;
+  }
+
+  .Recommended-tags {
+    gap: 2px !important;
+  }
+
+  .Recommended-tags span {
+    padding: 1px 4px !important;
+    font-size: 0.44rem !important;
+    border-radius: 6px !important;
+  }
+
+  .Recommended-card-bottom {
+    padding-top: 5px !important;
+    margin-top: 2px !important;
+  }
+
+  .Recommended-salary {
+    font-size: 0.67rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .Recommended-applicants {
+    font-size: 0.5rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .Recommended-match-badge {
+    padding: 2px 4px !important;
+    font-size: 0.45rem !important;
+    border-radius: 5px !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ FEATURED CARD (Mobile Only) ⭐              */
+/* ============================================ */
+
+.featured-card-wrapper {
+  display: none;   /* ซ่อนบน desktop */
+}
+
+@media (max-width: 768px) {
+  .featured-card-wrapper {
+    display: block;
+    width: 100%;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  /* ⭐ Gradient Border */
+  .featured-card {
+    position: relative;
+    background: linear-gradient(
+      135deg,
+      rgba(240, 209, 84, 0.15) 0%,
+      rgba(128, 255, 213, 0.1) 100%
+    );
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 20px;
+    padding: 2px;
+    box-shadow: 
+      0 0 30px rgba(240, 209, 84, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .featured-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      #f0d154 0%,
+      #f3d86b 50%,
+      #80ffd5 100%
+    );
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .featured-card-inner {
+    background: rgba(220, 220, 220, 0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 18px;
+    padding: 14px 16px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 160px;
+  }
+
+  /* ⭐ Badge "TOP PICK FOR YOU" */
+  .featured-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
+    color: #1C274C;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(240, 209, 84, 0.4);
+  }
+
+  .featured-badge svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  /* Featured card content */
+  .featured-card-inner .Recommended-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .featured-card-inner .Recommended-company-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .featured-card-inner .Recommended-logo {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .featured-card-inner h4 {
+    font-size: 1.05rem !important;
+    margin: 0 0 3px 0 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  .featured-card-inner .Recommended-company-info span {
+    font-size: 0.78rem !important;
+    color: #94a3b8 !important;
+  }
+
+  .featured-card-inner .Recommended-tags {
+    gap: 6px !important;
+  }
+
+  .featured-card-inner .Recommended-tags span {
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 4px 10px !important;
+    font-size: 0.68rem !important;
+    border-radius: 14px !important;
+  }
+
+  .featured-card-inner .Recommended-card-bottom {
+    padding-top: 10px !important;
+    margin-top: 4px !important;
+  }
+
+  .featured-card-inner .Recommended-salary {
+    font-size: 1rem !important;
+    color: #fbbf24 !important;
+  }
+
+  .featured-card-inner .Recommended-applicants {
+    font-size: 0.72rem !important;
+    margin-top: 2px !important;
+  }
+
+  .featured-card-inner .Recommended-match-badge {
+    padding: 5px 12px !important;
+    font-size: 0.82rem !important;
+    border-radius: 10px !important;
+  }
+
+  /* ============================================ */
+  /* ⭐ 2x2 GRID — Recommended cards (mobile)     */
+  /* ============================================ */
+
+  .horizontal-scroll-wrapper {
+    padding: 0 !important;
+  }
+
+  .horizontal-scroll {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;  /* ⭐ 2x2 grid */
+    grid-template-rows: auto !important;
+    grid-auto-flow: row !important;
+    grid-auto-columns: unset !important;
+    gap: 10px !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    padding: 0 !important;
+    scroll-snap-type: none !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  .scroll-arrow {
+    display: none !important;
+  }
+
+  .horizontal-card {
+    width: 100% !important;
+    height: auto !important;
+    scroll-snap-align: none !important;
+  }
+
+  .horizontal-card .Recommended-card {
+    flex: unset !important;
+    min-height: unset !important;
+    height: 100% !important;
+  }
+}
+
+/* ============================================ */
+/* ⭐ FEATURED CARD (Mobile Only) ⭐              */
+/* ============================================ */
+
+.featured-card-wrapper {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .featured-card-wrapper {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  /* ⭐ Gradient Border */
+  .featured-card {
+    position: relative;
+    background: linear-gradient(
+      135deg,
+      rgba(240, 209, 84, 0.15) 0%,
+      rgba(128, 255, 213, 0.1) 100%
+    );
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 20px;
+    padding: 2px;
+    box-shadow: 
+      0 0 30px rgba(240, 209, 84, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .featured-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    padding: 2px;
+    background: linear-gradient(135deg, #f0d154 0%, #f3d86b 50%, #80ffd5 100%);
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .featured-card-inner {
+    background: rgba(220, 220, 220, 0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 18px;
+    padding: 14px 16px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 160px;
+  }
+
+  .featured-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
+    color: #1C274C;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(240, 209, 84, 0.4);
+  }
+
+  .featured-badge svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  /* Featured card content */
+  .featured-card-inner .Recommended-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .featured-card-inner .Recommended-company-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .featured-card-inner .Recommended-logo {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .featured-card-inner h4 {
+    font-size: 1.05rem !important;
+    margin: 0 0 3px 0 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  .featured-card-inner .Recommended-company-info span {
+    font-size: 0.78rem !important;
+    color: #94a3b8 !important;
+  }
+
+  .featured-card-inner .Recommended-tags {
+    gap: 6px !important;
+  }
+
+  .featured-card-inner .Recommended-tags span {
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 4px 10px !important;
+    font-size: 0.68rem !important;
+    border-radius: 14px !important;
+  }
+
+  .featured-card-inner .Recommended-card-bottom {
+    padding-top: 10px !important;
+    margin-top: 4px !important;
+  }
+
+  .featured-card-inner .Recommended-salary {
+    font-size: 1rem !important;
+    color: #fbbf24 !important;
+  }
+
+  .featured-card-inner .Recommended-applicants {
+    font-size: 0.72rem !important;
+    margin-top: 2px !important;
+  }
+
+  .featured-card-inner .Recommended-match-badge {
+    padding: 5px 12px !important;
+    font-size: 0.82rem !important;
+    border-radius: 10px !important;
+  }
+
+  /* ============================================ */
+  /* ⭐ HORIZONTAL SCROLL (กลับมา) ⭐              */
+  /* ============================================ */
+
+  .horizontal-scroll-wrapper {
+    padding: 0 !important;
+    position: relative;
+  }
+
+  .horizontal-scroll {
+    display: flex !important;                /* ⭐ flex row */
+    flex-direction: row !important;
+    overflow-x: auto !important;             /* ⭐ scroll แนวนอน */
+    overflow-y: hidden !important;
+    gap: 12px !important;
+    padding: 4px 4px 16px 4px !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    width: 100% !important;
+    max-height: none !important;
+  }
+
+  /* ⭐ การ์ดเล็ก — 280px */
+  .horizontal-card {
+    scroll-snap-align: start !important;
+    flex: 0 0 280px !important;               /* ⭐ กว้าง 280px */
+    width: 280px !important;
+    height: auto !important;
+  }
+
+  .horizontal-card .Recommended-card {
+    flex: unset !important;
+    min-height: unset !important;
+    height: 100% !important;
+  }
+
+  /* ⭐ Scrollbar */
+  .horizontal-scroll::-webkit-scrollbar {
+    height: 6px !important;
+  }
+
+  .horizontal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(240, 209, 84, 0.4) !important;
+    border-radius: 10px !important;
+  }
+
+  /* ⭐ Scroll arrows — ซ่อนบน mobile */
+  .scroll-arrow {
+    display: none !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .horizontal-card {
+    flex: 0 0 260px !important;               /* ⭐ เล็กลง */
+    width: 260px !important;
+  }
+
+  .featured-card-inner {
+    padding: 12px 14px !important;
+    gap: 10px !important;
+  }
+
+  .featured-card-inner .Recommended-logo {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.1rem !important;
+  }
+
+  .featured-card-inner h4 {
+    font-size: 0.95rem !important;
+  }
+}

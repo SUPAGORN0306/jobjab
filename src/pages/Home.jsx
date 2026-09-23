@@ -3,27 +3,18 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import { getCurrentUserId } from '../api';
 import MatchModal from '../components/MatchModal';
+import FilterSheet from '../components/FilterSheet';
 
 // ⭐ Lucide Icons
 import {
-  Rocket,
-  Briefcase,
-  Star,
-  FileText,
-  Users,
-  BarChart3,
-  Target,
-  Zap,
-  DollarSign,
-  Shield,
   Flame,
+  Info,
   ArrowRight,
-  GraduationCap,
-  Wrench,
 } from 'lucide-react';
 
 import '../styles/home/Home.css';
@@ -45,17 +36,13 @@ const tokenize = (str) =>
 const matchesQuery = (text, query) => {
   if (!query) return true;
   if (!text) return false;
-
   const normText = normalize(text);
   const normQuery = normalize(query);
-
   if (normText.includes(normQuery)) return true;
-
   const tokens = tokenize(query);
   if (tokens.length > 1) {
     return tokens.every((token) => normText.includes(token));
   }
-
   return false;
 };
 
@@ -78,7 +65,7 @@ const getJobLogoClass = (title) => {
 };
 
 // ============================================
-// TRENDING CATEGORIES
+// TRENDING
 // ============================================
 
 const TRENDING_CATEGORIES = [
@@ -95,8 +82,8 @@ const TRENDING_CATEGORIES = [
 
 function Home() {
   const { isFavorited, toggleFavorite } = useFavorites();
-
   const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
 
   const MAX_SALARY = 250000;
   const [salaryRange, setSalaryRange] = useState([0, MAX_SALARY]);
@@ -105,7 +92,6 @@ function Home() {
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [sortBy, setSortBy] = useState("match");
 
   const scrollRef = useRef(null);
@@ -127,11 +113,9 @@ function Home() {
   }, []);
 
   const TOTAL_JOBS_AVAILABLE = jobs.length;
-
   const totalCompanies = useMemo(() => {
     return new Set(jobs.map((j) => j.company).filter(Boolean)).size;
   }, [jobs]);
-
   const totalApplicants = useMemo(() => {
     return jobs.reduce((sum, j) => sum + (j.applicant_count || 0), 0);
   }, [jobs]);
@@ -158,6 +142,16 @@ function Home() {
     setSalaryRange([0, MAX_SALARY]);
   };
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (position !== 'all') count++;
+    if (level !== 'all') count++;
+    if (type !== 'all') count++;
+    if (industry !== 'all') count++;
+    if (salaryRange[0] > 0 || salaryRange[1] < MAX_SALARY) count++;
+    return count;
+  }, [position, level, type, industry, salaryRange, MAX_SALARY]);
+
   const filteredJobs = useMemo(() => {
     const filtered = jobs.filter((job) => {
       if (searchQuery) {
@@ -171,9 +165,7 @@ function Home() {
         );
         if (!matchesSearch) return false;
       }
-
       if (position && position !== "all" && job.title !== position) return false;
-
       if (level && level !== "all") {
         const jobLevel = job.level?.toLowerCase() || "";
         const matchesLevel =
@@ -182,18 +174,14 @@ function Home() {
           (level === "mid" && jobLevel.includes("middle"));
         if (!matchesLevel) return false;
       }
-
       if (type && type !== "all" && job.type !== type) return false;
       if (industry && industry !== "all" && job.industry !== industry) return false;
-
       const jobMinSalary = job.salary_min || 0;
       const jobMaxSalary = job.salary_max || jobMinSalary;
-
       if (jobMinSalary > 0 || jobMaxSalary > 0) {
         const overlaps = jobMaxSalary >= minVal && jobMinSalary <= maxVal;
         if (!overlaps) return false;
       }
-
       return true;
     });
 
@@ -215,16 +203,17 @@ function Home() {
       case "salary_low":
         sorted.sort((a, b) => (a.salary_min || 0) - (b.salary_min || 0));
         break;
-      default:
-        break;
+      default: break;
     }
-
     return sorted;
   }, [jobs, searchQuery, position, level, type, industry, minVal, maxVal, sortBy]);
 
   const displayJobs = useMemo(() => {
     return filteredJobs.slice(0, 20);
   }, [filteredJobs]);
+
+  const featuredJob = displayJobs[0];
+  const gridJobs = displayJobs.slice(1);
 
   const hasActiveFilters = () => {
     return (
@@ -259,11 +248,9 @@ function Home() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
     const timer = setTimeout(() => {
       updateScrollButtons();
     }, 100);
-
     window.addEventListener("resize", updateScrollButtons);
     return () => {
       clearTimeout(timer);
@@ -278,12 +265,42 @@ function Home() {
           <img src="/Logo_in_app.svg" alt="JobLab" />
         </div>
 
+        {/* ⭐ HERO (Desktop) */}
         <div className="top-page-1">
           <h2>Find your next <span>opportunity.</span><br />Build your <span>future.</span></h2>
           <p>Discover the right jobs and internships, compare salaries, and see the skills you need to succeed.</p>
         </div>
 
-        {/* ⭐ QUICK STATS ⭐ */}
+        {/* ⭐ MOBILE HERO */}
+        <div className="mobile-hero">
+          <h1>Find The Right <span>Job For You</span></h1>
+        </div>
+
+        {/* ⭐ MOBILE SEARCH + FILTER */}
+        <div className="mobile-search-row">
+          <div className="mobile-search-input-wrapper">
+            <Search size={18} className="mobile-search-icon" />
+            <input
+              type="text"
+              placeholder="Search jobs, companies..."
+              className="mobile-search-input"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+          </div>
+          <button
+            className="mobile-filter-btn"
+            onClick={() => setShowFilterSheet(true)}
+          >
+            <SlidersHorizontal size={20} />
+            {activeFilterCount > 0 && (
+              <span className="mobile-filter-badge">{activeFilterCount}</span>
+            )}
+          </button>
+        </div>
+
+        {/* ⭐ QUICK STATS (Desktop) */}
         {!loading && (
           <div className="home-stats">
             <div className="home-stat">
@@ -303,7 +320,7 @@ function Home() {
           </div>
         )}
 
-        {/* ⭐ TRENDING ⭐ */}
+        {/* ⭐ TRENDING */}
         <div className="trending-section">
           <span className="trending-label">
             <Flame size={16} />
@@ -325,7 +342,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ⭐ SEARCH + FILTER ⭐ */}
+        {/* ⭐ SEARCH + FILTER (Desktop) */}
         <div className="search-filter-section">
           <div className="search-box">
             <div className="search-input-container">
@@ -344,7 +361,7 @@ function Home() {
           <div className="filter-navbar">
             <div className="filter-item">
               <Select value={position} onValueChange={setPosition}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Position" />
                 </SelectTrigger>
                 <SelectContent>
@@ -363,7 +380,7 @@ function Home() {
 
             <div className="filter-item">
               <Select value={level} onValueChange={setLevel}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Level" />
                 </SelectTrigger>
                 <SelectContent>
@@ -377,7 +394,7 @@ function Home() {
 
             <div className="filter-item">
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="custom-select-trigger bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -391,7 +408,7 @@ function Home() {
 
             <div className="filter-item">
               <Select value={industry} onValueChange={setIndustry}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Industry" />
                 </SelectTrigger>
                 <SelectContent>
@@ -427,7 +444,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ⭐ RECOMMENDED ⭐ */}
+        {/* ⭐ RECOMMENDED */}
         <div className="recommend-list w-full max-w-187.5 mx-auto mt-6 px-1">
           <div className="recommend-header-row">
             <div className="recommend-title-group">
@@ -441,10 +458,10 @@ function Home() {
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="match">🎯 Match Score</SelectItem>
-                    <SelectItem value="newest">🆕 Newest</SelectItem>
-                    <SelectItem value="salary_high">💰 Salary: High to Low</SelectItem>
-                    <SelectItem value="salary_low">💵 Salary: Low to High</SelectItem>
+                    <SelectItem value="match">Match Score</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="salary_high">Salary: High to Low</SelectItem>
+                    <SelectItem value="salary_low">Salary: Low to High</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -483,286 +500,175 @@ function Home() {
           )}
 
           {!loading && displayJobs.length > 0 && (
-            <div className="horizontal-scroll-wrapper">
-              {canScrollLeft && (
-                <button
-                  className="scroll-arrow scroll-arrow-left"
-                  onClick={() => handleScroll("left")}
-                  aria-label="Scroll left"
-                >
-                  ‹
-                </button>
-              )}
-
-              <div
-                className="horizontal-scroll"
-                ref={scrollRef}
-                onScroll={updateScrollButtons}
-              >
-                {displayJobs.map((job) => (
+            <>
+              {/* ⭐ FEATURED CARD */}
+              {featuredJob && (
+                <div className="featured-card-wrapper">
                   <Link
-                    to={`/job/${job.id}`}
-                    key={job.id}
-                    className="Recommended-card-link horizontal-card"
+                    to={`/job/${featuredJob.id}`}
+                    className="Recommended-card-link"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
                   >
-                    <div className="Recommended-card">
-                      <div className="Recommended-card-top">
-                        <div className="Recommended-company-info">
-                          <div className={`Recommended-logo ${getJobLogoClass(job.title)}`}>
-                            {job.logoLetter || job.title?.charAt(0) || 'J'}
+                    <div className="featured-card">
+                      <div className="featured-card-inner">
+                        <div className="featured-badge">
+                          <Sparkles size={11} />
+                          TOP PICK FOR YOU
+                        </div>
+
+                        <div className="Recommended-card-top">
+                          <div className="Recommended-company-info">
+                            <div className={`Recommended-logo ${getJobLogoClass(featuredJob.title)}`}>
+                              {featuredJob.logoLetter || featuredJob.title?.charAt(0) || 'J'}
+                            </div>
+                            <div>
+                              <h4>{featuredJob.title}</h4>
+                              <span>{featuredJob.company}</span>
+                            </div>
                           </div>
+                          <span
+                            className={`Recommended-favorite-btn ${isFavorited(featuredJob.id) ? "is-favorited" : ""}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleFavorite(featuredJob);
+                            }}
+                          >
+                            ♥
+                          </span>
+                        </div>
+
+                        <div className="Recommended-tags">
+                          {[featuredJob.type, featuredJob.level, featuredJob.work_mode || featuredJob.workMode].filter(Boolean).map((tag, idx) => (
+                            <span key={idx}>{tag}</span>
+                          ))}
+                        </div>
+
+                        <div className="Recommended-card-bottom">
                           <div>
-                            <h4>{job.title}</h4>
-                            <span>{job.company}</span>
+                            <div className="Recommended-salary">{featuredJob.salary || 'N/A'}</div>
+                            <div className="Recommended-applicants">{featuredJob.applicants || ''}</div>
+                          </div>
+                          <div
+                            className={`Recommended-match-badge ${getMatchBadgeClass(featuredJob.match_score || featuredJob.match || 0)}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedJobForMatch(featuredJob);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {featuredJob.match_score || featuredJob.match || 0}%
                           </div>
                         </div>
-                        <span
-                          className={`Recommended-favorite-btn ${isFavorited(job.id) ? "is-favorited" : ""}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(job);
-                          }}
-                        >
-                          ♥
-                        </span>
-                      </div>
-                      <div className="Recommended-tags">
-                        {[job.type, job.level, job.work_mode || job.workMode].filter(Boolean).map((tag, idx) => (
-                          <span key={idx}>{tag}</span>
-                        ))}
-                      </div>
-                      <div className="Recommended-card-bottom">
-                        <div>
-                          <div className="Recommended-salary">{job.salary || 'N/A'}</div>
-                          <div className="Recommended-applicants">{job.applicants ? `${job.applicants}` : ''}</div>
-                        </div>
-                        <div
-                          className={`Recommended-match-badge ${getMatchBadgeClass(job.match_score || job.match || 0)}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setSelectedJobForMatch(job);
-                          }}
-                          style={{ cursor: 'pointer' }}
-                          title="Click to see match breakdown"
-                        >
-                          {job.match_score || job.match || 0}%
-                        </div> 
                       </div>
                     </div>
                   </Link>
-                ))}
-              </div>
-
-              {canScrollRight && (
-                <button
-                  className="scroll-arrow scroll-arrow-right"
-                  onClick={() => handleScroll("right")}
-                  aria-label="Scroll right"
-                >
-                  ›
-                </button>
+                </div>
               )}
-            </div>
+
+              {/* ⭐ 2x2 GRID */}
+              <div className="horizontal-scroll-wrapper">
+                {canScrollLeft && (
+                  <button
+                    className="scroll-arrow scroll-arrow-left"
+                    onClick={() => handleScroll("left")}
+                  >
+                    ‹
+                  </button>
+                )}
+
+                <div
+                  className="horizontal-scroll"
+                  ref={scrollRef}
+                  onScroll={updateScrollButtons}
+                >
+                  {gridJobs.map((job) => (
+                    <Link
+                      to={`/job/${job.id}`}
+                      key={job.id}
+                      className="Recommended-card-link horizontal-card"
+                    >
+                      <div className="Recommended-card">
+                        <div className="Recommended-card-top">
+                          <div className="Recommended-company-info">
+                            <div className={`Recommended-logo ${getJobLogoClass(job.title)}`}>
+                              {job.logoLetter || job.title?.charAt(0) || 'J'}
+                            </div>
+                            <div>
+                              <h4>{job.title}</h4>
+                              <span>{job.company}</span>
+                            </div>
+                          </div>
+                          <span
+                            className={`Recommended-favorite-btn ${isFavorited(job.id) ? "is-favorited" : ""}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleFavorite(job);
+                            }}
+                          >
+                            ♥
+                          </span>
+                        </div>
+                        <div className="Recommended-tags">
+                          {[job.type, job.level, job.work_mode || job.workMode].filter(Boolean).map((tag, idx) => (
+                            <span key={idx}>{tag}</span>
+                          ))}
+                        </div>
+                        <div className="Recommended-card-bottom">
+                          <div>
+                            <div className="Recommended-salary">{job.salary || 'N/A'}</div>
+                            <div className="Recommended-applicants">{job.applicants || ''}</div>
+                          </div>
+                          <div
+                            className={`Recommended-match-badge ${getMatchBadgeClass(job.match_score || job.match || 0)}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedJobForMatch(job);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {job.match_score || job.match || 0}%
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {canScrollRight && (
+                  <button
+                    className="scroll-arrow scroll-arrow-right"
+                    onClick={() => handleScroll("right")}
+                  >
+                    ›
+                  </button>
+                )}
+              </div>
+            </>
           )}
 
           {!loading && displayJobs.length > 0 && (
             <div className="see-all-wrapper">
               <Link to="/all-jobs" className="see-all-btn">
                 See all {filteredJobs.length.toLocaleString()} jobs
-                <ArrowRight size={16} />
               </Link>
             </div>
           )}
         </div>
 
-        {/* ============================================ */}
-        {/* ⭐ SECTION 1: HOW IT WORKS ⭐ */}
-        {/* ============================================ */}
-        <section className="landing-section">
-          <div className="landing-grid">
-            <div className="landing-image-wrapper">
-              <img
-                src="/job-seeker.jpg"
-                alt="Job Seeker"
-                className="landing-image"
-                loading="lazy"
-              />
-              <div className="landing-image-badge">For Job Seekers</div>
-            </div>
+        {/* ⭐ About link */}
+        <div className="about-link-wrapper">
+          <Link to="/about" className="about-link-btn">
+            <Info size={16} />
+            Learn more about JOBJAB
+            <ArrowRight size={16} />
+          </Link>
+        </div>
 
-            <div className="landing-content">
-              <span className="landing-tag">
-                <Rocket size={14} />
-                HOW IT WORKS
-              </span>
-              <h2>Find your dream job in 3 simple steps</h2>
-              <p className="landing-description">
-                We make job hunting effortless. Create your profile once,
-                get matched with jobs that fit your skills, and apply with a single click.
-              </p>
-
-              <div className="landing-steps">
-                <div className="landing-step">
-                  <span className="step-number">01</span>
-                  <div>
-                    <h4>Create your profile</h4>
-                    <p>Add your skills, experience, and let us understand your strengths.</p>
-                  </div>
-                </div>
-                <div className="landing-step">
-                  <span className="step-number">02</span>
-                  <div>
-                    <h4>Browse matched jobs</h4>
-                    <p>See personalized recommendations based on your profile.</p>
-                  </div>
-                </div>
-                <div className="landing-step">
-                  <span className="step-number">03</span>
-                  <div>
-                    <h4>Apply & get hired</h4>
-                    <p>One-click apply. Track your applications in real-time.</p>
-                  </div>
-                </div>
-              </div>
-
-              <Link to="/profile/edit" className="landing-btn">
-                Complete Your Profile
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* ⭐ SECTION 2: FOR EMPLOYERS ⭐ */}
-        {/* ============================================ */}
-        <section className="landing-section landing-reverse">
-          <div className="landing-grid">
-            <div className="landing-content">
-              <span className="landing-tag">
-                <Briefcase size={14} />
-                FOR EMPLOYERS
-              </span>
-              <h2>Hire the best talent, faster</h2>
-              <p className="landing-description">
-                Post your job openings and reach thousands of qualified candidates.
-                Manage applications, track candidates, and build your dream team.
-              </p>
-
-              <div className="landing-features">
-                <div className="landing-feature">
-                  <div className="feature-icon">
-                    <FileText size={20} />
-                  </div>
-                  <div>
-                    <h4>Post jobs for free</h4>
-                    <p>Create detailed job listings in minutes.</p>
-                  </div>
-                </div>
-                <div className="landing-feature">
-                  <div className="feature-icon">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <h4>Review applicants</h4>
-                    <p>See candidate profiles with skills and experience.</p>
-                  </div>
-                </div>
-                <div className="landing-feature">
-                  <div className="feature-icon">
-                    <BarChart3 size={20} />
-                  </div>
-                  <div>
-                    <h4>Track hiring pipeline</h4>
-                    <p>Move candidates from applied to interview to hired.</p>
-                  </div>
-                </div>
-              </div>
-
-              <Link to="/?role=employer" className="landing-btn">
-                Post a Job
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-
-            <div className="landing-image-wrapper">
-              <img
-                src="/employer.jpg"
-                alt="Employer"
-                className="landing-image"
-                loading="lazy"
-              />
-              <div className="landing-image-badge">For Employers</div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* ⭐ SECTION 3: WHY CHOOSE US ⭐ */}
-        {/* ============================================ */}
-        <section className="landing-why">
-          <div className="landing-why-header">
-            <span className="landing-tag">
-              <Star size={14} />
-              WHY JOBJAB
-            </span>
-            <h2>Built for the modern job market</h2>
-            <p>Everything you need to succeed — for both candidates and employers.</p>
-          </div>
-
-          <div className="landing-why-grid">
-            <div className="landing-why-card">
-              <div className="why-icon">
-                <Target size={28} />
-              </div>
-              <h3>Match Score</h3>
-              <p>See how well you match each job — powered by skills, experience, and industry.</p>
-            </div>
-            <div className="landing-why-card">
-              <div className="why-icon">
-                <Zap size={28} />
-              </div>
-              <h3>1-Click Apply</h3>
-              <p>Apply to multiple jobs instantly with your saved profile.</p>
-            </div>
-            <div className="landing-why-card">
-              <div className="why-icon">
-                <DollarSign size={28} />
-              </div>
-              <h3>100% Free</h3>
-              <p>No hidden fees. Free for candidates and employers alike.</p>
-            </div>
-            <div className="landing-why-card">
-              <div className="why-icon">
-                <Shield size={28} />
-              </div>
-              <h3>Privacy First</h3>
-              <p>Your data is yours. We never share without your permission.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* ⭐ SECTION 4: FINAL CTA ⭐ */}
-        {/* ============================================ */}
-        <section className="landing-cta">
-          <div className="landing-cta-content">
-            <h2>Ready to find your dream job?</h2>
-            <p>Join thousands of candidates and employers already using JOBJAB.</p>
-            <div className="landing-cta-buttons">
-              <Link to="/all-jobs" className="landing-cta-btn primary">
-                Browse Jobs
-                <ArrowRight size={16} />
-              </Link>
-              <Link to="/profile/edit" className="landing-cta-btn secondary">
-                Create Profile
-              </Link>
-            </div>
-          </div>
-        </section>
-        {/* ⭐ MATCH MODAL ⭐ */}
+        {/* ⭐ MATCH MODAL */}
         {selectedJobForMatch && (
           <MatchModal
             job={selectedJobForMatch}
@@ -770,6 +676,19 @@ function Home() {
           />
         )}
       </div>
+
+      {/* ⭐ FILTER SHEET */}
+      <FilterSheet
+        isOpen={showFilterSheet}
+        onClose={() => setShowFilterSheet(false)}
+        position={position} setPosition={setPosition}
+        level={level} setLevel={setLevel}
+        type={type} setType={setType}
+        industry={industry} setIndustry={setIndustry}
+        salaryRange={salaryRange} setSalaryRange={setSalaryRange}
+        MAX_SALARY={MAX_SALARY}
+        clearFilters={clearFilters}
+      />
     </>
   );
 }

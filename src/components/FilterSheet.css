@@ -1,0 +1,345 @@
+/* ============================================ */
+/* FILTER SHEET (Bottom Sheet)                   */
+/* ============================================ */
+
+.filter-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 3000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.filter-sheet {
+  width: 100%;
+  max-width: 380px;                        /* ⭐ เล็กลง */
+  max-height: 90vh;                        /* ⭐ จาก 85 → 70 */
+  background: linear-gradient(
+    to bottom,
+    rgba(30, 40, 60, 0.98) 0%,
+    rgba(15, 20, 35, 0.98) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
+  padding: 8px 16px 16px 16px;             /* ⭐ ลด padding */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.filter-sheet-handle {
+  width: 0px;                         
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  margin: 0 auto 12px auto;               
+  flex-shrink: 0;
+}
+
+.filter-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;                     /* ⭐ จาก 20 → 14 */
+  flex-shrink: 0;
+}
+
+.filter-sheet-header h2 {
+  font-size: 1rem;                         /* ⭐ จาก 1.15 → 1.0 */
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.filter-sheet-close {
+  width: 15px;                             /* ⭐ จาก 34 → 30 */
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d3dae4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-sheet-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* ⭐ Content */
+.filter-sheet-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;                               /* ⭐ จาก 18 → 12 */
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.filter-sheet-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;                                /* ⭐ จาก 8 → 6 */
+}
+
+.filter-sheet-item label {
+  font-size: 0.55rem;                      /* ⭐ จาก 0.72 → 0.68 */
+  font-weight: 600;
+  color: #8896a9;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.filter-sheet-trigger {
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;          /* ⭐ จาก 12 → 10 */
+  padding: 10px 14px !important;           /* ⭐ จาก 12 → 10 */
+  font-size: 0.6rem !important;            /* ⭐ จาก 0.85 → 0.8 */
+  color: #41444f !important;
+  height: auto !important;
+  min-height: 40px !important;             /* ⭐ จาก 44 → 40 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* .filter-sheet-trigger span {
+  color: #0d1b3e !important;
+  font-size: 0.8rem !important;            /* ⭐ ลด */
+
+.filter-sheet-salary-value {
+  font-size: 0.7rem;                      /* ⭐ จาก 0.95 → 0.88 */
+  font-weight: 700;
+  color: #f0d154;
+  text-align: center;
+  padding: 6px 0 2px 0;                    /* ⭐ ลด */
+}
+
+
+/* ⭐ Actions */
+.filter-sheet-actions {
+  display: flex;
+  gap: 8px;                                /* ⭐ จาก 12 → 8 */
+  margin-top: 12px;                        /* ⭐ จาก 16 → 12 */
+  padding-top: 12px;                       /* ⭐ จาก 16 → 12 */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.filter-sheet-reset {
+  flex: 0 0 auto;
+  padding: 12px 20px;                      /* ⭐ จาก 14 → 12 */
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d3dae4;
+  border-radius: 12px;
+  font-size: 0.82rem;                      /* ⭐ จาก 0.85 → 0.82 */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-sheet-reset:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.filter-sheet-apply {
+  flex: 1;
+  padding: 12px 16px;                  
+  background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
+  border: none;
+  color: #1C274C;
+  border-radius: 12px;
+  font-size: 0.85rem;                 
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(240, 209, 84, 0.3);
+}
+
+.filter-sheet-apply:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240, 209, 84, 0.5);
+}
+
+.filter-sheet-apply:active {
+  transform: translateY(0);
+}
+
+/* ============================================ */
+/* ⭐ ซ่อน Scrollbar แต่ยัง scroll ได้ ⭐         */
+/* ============================================ */
+
+/* ซ่อน scrollbar ทั้ง sheet และ content */
+.filter-sheet::-webkit-scrollbar,
+.filter-sheet-content::-webkit-scrollbar {
+  width: 0 !important;
+  display: none !important;
+}
+
+/* Firefox */
+.filter-sheet,
+.filter-sheet-content {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* ============================================ */
+/* FILTER SHEET (Modal กลางจอ)                   */
+/* ============================================ */
+
+.filter-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;              /* ⭐ อยู่กลาง */
+  justify-content: center;
+  padding: 20px;                    /* ⭐ เว้นระยะ */
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.filter-sheet {
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;                 /* ⭐ ไม่เกิน 85% ของจอ */
+  background: linear-gradient(
+    to bottom,
+    rgba(30, 40, 60, 0.98) 0%,
+    rgba(15, 20, 35, 0.98) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;              /* ⭐ โค้งทุกมุม */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 18px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+.filter-sheet-handle {
+  display: none;
+}
+
+/* ============================================ */
+/* Header — จัดกลาง                              */
+/* ============================================ */
+
+.filter-sheet-header {
+  position: relative;
+  display: flex;
+  justify-content: center;              /* ⭐ Title อยู่กลาง */
+  align-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+  min-height: 30px;
+}
+
+.filter-sheet-header h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+}
+
+.filter-sheet-close {
+  position: absolute;                    /* ⭐ X absolute */
+  right: 0;                              /* ⭐ ติดขวา */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d3dae4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-sheet-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* ⭐ FIX: กด dropdown ได้ */
+.filter-sheet-backdrop {
+  pointer-events: auto !important;
+}
+
+.filter-sheet {
+  pointer-events: auto !important;
+}
+
+.filter-sheet-content {
+  pointer-events: auto !important;
+  z-index: 1 !important;
+}
+
+.filter-sheet-item {
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* ⭐ Radix Select — z-index สูงกว่า backdrop */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+[data-radix-select-content],
+[role="listbox"] {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}

@@ -102,10 +102,15 @@
   pointer-events: none;
 }
 
+/* ============================================ */
+/* TABLET — max-width: 1100px                    */
+/* ============================================ */
+
 @media (max-width: 1100px) {
   .tabbar,
   .employer-tabbar {
-    top: 16px;
+    top: auto;               /* ⭐ แก้ */
+    bottom: 16px;            /* ⭐ แก้ */
     left: 50%;
     transform: translateX(-50%);
     flex-direction: row;
@@ -135,10 +140,15 @@
   }
 }
 
+/* ============================================ */
+/* MOBILE — max-width: 500px                     */
+/* ============================================ */
+
 @media (max-width: 500px) {
   .tabbar,
   .employer-tabbar {
-    top: 12px;
+    top: auto;               /* ⭐ แก้ */
+    bottom: 12px;            /* ⭐ แก้ */
     gap: 6px;
     height: 46px;
     padding: 8px 12px;

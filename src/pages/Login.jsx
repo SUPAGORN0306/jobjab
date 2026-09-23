@@ -1,25 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/candidate/Login.css';
-
 import { API_BASE } from '../utils/apiUrl';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login: authLogin } = useAuth();
 
-  const [isSignUp, setIsSignUp] = useState(false);
   const [userType, setUserType] = useState('seeker');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
-    company_name: '',
-    industry: '',
   });
 
   const handleChange = (field, value) => {
@@ -27,7 +22,6 @@ export default function Login() {
     setError(null);
   };
 
-  // === Submit: Register หรือ Login ===
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -36,27 +30,14 @@ export default function Login() {
     try {
       const role = userType === 'employer' ? 'employer' : 'candidate';
 
-      const endpoint = isSignUp ? '/auth/register' : '/auth/login';
-      const payload = isSignUp
-        ? {
-            full_name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            role,
-            ...(role === 'employer' && {
-              company_name: formData.company_name,
-              industry: formData.industry,
-            }),
-          }
-        : {
-            email: formData.email,
-            password: formData.password,
-          };
-
-      const res = await fetch(`${API_BASE}${endpoint}`, {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          role,
+        }),
       });
 
       const data = await res.json();
@@ -65,15 +46,32 @@ export default function Login() {
         throw new Error(data.error || 'Something went wrong');
       }
 
-      // === บันทึก user ผ่าน AuthContext → return roles ===
-      const roles = authLogin(data.user);
+      authLogin(data.user);
 
-      // === Redirect ตาม roles ===
-      if (roles.length >= 2) {
-        // มี 2 roles → default = candidate
-        // (ในอนาคต: ทำหน้า /choose-role)
-        navigate('/home');
-      } else if (roles[0] === 'employer') {
+      // ⭐ เช็ค pending — ถาม user ก่อน redirect
+      const pendingRaw = localStorage.getItem('pendingApplication');
+      if (pendingRaw) {
+        try {
+          const pending = JSON.parse(pendingRaw);
+
+          const goToApply = window.confirm(
+            `You have an unsaved job application.\n\n` +
+            `Do you want to continue filling it out?`
+          );
+
+          if (goToApply) {
+            navigate(`/job/${pending.jobId}/apply`);
+            return;
+          } else {
+            localStorage.removeItem('pendingApplication');
+          }
+        } catch (err) {
+          localStorage.removeItem('pendingApplication');
+        }
+      }
+
+      // ⭐ Redirect ตาม role
+      if (userType === 'employer') {
         navigate('/employer/dashboard');
       } else {
         navigate('/home');
@@ -86,12 +84,13 @@ export default function Login() {
     }
   };
 
-  // === Guest ===
+  // ⭐ Guest login
   const handleGuest = () => {
     authLogin({
       id: 1,
       role: 'candidate',
       full_name: 'Guest User',
+      roles: ['candidate'],
     });
     navigate('/home');
   };
@@ -104,86 +103,41 @@ export default function Login() {
       </div>
 
       <div className="login-card">
-        {/* Tabs */}
-        <div className="login-tabs">
-          <button
-            type="button"
-            onClick={() => { setIsSignUp(false); setError(null); }}
-            className={`tab-btn ${!isSignUp ? 'active-login' : ''}`}
+        {/* User Type Selection */}
+        <div className="user-type-grid">
+          <div
+            onClick={() => setUserType('seeker')}
+            className={`type-card ${userType === 'seeker' ? 'selected' : ''}`}
           >
-            Log in
-          </button>
-          <button
-            type="button"
-            onClick={() => { setIsSignUp(true); setError(null); }}
-            className={`tab-btn ${isSignUp ? 'active-signup' : ''}`}
+            <div className="type-title">
+              <span className={`dot ${userType === 'seeker' ? 'dot-active' : ''}`}></span>
+              <span>Job seeker</span>
+            </div>
+            <p className="type-desc">Find & apply to jobs</p>
+          </div>
+
+          <div
+            onClick={() => setUserType('employer')}
+            className={`type-card ${userType === 'employer' ? 'selected' : ''}`}
           >
-            Sign up
-          </button>
+            <div className="type-title">
+              <span className={`dot ${userType === 'employer' ? 'dot-active' : ''}`}></span>
+              <span>Employer</span>
+            </div>
+            <p className="type-desc">Post job openings</p>
+          </div>
         </div>
 
-        {/* User Type Selection — แสดงเฉพาะตอน Signup */}
-        {isSignUp && (
-          <div className="user-type-grid">
-            <div
-              onClick={() => setUserType('seeker')}
-              className={`type-card ${userType === 'seeker' ? 'selected' : ''}`}
-            >
-              <div className="type-title">
-                <span className={`dot ${userType === 'seeker' ? 'dot-active' : ''}`}></span>
-                <span>Job seeker</span>
-              </div>
-              <p className="type-desc">Find & apply to jobs</p>
-            </div>
-
-            <div
-              onClick={() => setUserType('employer')}
-              className={`type-card ${userType === 'employer' ? 'selected' : ''}`}
-            >
-              <div className="type-title">
-                <span className={`dot ${userType === 'employer' ? 'dot-active' : ''}`}></span>
-                <span>Employer</span>
-              </div>
-              <p className="type-desc">Post job openings</p>
-            </div>
-          </div>
-        )}
-
         {/* Error */}
-        {error && (
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
-            color: '#fca5a5',
-            padding: '8px 12px',
-            borderRadius: '12px',
-            fontSize: '0.72rem',
-            marginBottom: '4px',
-          }}>
-            ❌ {error}
-          </div>
-        )}
+        {error && <div className="signup-error">{error}</div>}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="login-form">
-          {isSignUp && (
-            <div className="input-group">
-              <label>Full name</label>
-              <input
-                type="text"
-                placeholder="Your name"
-                required
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-              />
-            </div>
-          )}
-
           <div className="input-group">
             <label>Email</label>
             <input
               type="email"
-              placeholder="you@email.com"
+              placeholder="Enter your email"
               required
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
@@ -202,35 +156,9 @@ export default function Login() {
             />
           </div>
 
-          {/* Employer-only fields */}
-          {isSignUp && userType === 'employer' && (
-            <>
-              <div className="input-group">
-                <label>Company name</label>
-                <input
-                  type="text"
-                  placeholder="Acme Inc."
-                  required
-                  value={formData.company_name}
-                  onChange={(e) => handleChange('company_name', e.target.value)}
-                />
-              </div>
-
-              <div className="input-group">
-                <label>Industry</label>
-                <input
-                  type="text"
-                  placeholder="Tech / Finance / Healthcare..."
-                  value={formData.industry}
-                  onChange={(e) => handleChange('industry', e.target.value)}
-                />
-              </div>
-            </>
-          )}
-
           <div className="submit-container">
             <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? 'Please wait...' : (isSignUp ? 'Create account' : 'Log in')}
+              {loading ? 'Please wait...' : 'Log in'}
             </button>
           </div>
         </form>
@@ -245,6 +173,12 @@ export default function Login() {
           <button type="button" onClick={handleGuest} className="guest-btn">
             Continue as guest
           </button>
+        </div>
+
+        {/* Link ไป Signup */}
+        <div className="login-footer">
+          <span>Don't have an account?</span>
+          <Link to="/signup" className="signup-link">Sign up</Link>
         </div>
       </div>
     </div>

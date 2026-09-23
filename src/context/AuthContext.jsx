@@ -16,9 +16,8 @@ export function AuthProvider({ children }) {
     const company = localStorage.getItem('company_name');
 
     if (id) {
-      // ✅ Fallback: ถ้า storedActiveRole เป็น null → ใช้ role แรก
       const validActiveRole = storedActiveRole || (roles.length > 0 ? roles[0] : 'candidate');
-      
+
       setUser({
         id: parseInt(id, 10),
         roles,
@@ -27,8 +26,7 @@ export function AuthProvider({ children }) {
         company,
       });
       setActiveRole(validActiveRole);
-      
-      // sync localStorage
+
       if (!storedActiveRole && validActiveRole) {
         localStorage.setItem('active_role', validActiveRole);
       }
@@ -39,16 +37,21 @@ export function AuthProvider({ children }) {
   const login = (userData) => {
     const roles = userData.roles || [userData.role || 'candidate'];
 
+    // ⭐ ใช้ role ที่ backend ส่งมา (จาก userData.role) แทนการบังคับ roles[0]
+    let initialRole = userData.role;
+
+    // ถ้า role ไม่ถูกต้อง → fallback เป็น roles[0]
+    if (!initialRole || !roles.includes(initialRole)) {
+      initialRole = roles[0] || 'candidate';
+    }
+
     localStorage.setItem('user_id', userData.id);
     localStorage.setItem('user_roles', JSON.stringify(roles));
+    localStorage.setItem('active_role', initialRole);
     localStorage.setItem('user_name', userData.full_name || '');
     if (userData.company_name) {
       localStorage.setItem('company_name', userData.company_name);
     }
-
-    // ✅ ตั้ง default active role = role แรก เสมอ
-    const initialRole = roles[0] || 'candidate';
-    localStorage.setItem('active_role', initialRole);
 
     setUser({
       id: userData.id,

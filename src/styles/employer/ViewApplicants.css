@@ -59,18 +59,18 @@
 .applicants-header h1 {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #fafafa;
+  color: #ffffff;
   margin: 0 0 6px 0;
 }
 
 .applicants-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #8896a9;
   margin: 0;
 }
 
 .applicants-subtitle strong {
-  color: #80ffd5;
+  color: #f0d154
 }
 
 /* ============================================ */
@@ -118,21 +118,24 @@
 }
 
 .applicant-card {
-  background: rgba(220, 220, 220, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 16px;
-  padding: 16px 20px;
+  padding: 18px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .applicant-card:hover {
-  background: rgba(220, 220, 220, 0.15);
-  border-color: rgba(128, 255, 213, 0.4);
+  background: rgba(240, 209, 84, 0.05);
+  border-color: rgba(240, 209, 84, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .applicant-header {
@@ -265,7 +268,7 @@
   to { opacity: 1; }
 }
 
-.modal-content {
+/* .modal-content {
   background: #1a1f2e;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
@@ -276,6 +279,20 @@
   display: flex;
   flex-direction: column;
   animation: slideUp 0.25s ease;
+} */
+
+.modal-content {
+  background: #0d1626;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
 @keyframes slideUp {
@@ -501,6 +518,34 @@
   cursor: not-allowed;
 }
 
+/* Resume link */
+/* .resume-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #f0d154;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(240, 209, 84, 0.4);
+  transition: all 0.2s ease;
+  padding-bottom: 2px;
+  cursor: pointer;
+  font-weight: 600;
+} */
+
+.resume-link {
+  color: #80ffd5;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(128, 255, 213, 0.4);
+  transition: all 0.2s ease;
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+.resume-link:hover {
+  color: #f3d86b;
+  border-bottom-color: #f3d86b;
+}
+
 /* ============================================ */
 /* Responsive                                    */
 /* ============================================ */
@@ -528,94 +573,9 @@
   }
 }
 
-/* ============================================ */
-/* Resume Link                                   */
-/* ============================================ */
-
-.resume-link {
-  color: #80ffd5;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(128, 255, 213, 0.4);
-  transition: all 0.2s ease;
-  padding-bottom: 1px;
-  cursor: pointer;
-}
-
 .resume-link:hover {
   color: #a3ffe3;
   border-bottom-color: #a3ffe3;
-}
-
-/* ============================================ */
-/* ViewApplicants — Match Home Style            */
-/* ============================================ */
-
-.applicants-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 1080px;
-  min-height: 100vh;
-  padding: 40px 40px 80px 100px;
-  gap: 24px;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  color: #fafafa;
-}
-
-/* Applicant card — glass style */
-.applicant-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 16px;
-  padding: 18px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  transition: all 0.25s ease;
-}
-
-.applicant-card:hover {
-  background: rgba(240, 209, 84, 0.05);
-  border-color: rgba(240, 209, 84, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-}
-
-/* Avatar — gradient yellow */
-.applicant-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  color: #1C274C;
-  font-size: 1.15rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(240, 209, 84, 0.25);
-}
-
-/* Modal — dark glass */
-.modal-content {
-  background: #0d1626;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  max-width: 720px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  animation: slideUp 0.25s ease;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
 .modal-header {
@@ -691,39 +651,3 @@
   color: #f0d154;
 }
 
-/* Header */
-.applicants-header h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0 0 6px 0;
-}
-
-.applicants-subtitle {
-  font-size: 0.85rem;
-  color: #8c9bae;
-  margin: 0;
-}
-
-.applicants-subtitle strong {
-  color: #f0d154;
-}
-
-/* Resume link */
-.resume-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #f0d154;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(240, 209, 84, 0.4);
-  transition: all 0.2s ease;
-  padding-bottom: 2px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.resume-link:hover {
-  color: #f3d86b;
-  border-bottom-color: #f3d86b;
-}

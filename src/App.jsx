@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Home, Heart, FileText, User } from "lucide-react";
+import { Home, Heart, FileText, User, Info } from "lucide-react";
 // import './index.css';   // ย้ายไป styles/global.css ที่ main.jsx
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
@@ -11,6 +11,7 @@ export default function App() {
     { path: "/favorite", icon: Heart, label: "Favorites" },
     { path: "/status", icon: FileText, label: "Status" },
     { path: "/profile", icon: User, label: "Profile" },
+    { path: "/about", icon: Info, label: "About" }, 
   ];
 
   return (

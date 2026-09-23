@@ -72,6 +72,16 @@ const JOB_TITLES = [
   'Quant Researcher',
 ];
 
+const INDUSTRIES = [
+  'Tech',
+  'Finance',
+  'Healthcare',
+  'Education',
+  'Retail',
+  'E-commerce',
+  'Automotive',
+];
+
 export default function EmployerDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -341,7 +351,6 @@ export default function EmployerDashboard() {
                 <option value="Junior">Junior</option>
                 <option value="Mid">Mid</option>
                 <option value="Senior">Senior</option>
-                <option value="Lead">Lead</option>
               </select>
 
               <input
@@ -360,13 +369,18 @@ export default function EmployerDashboard() {
                 className="emp-field"
               />
 
-              <input
-                type="text"
-                placeholder="Industry"
+              <select
                 value={form.industry}
                 onChange={(e) => handleChange('industry', e.target.value)}
                 className="emp-field"
-              />
+              >
+                <option value="">Select Industry</option>
+                {INDUSTRIES.map((ind) => (
+                  <option key={ind} value={ind}>
+                    {ind}
+                  </option>
+                ))}
+              </select>
 
               <input
                 type="text"

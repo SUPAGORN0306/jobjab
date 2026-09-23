@@ -1,9 +1,9 @@
-// src/components/ProtectedRoute.jsx
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProtectedRoute({ children, requiredRole }) {
   const { user, activeRole, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -21,16 +21,39 @@ export default function ProtectedRoute({ children, requiredRole }) {
     );
   }
 
-  // ยังไม่ login → เด้งไปหน้า login
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
-  // login แล้ว แต่ activeRole ไม่ตรง
-  if (requiredRole && activeRole !== requiredRole) {
+  const isGuest = user.id === 1;
+  const path = location.pathname;
+
+  if (isGuest) {
+    // ⭐ Guest ห้ามเข้า — แต่ **อนุญาต** /apply
+    const isBlocked =
+      path === '/favorite' ||
+      path === '/status' ||
+      path === '/profile' ||
+      path.startsWith('/profile/');
+      // ⭐ ไม่บล็อค /apply และ /employer แยกต่างหาก
+
+    if (isBlocked) {
+      alert('Please login to access this page');
+      return <Navigate to="/home" replace />;
+    }
+  }
+
+  const storedRole = localStorage.getItem('active_role');
+  const effectiveRole = activeRole || storedRole;
+
+  if (isGuest) {
+    return children;
+  }
+
+  if (requiredRole && effectiveRole !== requiredRole) {
     return (
       <Navigate
-        to={activeRole === 'employer' ? '/employer/dashboard' : '/home'}
+        to={effectiveRole === 'employer' ? '/employer/dashboard' : '/home'}
         replace
       />
     );
