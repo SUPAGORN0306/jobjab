@@ -1,8 +1,8 @@
-import { API_BASE } from '../utils/apiUrl';
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../styles/candidate/JobDetail.css";
-import { getCurrentUserId } from '../api';
+import { useAuth } from '../context/AuthContext';
+import { fetchJobDetailWithMatch } from '../api';
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -22,6 +22,7 @@ function JobDetail() {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAuth();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,12 +31,8 @@ function JobDetail() {
     const fetchJob = async () => {
       try {
         setLoading(true);
-        const userId = getCurrentUserId();
-        const response = await fetch(
-          `${API_BASE}/jobs/${id}?user_id=${userId}`
-        );
-        const data = await response.json();
-        
+        const data = await fetchJobDetailWithMatch(id, user?.id);
+
         if (data.error) {
           setError(data.error);
         } else {
@@ -48,9 +45,9 @@ function JobDetail() {
         setLoading(false);
       }
     };
-    
+
     fetchJob();
-  }, [id]);
+  }, [id, user]);
 
   // แปลง JSON string เป็น array
   const parseArray = (value) => {

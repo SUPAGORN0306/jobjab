@@ -1,7 +1,9 @@
-import { resolveFileUrl, API_BASE } from '../utils/apiUrl';
+import { resolveFileUrl } from '../utils/apiUrl';
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { fetchJobDetail, fetchFullProfile, submitApplication, fetchSkills, getCurrentUserId } from '../api';
+import { fetchJobDetail, fetchFullProfile, submitApplication, fetchSkills } from '../api';
+import { useAuth } from '../context/AuthContext';
+import apiClient from '../apiClient';
 
 import {
   Briefcase,
@@ -48,8 +50,9 @@ export default function Apply() {
     educations: [],
   });
 
-  const userId = getCurrentUserId();
-  const isGuest = !userId || userId === 1;
+  const { user } = useAuth();
+  const userId = user?.id;
+  const isGuest = !user;
 
   useEffect(() => {
     const load = async () => {
@@ -146,13 +149,9 @@ export default function Apply() {
       fd.append('resume', file);
       fd.append('user_id', userId);
 
-      const res = await fetch(`${API_BASE}/upload/resume`, {
-        method: 'POST',
-        body: fd,
+      const { data } = await apiClient.post('/api/upload/resume', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
 
       setFormData((prev) => ({
         ...prev,

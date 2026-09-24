@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchFullProfile, fetchEmployerJobs, getCurrentUserId } from '../api';
-import { API_ORIGIN } from '../utils/apiUrl';
+import { fetchFullProfile, fetchEmployerJobs } from '../api';
+import apiClient from '../apiClient';
 import '../styles/candidate/Profile.css';
 import {
   Building2,
@@ -28,22 +28,21 @@ export default function EmployerProfile() {
     const load = async () => {
       try {
         setLoading(true);
-        const userId = getCurrentUserId();
 
         const [profileData, jobsData, empRes] = await Promise.all([
           fetchFullProfile(),
           fetchEmployerJobs(),
-          fetch(`${API_ORIGIN}/api/employer/profile?user_id=${userId}`).catch(
-            () => null
-          ),
+          apiClient
+            .get('/api/employer/profile')
+            .then((r) => r.data)
+            .catch(() => null),
         ]);
 
         setProfile(profileData.profile);
         setJobs(jobsData.jobs || []);
 
-        if (empRes && empRes.ok) {
-          const empData = await empRes.json();
-          setCompanyLogo(empData.profile?.company_logo || null);
+        if (empRes) {
+          setCompanyLogo(empRes.profile?.company_logo || null);
         }
       } catch (err) {
         setError(err.message);

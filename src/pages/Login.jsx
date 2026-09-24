@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getErrorMessage } from '../apiClient';
 import '../styles/candidate/Login.css';
-import { API_BASE } from '../utils/apiUrl';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,25 +30,10 @@ export default function Login() {
     try {
       const role = userType === 'employer' ? 'employer' : 'candidate';
 
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          role,
-        }),
-      });
+      // ⭐ ใช้ authLogin ใหม่ — รับ (email, password, role)
+      await authLogin(formData.email, formData.password, role);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong');
-      }
-
-      authLogin(data.user);
-
-      // ⭐ เช็ค pending — ถาม user ก่อน redirect
+      // ⭐ เช็ค pending application ก่อน redirect
       const pendingRaw = localStorage.getItem('pendingApplication');
       if (pendingRaw) {
         try {
@@ -56,7 +41,7 @@ export default function Login() {
 
           const goToApply = window.confirm(
             `You have an unsaved job application.\n\n` +
-            `Do you want to continue filling it out?`
+              `Do you want to continue filling it out?`
           );
 
           if (goToApply) {
@@ -65,7 +50,7 @@ export default function Login() {
           } else {
             localStorage.removeItem('pendingApplication');
           }
-        } catch (err) {
+        } catch {
           localStorage.removeItem('pendingApplication');
         }
       }
@@ -76,29 +61,19 @@ export default function Login() {
       } else {
         navigate('/home');
       }
-
     } catch (err) {
-      setError(err.message);
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
-  // ⭐ Guest login
-  const handleGuest = () => {
-    authLogin({
-      id: 1,
-      role: 'candidate',
-      full_name: 'Guest User',
-      roles: ['candidate'],
-    });
-    navigate('/home');
-  };
-
   return (
     <div className="login-container">
       <div className="login-header">
-        <h1>Welcome to <span>JOBJAB</span></h1>
+        <h1>
+          Welcome to <span>JOBJAB</span>
+        </h1>
         <p>Log in to save jobs, track applications, and get matched.</p>
       </div>
 
@@ -110,10 +85,12 @@ export default function Login() {
             className={`type-card ${userType === 'seeker' ? 'selected' : ''}`}
           >
             <div className="type-title">
-              <span className={`dot ${userType === 'seeker' ? 'dot-active' : ''}`}></span>
+              <span
+                className={`dot ${userType === 'seeker' ? 'dot-active' : ''}`}
+              ></span>
               <span>Job seeker</span>
             </div>
-            <p className="type-desc">Find & apply to jobs</p>
+            <p className="type-desc">Find &amp; apply to jobs</p>
           </div>
 
           <div
@@ -121,7 +98,9 @@ export default function Login() {
             className={`type-card ${userType === 'employer' ? 'selected' : ''}`}
           >
             <div className="type-title">
-              <span className={`dot ${userType === 'employer' ? 'dot-active' : ''}`}></span>
+              <span
+                className={`dot ${userType === 'employer' ? 'dot-active' : ''}`}
+              ></span>
               <span>Employer</span>
             </div>
             <p className="type-desc">Post job openings</p>
@@ -139,6 +118,7 @@ export default function Login() {
               type="email"
               placeholder="Enter your email"
               required
+              autoComplete="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
             />
@@ -151,6 +131,7 @@ export default function Login() {
               placeholder="••••••••"
               required
               minLength={6}
+              autoComplete="current-password"
               value={formData.password}
               onChange={(e) => handleChange('password', e.target.value)}
             />
@@ -163,22 +144,12 @@ export default function Login() {
           </div>
         </form>
 
-        {/* Divider */}
-        <div className="divider">
-          <span>or</span>
-        </div>
-
-        {/* Guest */}
-        <div className="guest-container">
-          <button type="button" onClick={handleGuest} className="guest-btn">
-            Continue as guest
-          </button>
-        </div>
-
         {/* Link ไป Signup */}
         <div className="login-footer">
           <span>Don't have an account?</span>
-          <Link to="/signup" className="signup-link">Sign up</Link>
+          <Link to="/signup" className="signup-link">
+            Sign up
+          </Link>
         </div>
       </div>
     </div>

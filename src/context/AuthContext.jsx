@@ -1,5 +1,21 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
+//
+// Sprint 1.5: ใช้ cookies + /api/auth/me แทน localStorage
+//
+// Changes:
+// - Init: ใช้ fetchMe() แทน localStorage
+// - Login: เรียก API + setUser (ไม่ต้อง localStorage)
+// - Logout: call API (revoke token) + setUser(null)
+// - SwitchRole: set state (backend ส่ง roles มา)
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+
+import {
+  fetchMe,
+  login as apiLogin,
+  logout as apiLogout,
+  register as apiRegister,
+  setCurrentUser,
+} from '../api';
 
 const AuthContext = createContext(null);
 
@@ -8,94 +24,130 @@ export function AuthProvider({ children }) {
   const [activeRole, setActiveRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ============================================================
+  // INIT: ดึงข้อมูลจาก backend (cookies)
+  // ============================================================
   useEffect(() => {
-    const id = localStorage.getItem('user_id');
-    const roles = JSON.parse(localStorage.getItem('user_roles') || '[]');
-    const storedActiveRole = localStorage.getItem('active_role');
-    const name = localStorage.getItem('user_name');
-    const company = localStorage.getItem('company_name');
+    let cancelled = false;
 
-    if (id) {
-      const validActiveRole = storedActiveRole || (roles.length > 0 ? roles[0] : 'candidate');
+    fetchMe()
+      .then((data) => {
+        if (cancelled) return;
+        const u = data.user;
+        setUser(u);
 
-      setUser({
-        id: parseInt(id, 10),
-        roles,
-        role: validActiveRole,
-        name,
-        company,
+        // เลือก role เริ่มต้น
+        const initial = u.role || u.roles?.[0] || 'candidate';
+        setActiveRole(initial);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // 401 → ยังไม่ login
+        setUser(null);
+        setActiveRole(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
-      setActiveRole(validActiveRole);
 
-      if (!storedActiveRole && validActiveRole) {
-        localStorage.setItem('active_role', validActiveRole);
-      }
-    }
-    setLoading(false);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const login = (userData) => {
-    const roles = userData.roles || [userData.role || 'candidate'];
+  // ============================================================
+  // SYNC USER → api.js (module-level state)
+  // ============================================================
+  useEffect(() => {
+    setCurrentUser(user);
+  }, [user]);
 
-    // ⭐ ใช้ role ที่ backend ส่งมา (จาก userData.role) แทนการบังคับ roles[0]
-    let initialRole = userData.role;
+  // ============================================================
+  // LOGIN
+  // ============================================================
+  const login = useCallback(async (email, password, role) => {
+    const data = await apiLogin({ email, password, role });
+    const u = data.user;
 
-    // ถ้า role ไม่ถูกต้อง → fallback เป็น roles[0]
-    if (!initialRole || !roles.includes(initialRole)) {
-      initialRole = roles[0] || 'candidate';
+    setUser(u);
+
+    // เลือก role
+    const initial = u.role || u.roles?.[0] || 'candidate';
+    setActiveRole(initial);
+
+    return u;
+  }, []);
+
+  // ============================================================
+  // REGISTER
+  // ============================================================
+  const register = useCallback(async (data) => {
+    return apiRegister(data);
+  }, []);
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+  const logout = useCallback(async () => {
+    try {
+      await apiLogout(); // ← revoke token + clear cookies
+    } catch (err) {
+      // ถ้า logout fail → ยัง clear state อยู่ดี
+      console.warn('Logout API failed:', err);
+    } finally {
+      setUser(null);
+      setActiveRole(null);
     }
+  }, []);
 
-    localStorage.setItem('user_id', userData.id);
-    localStorage.setItem('user_roles', JSON.stringify(roles));
-    localStorage.setItem('active_role', initialRole);
-    localStorage.setItem('user_name', userData.full_name || '');
-    if (userData.company_name) {
-      localStorage.setItem('company_name', userData.company_name);
-    }
-
-    setUser({
-      id: userData.id,
-      roles,
-      role: initialRole,
-      name: userData.full_name,
-      company: userData.company_name,
-    });
-    setActiveRole(initialRole);
-
-    return roles;
-  };
-
-  const switchRole = (role) => {
-    if (!user?.roles?.includes(role)) return false;
-    localStorage.setItem('active_role', role);
-    setActiveRole(role);
-    return true;
-  };
-
-  const logout = () => {
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('user_roles');
-    localStorage.removeItem('active_role');
-    localStorage.removeItem('user_name');
-    localStorage.removeItem('company_name');
-    setUser(null);
-    setActiveRole(null);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        activeRole,
-        login,
-        logout,
-        switchRole,
-        loading,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  // ============================================================
+  // SWITCH ROLE
+  // ============================================================
+  const switchRole = useCallback(
+    (role) => {
+      if (!user?.roles?.includes(role)) return false;
+      setActiveRole(role);
+      return true;
+    },
+    [user]
   );
+
+  // ============================================================
+  // REFRESH USER (optional — สำหรับหลัง updateProfile)
+  // ============================================================
+  const refreshUser = useCallback(async () => {
+    try {
+      const data = await fetchMe();
+      setUser(data.user);
+      return data.user;
+    } catch {
+      setUser(null);
+      return null;
+    }
+  }, []);
+
+  // ============================================================
+  // CONTEXT VALUE
+  // ============================================================
+  const value = {
+    // State
+    user,
+    activeRole,
+    loading,
+
+    // Derived
+    isAuthenticated: !!user,
+    userId: user?.id ?? null,
+
+    // Actions
+    login,
+    register,
+    logout,
+    switchRole,
+    refreshUser,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {

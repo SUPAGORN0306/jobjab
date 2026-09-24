@@ -1,183 +1,209 @@
-import { API_BASE } from './utils/apiUrl';
+/**
+ * api.js — API functions
+ *
+ * ทุก call ใช้ apiClient (axios + cookies + auto-refresh)
+ *
+ * Changes from v1:
+ * - ใช้ apiClient แทน fetch
+ * - cookies ส่งอัตโนมัติ (withCredentials)
+ * - auto-refresh เมื่อ 401
+ * - error format มาตรฐาน
+ */
+import apiClient from './apiClient';
 
-// === Helper: ดึง user_id จาก localStorage ===
+// ============================================================
+// MODULE-LEVEL USER STATE
+// ============================================================
+// sync จาก AuthContext — ใช้สำหรับ api.js ที่ไม่ใช่ React component
+
+let _currentUser = null;
+
+/**
+ * setCurrentUser — เรียกจาก AuthContext ทุกครั้งที่ user เปลี่ยน
+ * @param {object|null} user
+ */
+export const setCurrentUser = (user) => {
+  _currentUser = user;
+};
+
 export const getCurrentUserId = () => {
-  const id = localStorage.getItem('user_id');
-  return id ? parseInt(id, 10) : 1;
+  return _currentUser?.id ?? null;
 };
 
 export const getCurrentUserRole = () => {
-  return localStorage.getItem('user_role') || 'candidate';
+  return _currentUser?.role ?? 'candidate';
 };
 
 export const getCurrentUserName = () => {
-  return localStorage.getItem('user_name') || '';
+  return _currentUser?.full_name ?? '';
 };
 
-// ==================== PROFILE ====================
+// ============================================================
+// PROFILE
+// ============================================================
 
 export const fetchFullProfile = async (userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/profile/${uid}/full`);
-  if (!res.ok) throw new Error('Failed to fetch profile');
-  return res.json();
+  const { data } = await apiClient.get(`/api/profile/${uid}/full`);
+  return data;
 };
 
 export const updateProfile = async (data, userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/profile/${uid}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...data,
-      profile_image: data.profile_image || undefined,
-    }),
+  const { data: response } = await apiClient.put(`/api/profile/${uid}`, {
+    ...data,
+    profile_image: data.profile_image || undefined,
   });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Failed to update profile');
-  }
-  return res.json();
+  return response;
 };
 
-// ==================== JOBS ====================
+// ============================================================
+// JOBS
+// ============================================================
 
 export const fetchJobs = async () => {
-  const res = await fetch(`${API_BASE}/jobs`);
-  if (!res.ok) throw new Error('Failed to fetch jobs');
-  return res.json();
+  const { data } = await apiClient.get('/api/jobs');
+  return data;
 };
 
 export const fetchJobDetail = async (jobId) => {
-  const res = await fetch(`${API_BASE}/jobs/${jobId}`);
-  if (!res.ok) throw new Error('Failed to fetch job');
-  return res.json();
+  const { data } = await apiClient.get(`/api/jobs/${jobId}`);
+  return data;
 };
 
-// ==================== APPLICATIONS ====================
+// ============================================================
+// APPLICATIONS
+// ============================================================
 
 export const submitApplication = async (data) => {
   const payload = { user_id: getCurrentUserId(), ...data };
-  const res = await fetch(`${API_BASE}/applications`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Failed to submit application');
-  return json;
+  const { data: response } = await apiClient.post('/api/applications', payload);
+  return response;
 };
 
 export const fetchUserApplications = async (userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/applications/user/${uid}`);
-  if (!res.ok) throw new Error('Failed to fetch applications');
-  return res.json();
+  const { data } = await apiClient.get(`/api/applications/user/${uid}`);
+  return data;
 };
 
 export const fetchApplicationDetail = async (applicationId) => {
-  const res = await fetch(`${API_BASE}/applications/${applicationId}/detail`);
-  if (!res.ok) throw new Error('Failed to fetch application detail');
-  return res.json();
+  const { data } = await apiClient.get(`/api/applications/${applicationId}/detail`);
+  return data;
 };
 
-// ==================== AUTH ====================
+// ============================================================
+// AUTH
+// ============================================================
 
 export const register = async (data) => {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Register failed');
-  return json;
+  const { data: response } = await apiClient.post('/api/auth/register', data);
+  return response;
 };
 
 export const login = async (data) => {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Login failed');
-  return json;
+  const { data: response } = await apiClient.post('/api/auth/login', data);
+  return response;
 };
 
-// ==================== EMPLOYER ====================
+// ⭐ ใหม่ — Sprint 1
+export const logout = async () => {
+  const { data } = await apiClient.post('/api/auth/logout');
+  return data;
+};
+
+export const fetchMe = async () => {
+  const { data } = await apiClient.get('/api/auth/me');
+  return data;
+};
+
+export const refreshToken = async () => {
+  const { data } = await apiClient.post('/api/auth/refresh');
+  return data;
+};
+
+// ============================================================
+// EMPLOYER
+// ============================================================
 
 export const fetchEmployerJobs = async (userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/employer/jobs?user_id=${uid}`);
-  if (!res.ok) throw new Error('Failed to fetch employer jobs');
-  return res.json();
+  const { data } = await apiClient.get(`/api/employer/jobs?user_id=${uid}`);
+  return data;
 };
 
 export const createEmployerJob = async (data) => {
   const payload = { user_id: getCurrentUserId(), ...data };
-  const res = await fetch(`${API_BASE}/employer/jobs`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Failed to create job');
-  return json;
+  const { data: response } = await apiClient.post('/api/employer/jobs', payload);
+  return response;
 };
 
-// ==================== EMPLOYER: APPLICATIONS ====================
+// ============================================================
+// EMPLOYER: APPLICATIONS
+// ============================================================
 
 export const fetchJobApplications = async (jobId) => {
-  const res = await fetch(`${API_BASE}/employer/jobs/${jobId}/applications`);
-  if (!res.ok) throw new Error('Failed to fetch applications');
-  return res.json();
+  const { data } = await apiClient.get(`/api/employer/jobs/${jobId}/applications`);
+  return data;
 };
 
 export const fetchApplicationSnapshot = async (applicationId) => {
-  const res = await fetch(`${API_BASE}/employer/applications/${applicationId}/detail`);
-  if (!res.ok) throw new Error('Failed to fetch application detail');
-  return res.json();
+  const { data } = await apiClient.get(`/api/employer/applications/${applicationId}/detail`);
+  return data;
 };
 
 export const updateApplicationStatus = async (applicationId, newStatus) => {
-  const res = await fetch(`${API_BASE}/employer/applications/${applicationId}/status`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status: newStatus }),
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Failed to update status');
-  return json;
+  const { data } = await apiClient.put(
+    `/api/employer/applications/${applicationId}/status`,
+    { status: newStatus }
+  );
+  return data;
 };
 
-// ==================== SKILLS ====================
+// ============================================================
+// SKILLS
+// ============================================================
 
 export const fetchSkills = async () => {
-  const res = await fetch(`${API_BASE}/skills`);
-  if (!res.ok) throw new Error('Failed to fetch skills');
-  return res.json();
+  const { data } = await apiClient.get('/api/skills');
+  return data;
 };
 
-// ==================== MATCH SCORE ====================
+// ============================================================
+// MATCH SCORE
+// ============================================================
 
 export const fetchJobsWithMatch = async (userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/jobs?user_id=${uid}`);
-  if (!res.ok) throw new Error('Failed to fetch jobs');
-  return res.json();
+  const { data } = await apiClient.get(`/api/jobs?user_id=${uid}`);
+  return data;
 };
 
 export const fetchJobDetailWithMatch = async (jobId, userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/jobs/${jobId}?user_id=${uid}`);
-  if (!res.ok) throw new Error('Failed to fetch job');
-  return res.json();
+  const { data } = await apiClient.get(`/api/jobs/${jobId}?user_id=${uid}`);
+  return data;
 };
 
 export const fetchMatchScore = async (jobId, userId) => {
   const uid = userId ?? getCurrentUserId();
-  const res = await fetch(`${API_BASE}/match-score/${jobId}?user_id=${uid}`);
-  if (!res.ok) throw new Error('Failed to fetch match score');
-  return res.json();
+  const { data } = await apiClient.get(`/api/match-score/${jobId}?user_id=${uid}`);
+  return data;
+};
+
+// ============================================================
+// FAVORITES (⭐ ใหม่ — ส่งผ่าน apiClient)
+// ============================================================
+
+export const fetchFavorites = async () => {
+  const { data } = await apiClient.get('/api/favorites');
+  return data;
+};
+
+export const toggleFavorite = async (jobId) => {
+  const { data } = await apiClient.post('/api/favorites/toggle', {
+    user_id: getCurrentUserId(),
+    job_id: jobId,
+  });
+  return data;
 };

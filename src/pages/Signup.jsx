@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { getErrorMessage } from '../apiClient';
 import '../styles/candidate/Signup.css';
-import { API_BASE } from '../utils/apiUrl';
 
 const INDUSTRIES = [
   'Tech',
@@ -36,7 +36,8 @@ const getPasswordStrength = (pwd) => {
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { login: authLogin } = useAuth();
+  // ⭐ ต้องใช้ทั้ง register + login
+  const { register, login: authLogin } = useAuth();
 
   const [step, setStep] = useState(1);
   const [userType, setUserType] = useState('');
@@ -75,10 +76,7 @@ export default function Signup() {
 
       case 3:
         if (userType === 'employer') {
-          return (
-            formData.company_name.trim() !== '' &&
-            formData.industry !== ''
-          );
+          return formData.company_name.trim() !== '' && formData.industry !== '';
         }
         return true;
 
@@ -135,27 +133,20 @@ export default function Signup() {
         }),
       };
 
-      const res = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      // ⭐ 1. Register
+      await register(payload);
 
-      const data = await res.json();
+      // ⭐ 2. Auto-login (สร้าง cookies)
+      await authLogin(formData.email, formData.password, role);
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong');
-      }
-
-      authLogin(data.user);
-
+      // ⭐ 3. Redirect ตาม role
       if (userType === 'employer') {
         navigate('/employer/dashboard');
       } else {
         navigate('/home');
       }
     } catch (err) {
-      setError(err.message);
+      setError(getErrorMessage(err));
       if (step === 3) setStep(2);
     } finally {
       setLoading(false);
@@ -172,7 +163,9 @@ export default function Signup() {
   return (
     <div className="signup-container">
       <div className="signup-header">
-        <h1>Join <span>JOBJAB</span></h1>
+        <h1>
+          Join <span>JOBJAB</span>
+        </h1>
         <p>Create your account in a few easy steps</p>
       </div>
 
@@ -226,10 +219,12 @@ export default function Signup() {
                 className={`type-card ${userType === 'seeker' ? 'selected' : ''}`}
               >
                 <div className="type-title">
-                  <span className={`dot ${userType === 'seeker' ? 'dot-active' : ''}`}></span>
+                  <span
+                    className={`dot ${userType === 'seeker' ? 'dot-active' : ''}`}
+                  ></span>
                   <span>Job seeker</span>
                 </div>
-                <p className="type-desc">Find & apply to jobs</p>
+                <p className="type-desc">Find &amp; apply to jobs</p>
               </div>
 
               <div
@@ -237,7 +232,9 @@ export default function Signup() {
                 className={`type-card ${userType === 'employer' ? 'selected' : ''}`}
               >
                 <div className="type-title">
-                  <span className={`dot ${userType === 'employer' ? 'dot-active' : ''}`}></span>
+                  <span
+                    className={`dot ${userType === 'employer' ? 'dot-active' : ''}`}
+                  ></span>
                   <span>Employer</span>
                 </div>
                 <p className="type-desc">Post job openings</p>
@@ -269,6 +266,7 @@ export default function Signup() {
                 type="email"
                 placeholder="Enter your email"
                 required
+                autoComplete="email"
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
               />
@@ -282,6 +280,7 @@ export default function Signup() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   required
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={(e) => handleChange('password', e.target.value)}
                 />
@@ -296,7 +295,6 @@ export default function Signup() {
                 </button>
               </div>
 
-              {/* Strength bars */}
               {formData.password && (
                 <div className="password-strength">
                   <div className="strength-bars">
@@ -356,7 +354,9 @@ export default function Signup() {
               >
                 <option value="">Select Industry</option>
                 {INDUSTRIES.map((ind) => (
-                  <option key={ind} value={ind}>{ind}</option>
+                  <option key={ind} value={ind}>
+                    {ind}
+                  </option>
                 ))}
               </select>
             </div>
@@ -393,7 +393,9 @@ export default function Signup() {
         {/* Footer */}
         <div className="signup-footer">
           <span>Already have an account?</span>
-          <Link to="/login" className="signup-link">Log in</Link>
+          <Link to="/login" className="signup-link">
+            Log in
+          </Link>
         </div>
       </div>
     </div>

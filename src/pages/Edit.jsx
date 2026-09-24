@@ -1,7 +1,8 @@
 import { resolveFileUrl } from '../utils/apiUrl';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchFullProfile, updateProfile, fetchSkills, getCurrentUserId } from '../api';
+import { fetchFullProfile, updateProfile, fetchSkills } from '../api';
+import { useAuth } from '../context/AuthContext';
 import AvatarUploader from '../components/AvatarUploader';
 import ResumeUploader from '../components/ResumeUploader';
 
@@ -11,6 +12,7 @@ import '../styles/candidate/Edit.css';
 
 export default function Edit() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -323,7 +325,7 @@ export default function Edit() {
                   : resolveFileUrl(profile.profile_image)
                 : null
             }
-            userId={getCurrentUserId()}
+            userId={user?.id}
             onUploadSuccess={handleAvatarUploaded}
           />
 
@@ -402,7 +404,7 @@ export default function Edit() {
             <ResumeUploader
               currentResume={profile.resume_url}
               currentFilename={profile.resume_filename}
-              userId={getCurrentUserId()}
+              userId={user?.id}
               onUploadSuccess={handleResumeUploaded}
               onDeleteSuccess={handleResumeDeleted}
             />

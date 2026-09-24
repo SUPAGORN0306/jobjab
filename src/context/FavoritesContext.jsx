@@ -1,28 +1,27 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { API_BASE } from "../utils/apiUrl";
-import { getCurrentUserId } from "../api";
+import { useAuth } from "./AuthContext";
+import { fetchFavorites, toggleFavorite as apiToggleFavorite } from "../api";
 
 const FavoritesContext = createContext(null);
 
 export function FavoritesProvider({ children }) {
+  const { user } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // ⭐ โหลด favorites จาก API ตอน mount
   useEffect(() => {
     const loadFavorites = async () => {
-      const userId = getCurrentUserId();
-
-      // Guest → ไม่โหลด
-      if (!userId || userId === 1) {
+      // ยังไม่ login → ไม่โหลด
+      if (!user) {
+        setFavorites([]);
         setLoading(false);
         return;
       }
 
       try {
-        const res = await fetch(`${API_BASE}/favorites?user_id=${userId}`);
-        if (!res.ok) throw new Error('Failed to load favorites');
-        const data = await res.json();
+        setLoading(true);
+        const data = await fetchFavorites();
 
         // ⭐ แปลงข้อมูลจาก DB เป็นรูปแบบที่ UI ใช้
         const mapped = (data.favorites || []).map((f) => ({
@@ -51,7 +50,7 @@ export function FavoritesProvider({ children }) {
     };
 
     loadFavorites();
-  }, []);
+  }, [user]);
 
   const isFavorited = (jobId) => {
     return favorites.some((job) => job.id === jobId || job.job_id === jobId);
@@ -59,29 +58,14 @@ export function FavoritesProvider({ children }) {
 
   // ⭐ toggleFavorite — เรียก API
   const toggleFavorite = async (job) => {
-    const userId = getCurrentUserId();
-
-    // ⭐ Guest → alert
-    if (!userId || userId === 1) {
-      alert('Please login first to save favorites');
+    // ยังไม่ login → แจ้งเตือน
+    if (!user) {
+      alert("Please login first to save favorites");
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE}/favorites/toggle`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          job_id: job.id,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to toggle favorite');
-      }
+      const data = await apiToggleFavorite(job.id);
 
       if (data.favorited) {
         // ⭐ เพิ่มเข้า state

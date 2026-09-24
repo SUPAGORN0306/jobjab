@@ -5,50 +5,33 @@ export default function ProtectedRoute({ children, requiredRole }) {
   const { user, activeRole, loading } = useAuth();
   const location = useLocation();
 
+  // ─── 1. กำลังโหลด auth state ───
   if (loading) {
     return (
-      <div style={{
-        padding: 40,
-        textAlign: 'center',
-        color: '#8c9bae',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+      <div
+        style={{
+          padding: 40,
+          textAlign: 'center',
+          color: '#8c9bae',
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         Loading...
       </div>
     );
   }
 
+  // ─── 2. ยังไม่ login → redirect ไป /login (จำ path เดิม) ───
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  const isGuest = user.id === 1;
-  const path = location.pathname;
-
-  if (isGuest) {
-    // ⭐ Guest ห้ามเข้า — แต่ **อนุญาต** /apply
-    const isBlocked =
-      path === '/favorite' ||
-      path === '/status' ||
-      path === '/profile' ||
-      path.startsWith('/profile/');
-      // ⭐ ไม่บล็อค /apply และ /employer แยกต่างหาก
-
-    if (isBlocked) {
-      alert('Please login to access this page');
-      return <Navigate to="/home" replace />;
-    }
-  }
-
-  const storedRole = localStorage.getItem('active_role');
-  const effectiveRole = activeRole || storedRole;
-
-  if (isGuest) {
-    return children;
-  }
+  // ─── 3. ตรวจ role ───
+  const effectiveRole =
+    activeRole || user.role || user.roles?.[0] || 'candidate';
 
   if (requiredRole && effectiveRole !== requiredRole) {
     return (
@@ -59,5 +42,6 @@ export default function ProtectedRoute({ children, requiredRole }) {
     );
   }
 
+  // ─── 4. ผ่านทุกเงื่อนไข → แสดง children ───
   return children;
 }

@@ -1,12 +1,12 @@
-import { API_BASE } from '../utils/apiUrl';
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
+import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
-import { getCurrentUserId } from '../api';
+import { fetchJobsWithMatch } from '../api';
 import MatchModal from '../components/MatchModal';
 import FilterSheet from '../components/FilterSheet';
 
@@ -82,6 +82,7 @@ const TRENDING_CATEGORIES = [
 
 function Home() {
   const { isFavorited, toggleFavorite } = useFavorites();
+  const { user } = useAuth();
   const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
 
@@ -98,10 +99,11 @@ function Home() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+  // ⭐ Fetch jobs — ใช้ cookies + user.id
   useEffect(() => {
-    const userId = getCurrentUserId();
-    fetch(`${API_BASE}/jobs?user_id=${userId}`)
-      .then((res) => res.json())
+    const userId = user?.id;
+
+    fetchJobsWithMatch(userId)
       .then((data) => {
         setJobs(data.jobs || []);
         setLoading(false);
@@ -110,7 +112,7 @@ function Home() {
         console.error("Error fetching jobs:", err);
         setLoading(false);
       });
-  }, []);
+  }, [user]);
 
   const TOTAL_JOBS_AVAILABLE = jobs.length;
   const totalCompanies = useMemo(() => {

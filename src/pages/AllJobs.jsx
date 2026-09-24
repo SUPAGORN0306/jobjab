@@ -1,11 +1,11 @@
-import { API_BASE } from '../utils/apiUrl';
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useFavorites } from "../context/FavoritesContext.jsx";
+import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
-import { getCurrentUserId } from '../api';
+import { fetchJobsWithMatch } from '../api';
 import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
 
@@ -64,6 +64,7 @@ const getJobLogoClass = (title) => {
 function AllJobs() {
   const navigate = useNavigate();
   const { isFavorited, toggleFavorite } = useFavorites();
+  const { user } = useAuth();
 
   const MAX_SALARY = 250000;
   const [salaryRange, setSalaryRange] = useState([0, MAX_SALARY]);
@@ -77,9 +78,9 @@ function AllJobs() {
   const [sortBy, setSortBy] = useState("match");
 
   useEffect(() => {
-    const userId = getCurrentUserId();
-    fetch(`${API_BASE}/jobs?user_id=${userId}`)
-      .then((res) => res.json())
+    const userId = user?.id;
+
+    fetchJobsWithMatch(userId)
       .then((data) => {
         setJobs(data.jobs || []);
         setLoading(false);
@@ -88,7 +89,7 @@ function AllJobs() {
         console.error("Error fetching jobs:", err);
         setLoading(false);
       });
-  }, []);
+  }, [user]);
 
   const TOTAL_JOBS_AVAILABLE = jobs.length;
 

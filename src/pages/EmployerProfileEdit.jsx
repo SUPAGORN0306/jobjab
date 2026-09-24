@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchFullProfile, updateProfile, getCurrentUserId } from '../api';
-import { API_ORIGIN } from '../utils/apiUrl';
+import { fetchFullProfile, updateProfile } from '../api';
+import apiClient from '../apiClient';
 import CompanyLogoUploader from '../components/CompanyLogoUploader';
 import '../styles/candidate/Edit.css';
 
@@ -33,13 +33,13 @@ export default function EmployerProfileEdit() {
           industry: userData.profile?.industry || '',
         });
 
-        const userId = getCurrentUserId();
-        const empRes = await fetch(
-          `${API_ORIGIN}/api/employer/profile?user_id=${userId}`
-        );
-        if (empRes.ok) {
-          const empData = await empRes.json();
-          setCompanyLogo(empData.profile?.company_logo || null);
+        const empRes = await apiClient
+          .get('/api/employer/profile')
+          .then((r) => r.data)
+          .catch(() => null);
+
+        if (empRes) {
+          setCompanyLogo(empRes.profile?.company_logo || null);
         }
       } catch (err) {
         setError(err.message);
@@ -130,7 +130,7 @@ export default function EmployerProfileEdit() {
           >
             <CompanyLogoUploader
               currentImage={companyLogo}
-              userId={getCurrentUserId()}
+              userId={user?.id}
               onUploadSuccess={handleLogoUploaded}
             />
 
