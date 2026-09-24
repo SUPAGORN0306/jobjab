@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/candidate/Splash.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Splash() {
+  usePageTitle("Welcome", { description: "JobJab — AI-powered job matching" });
+
   const navigate = useNavigate();
   const [fadeOut, setFadeOut] = useState(false);
 

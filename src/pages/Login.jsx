@@ -3,8 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../apiClient';
 import '../styles/candidate/Login.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Login() {
+  usePageTitle("Log In", { description: "Sign in to your JobJab account" });
+
   const navigate = useNavigate();
   const { login: authLogin } = useAuth();
 

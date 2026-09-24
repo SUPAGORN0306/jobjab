@@ -13,8 +13,11 @@ import {
   Users,
   UserCheck,
 } from 'lucide-react';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function EmployerProfile() {
+  usePageTitle("Company Profile", { description: "Your company profile" });
+
   const navigate = useNavigate();
   const { user, logout, switchRole } = useAuth();
 

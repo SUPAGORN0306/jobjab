@@ -16,10 +16,13 @@ import {
 
 import '../styles/candidate/Apply.css';
 import { toast } from 'sonner';
+import usePageTitle from '../hooks/usePageTitle';
 
 const PENDING_APP_KEY = 'pendingApplication';
 
 export default function Apply() {
+  usePageTitle("Apply", { description: "Submit your job application" });
+
   const { id } = useParams();
   const navigate = useNavigate();
 

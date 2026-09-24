@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "../styles/candidate/JobDetail.css";
 import { useAuth } from '../context/AuthContext';
 import { fetchJobDetailWithMatch } from '../api';
+import usePageTitle from '../hooks/usePageTitle';
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -19,6 +20,8 @@ const getJobLogoClass = (title) => {
 };
 
 function JobDetail() {
+  usePageTitle("Job Details", { description: "View job details and match score" });
+
 
   const navigate = useNavigate();
   const { id } = useParams();

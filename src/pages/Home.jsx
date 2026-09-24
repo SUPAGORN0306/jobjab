@@ -25,6 +25,7 @@ import {
 
 import '../styles/home/Home.css';
 import '../styles/home/RecommendedCard.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 // ============================================
 // SEARCH HELPERS
@@ -87,6 +88,8 @@ const TRENDING_CATEGORIES = [
 // ============================================
 
 function Home() {
+  usePageTitle("Home", { description: "Find your dream job with AI matching" });
+
   const { isFavorited, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);

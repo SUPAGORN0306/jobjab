@@ -18,8 +18,11 @@ import {
 } from 'lucide-react';
 import '../styles/employer/ViewApplicants.css';
 import { toast } from 'sonner';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function ViewApplicants() {
+  usePageTitle("Applicant Details", { description: "Review candidate details" });
+
   const { jobId } = useParams();
   const navigate = useNavigate();
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchEmployerJobs } from '../api';
 import { Briefcase, MapPin, Users, ArrowRight } from 'lucide-react';
 import EmptyState from "../components/EmptyState";
+import usePageTitle from '../hooks/usePageTitle';
 // ============================================
 // JOB LOGO CLASS
 // ============================================
@@ -22,6 +23,8 @@ const getJobLogoClass = (title) => {
 };
 
 export default function EmployerJobs() {
+  usePageTitle("My Jobs", { description: "Your posted jobs" });
+
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);

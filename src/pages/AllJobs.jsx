@@ -11,6 +11,7 @@ import '../styles/home/RecommendedCard.css';
 import { JobListSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
 import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
+import usePageTitle from '../hooks/usePageTitle';
 
 // ============================================
 // SEARCH HELPERS
@@ -65,6 +66,8 @@ const getJobLogoClass = (title) => {
 // ============================================
 
 function AllJobs() {
+  usePageTitle("All Jobs", { description: "Browse all available positions" });
+
   const navigate = useNavigate();
   const { isFavorited, toggleFavorite } = useFavorites();
   const { user } = useAuth();

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { API_BASE } from '../utils/apiUrl';
 import EmptyState from "../components/EmptyState";
+import usePageTitle from '../hooks/usePageTitle';
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -72,6 +73,8 @@ const getStatusColor = (status) => {
 };
 
 export default function EmployerApplicants() {
+  usePageTitle("Applicants", { description: "Review job applicants" });
+
   const navigate = useNavigate();
   const [all, setAll] = useState([]);
   const [loading, setLoading] = useState(true);

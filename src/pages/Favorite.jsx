@@ -6,6 +6,7 @@ import { getMatchBadgeClass } from '../utils/matchBadge.js';
 import { FavoriteSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
 import { Heart } from "lucide-react";
+import usePageTitle from '../hooks/usePageTitle';
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -22,6 +23,8 @@ const getJobLogoClass = (title) => {
 };
 
 export default function Favorite() {
+  usePageTitle("Favorites", { description: "Your saved jobs" });
+
   const navigate = useNavigate();
   const { favorites, toggleFavorite, loading } = useFavorites();
 

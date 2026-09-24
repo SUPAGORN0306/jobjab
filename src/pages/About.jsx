@@ -14,8 +14,11 @@ import {
 } from 'lucide-react';
 
 import '../styles/candidate/About.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function About() {
+  usePageTitle("About", { description: "Learn more about JobJab" });
+
   return (
     <div className="about-container">
       <div className="about-hero">

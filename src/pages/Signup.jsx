@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../apiClient';
 import '../styles/candidate/Signup.css';
+import usePageTitle from '../hooks/usePageTitle';
 
 const INDUSTRIES = [
   'Tech',
@@ -35,6 +36,8 @@ const getPasswordStrength = (pwd) => {
 };
 
 export default function Signup() {
+  usePageTitle("Sign Up", { description: "Create your free JobJab account" });
+
   const navigate = useNavigate();
   // ⭐ ต้องใช้ทั้ง register + login
   const { register, login: authLogin } = useAuth();

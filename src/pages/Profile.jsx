@@ -5,8 +5,11 @@ import { fetchFullProfile } from '../api';
 import { useAuth } from '../context/AuthContext';
 import '../styles/candidate/Profile.css';
 import { ProfileSkeleton } from "../components/Skeleton";
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Profile() {
+  usePageTitle("Profile", { description: "Your profile and resume" });
+
   const navigate = useNavigate();
   const { user, activeRole, logout, switchRole, loading: authLoading } = useAuth();
 

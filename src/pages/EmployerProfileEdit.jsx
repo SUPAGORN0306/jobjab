@@ -6,8 +6,11 @@ import apiClient from '../apiClient';
 import CompanyLogoUploader from '../components/CompanyLogoUploader';
 import '../styles/candidate/Edit.css';
 import { toast } from 'sonner';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function EmployerProfileEdit() {
+  usePageTitle("Edit Company", { description: "Update company information" });
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);

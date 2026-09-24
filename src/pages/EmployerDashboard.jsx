@@ -22,6 +22,7 @@ import {
   Send,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import usePageTitle from '../hooks/usePageTitle';
 
 // ============================================
 // TIME AGO HELPER
@@ -84,6 +85,8 @@ const INDUSTRIES = [
 ];
 
 export default function EmployerDashboard() {
+  usePageTitle("Employer Dashboard", { description: "Manage your job postings" });
+
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 

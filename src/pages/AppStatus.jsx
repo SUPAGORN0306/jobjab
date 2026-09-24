@@ -16,8 +16,11 @@ import {
 import '../styles/candidate/AppStatus.css';
 import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function AppStatus() {
+  usePageTitle("Application Status", { description: "Track your job applications" });
+
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
