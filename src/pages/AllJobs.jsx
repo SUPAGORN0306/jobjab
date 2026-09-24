@@ -357,9 +357,9 @@ function AllJobs() {
       {!loading && filteredJobs.length === 0 && (
         <EmptyState
           icon={Search}
-          title="ไม่พบงานที่ตรงกับตัวกรอง"
-          description="ลองปรับการค้นหาหรือล้างตัวกรอง"
-          actionLabel="ล้างตัวกรองทั้งหมด"
+          title="No jobs match your filters"
+          description="Try adjusting your search or clearing the filters"
+          actionLabel="Clear all filters"
           onAction={clearFilters}
         />
       )}

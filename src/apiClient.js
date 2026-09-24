@@ -74,14 +74,14 @@ apiClient.interceptors.response.use(
 
 export function getErrorMessage(error) {
   const data = error?.response?.data;
-  if (!data) return error?.message || 'เกิดข้อผิดพลาด';
+  if (!data) return error?.message || 'Something went wrong';
 
   if (data.error?.message) return data.error.message;
   if (typeof data.error === 'string') return data.error;
   if (data.message) return data.message;
   if (data.detail) return data.detail;
 
-  return 'เกิดข้อผิดพลาด';
+  return 'Something went wrong';
 }
 
 export default apiClient;

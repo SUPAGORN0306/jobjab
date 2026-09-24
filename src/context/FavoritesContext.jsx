@@ -85,7 +85,7 @@ export function FavoritesProvider({ children }) {
   const toggleFavorite = useCallback(
     async (job) => {
       if (!user) {
-        toast.error("กรุณาเข้าสู่ระบบก่อนบันทึกงาน");
+        toast.error("Please log in to save jobs");
         return;
       }
 
@@ -130,7 +130,7 @@ export function FavoritesProvider({ children }) {
 export function useFavorites() {
   const context = useContext(FavoritesContext);
   if (!context) {
-    throw new Error("useFavorites() ต้องถูกเรียกใช้ภายใน <FavoritesProvider> เท่านั้น");
+    throw new Error("useFavorites() must be used within <FavoritesProvider>");
   }
   return context;
 }

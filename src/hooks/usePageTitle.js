@@ -10,7 +10,7 @@
 import { useEffect } from 'react';
 
 const DEFAULT_TITLE = 'JobJab';
-const DEFAULT_DESCRIPTION = 'JobJab แพลตฟอร์มหางานอัจฉริยะ';
+const DEFAULT_DESCRIPTION = 'JobJab - AI-powered job matching';
 
 export default function usePageTitle(title, options = {}) {
   useEffect(() => {

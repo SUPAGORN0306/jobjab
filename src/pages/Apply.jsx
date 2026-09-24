@@ -386,7 +386,7 @@ export default function Apply() {
 
       const result = await submitApplication(payload);
       localStorage.removeItem(PENDING_APP_KEY);
-      toast.success(`สมัครสำเร็จ! ${result.message || ''} (ID: ${result.application_id})`);
+      toast.success(`Applied successfully! ${result.message || ''} (ID: ${result.application_id})`);
       navigate('/status');
     } catch (err) {
       toast.error(err.message);

@@ -46,10 +46,10 @@ class ErrorBoundary extends React.Component {
               <AlertTriangle size={64} strokeWidth={1.5} />
             </div>
             <h1 className="error-boundary-title">
-              เกิดข้อผิดพลาด
+              Something went wrong
             </h1>
             <p className="error-boundary-message">
-              ขออภัย มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง
+              Sorry, something went wrong. Please try again.
             </p>
 
             {isDev && this.state.error && (
@@ -68,14 +68,14 @@ class ErrorBoundary extends React.Component {
                 onClick={this.handleReload}
               >
                 <RefreshCw size={18} />
-                <span>โหลดหน้าใหม่</span>
+                <span>Reload</span>
               </button>
               <button
                 className="error-boundary-btn error-boundary-btn-secondary"
                 onClick={this.handleGoHome}
               >
                 <Home size={18} />
-                <span>กลับหน้าหลัก</span>
+                <span>Go Home</span>
               </button>
             </div>
           </div>

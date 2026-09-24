@@ -84,8 +84,8 @@ export default function EmployerJobs() {
         {filtered.length === 0 ? (
           <EmptyState
             icon={Briefcase}
-            title="ยังไม่มีงานที่ประกาศ"
-            description="เริ่มประกาศงานแรกของคุณ เพื่อหาผู้สมัครที่ใช่"
+            title="No jobs posted yet"
+            description="Post your first job to find the right candidates"
           />
         ) : (
           <div className="job-list-grid">

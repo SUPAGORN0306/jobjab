@@ -270,9 +270,9 @@ export default function AppStatus() {
           {filteredApplications.length === 0 ? (
             <EmptyState
                 icon={FileText}
-                title="ยังไม่มีใบสมัคร"
-                description="คุณยังไม่ได้สมัครงานใดๆ ลองหางานที่สนใจ"
-                actionLabel="หางาน"
+                title="No applications yet"
+                description="You haven't applied to any jobs. Try finding one that interests you."
+                actionLabel="Find Jobs"
                 onAction={() => window.location.href = '/home'}
               />
           ) : (

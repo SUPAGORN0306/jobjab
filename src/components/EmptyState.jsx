@@ -7,7 +7,7 @@ import { Briefcase } from 'lucide-react';
 
 export default function EmptyState({
   icon: Icon = Briefcase,
-  title = 'ไม่มีข้อมูล',
+  title = 'No data',
   description = '',
   actionLabel,
   onAction,

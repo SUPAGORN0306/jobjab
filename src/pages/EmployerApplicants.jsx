@@ -175,8 +175,8 @@ export default function EmployerApplicants() {
         {filtered.length === 0 ? (
           <EmptyState
             icon={Users}
-            title="ยังไม่มีผู้สมัคร"
-            description="เมื่อมีผู้สมัครงานของคุณ จะแสดงที่นี่"
+            title="No applicants yet"
+            description="When candidates apply to your jobs, they will appear here"
           />
         ) : (
           <div className="job-list-grid">

@@ -42,9 +42,9 @@ export default function Favorite() {
         {!loading && favorites.length === 0 && (
           <EmptyState
             icon={Heart}
-            title="ยังไม่มีงานที่บันทึกไว้"
-            description="กดหัวใจที่งานที่สนใจ เพื่อบันทึกไว้ดูทีหลัง"
-            actionLabel="ไปดูงาน"
+            title="No saved jobs yet"
+            description="Click the heart on jobs you like to save them here"
+            actionLabel="Browse Jobs"
             onAction={() => navigate('/home')}
           />
         )}

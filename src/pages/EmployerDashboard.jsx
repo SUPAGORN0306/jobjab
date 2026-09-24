@@ -123,7 +123,7 @@ export default function EmployerDashboard() {
 
     try {
       const result = await createEmployerJob(form);
-      toast.success(`${result.message || 'สร้างงานสำเร็จ'} (Job ID: ${result.job_id})`);
+      toast.success(`${result.message || 'Job posted successfully'} (Job ID: ${result.job_id})`);
 
       setForm({
         job_title: '',

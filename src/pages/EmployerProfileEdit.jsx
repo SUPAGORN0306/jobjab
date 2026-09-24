@@ -66,7 +66,7 @@ export default function EmployerProfileEdit() {
     setSaving(true);
     try {
       await updateProfile(form);
-      toast.success('อัปเดตโปรไฟล์สำเร็จ');
+      toast.success('Profile updated successfully');
       navigate('/employer/profile');
     } catch (err) {
       toast.error(err.message);
