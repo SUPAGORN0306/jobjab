@@ -35,6 +35,18 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config || {};
 
+    // ⭐ Handle 429 Rate Limit — แสดงข้อความชัดเจน
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'] || '60';
+      const customError = new Error(
+        `Too many attempts. Please wait ${retryAfter} seconds.`
+      );
+      customError.response = error.response;
+      customError.isRateLimit = true;
+      customError.retryAfter = parseInt(retryAfter, 10);
+      return Promise.reject(customError);
+    }
+
     // ไม่ refresh ถ้า:
     // 1. ไม่ใช่ 401
     // 2. เคย retry แล้ว
@@ -73,8 +85,20 @@ apiClient.interceptors.response.use(
 // ============================================================
 
 export function getErrorMessage(error) {
+  // ⭐ Rate limit (429) — แสดงข้อความจาก custom error
+  if (error?.isRateLimit) {
+    return error.message || 'Too many attempts. Please wait.';
+  }
+
   const data = error?.response?.data;
-  if (!data) return error?.message || 'Something went wrong';
+
+  if (!data) {
+    // Network error (no response)
+    if (error?.code === 'ERR_NETWORK') {
+      return 'Cannot reach the server. Please check your connection.';
+    }
+    return error?.message || 'Something went wrong';
+  }
 
   if (data.error?.message) return data.error.message;
   if (typeof data.error === 'string') return data.error;
