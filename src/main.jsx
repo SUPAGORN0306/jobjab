@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 
 import Splash from './pages/Splash.jsx';
 import Login from './pages/Login.jsx';
-import Signup from './pages/Signup.jsx'; 
+import Signup from './pages/Signup.jsx';
 import App from './App.jsx';
 import EmployerApp from './EmployerApp.jsx';
 
@@ -29,13 +29,16 @@ import EmployerProfileEdit from './pages/EmployerProfileEdit.jsx';
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+
 import './styles/global.css';
 import './styles/tabbar.css';
+import './styles/components/ErrorBoundary.css';
 
 const router = createBrowserRouter([
-  { path: "/", element: <Splash /> }, 
-  { path: "/login", element: <Login /> },        
-  { path: "/signup", element: <Signup /> },       
+  { path: "/", element: <Splash /> },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
   {
     path: "/",
     element: (
@@ -52,7 +55,7 @@ const router = createBrowserRouter([
       { path: "profile/edit", element: <Edit /> },
       { path: "job/:id", element: <JobDetail /> },
       { path: "job/:id/apply", element: <Apply /> },
-      { path: "about", element: <About /> }, 
+      { path: "about", element: <About /> },
     ],
   },
   {
@@ -75,16 +78,18 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <FavoritesProvider>
-        <RouterProvider router={router} />
-        <Toaster
-          position="top-center"
-          richColors
-          closeButton
-          duration={3000}
-        />
-      </FavoritesProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <FavoritesProvider>
+          <RouterProvider router={router} />
+          <Toaster
+            position="top-center"
+            richColors
+            closeButton
+            duration={3000}
+          />
+        </FavoritesProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );
