@@ -28,7 +28,7 @@ export default function CompanyLogoUploader({
     try {
       const formData = new FormData();
       formData.append('logo', file);
-      formData.append('user_id', userId);
+      // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
 
       const { data } = await apiClient.post(
         '/api/upload/company-logo',

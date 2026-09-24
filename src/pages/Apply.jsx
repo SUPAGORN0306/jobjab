@@ -147,7 +147,7 @@ export default function Apply() {
 
       const fd = new FormData();
       fd.append('resume', file);
-      fd.append('user_id', userId);
+      // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
 
       const { data } = await apiClient.post('/api/upload/resume', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },

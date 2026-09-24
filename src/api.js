@@ -76,8 +76,8 @@ export const fetchJobDetail = async (jobId) => {
 // ============================================================
 
 export const submitApplication = async (data) => {
-  const payload = { user_id: getCurrentUserId(), ...data };
-  const { data: response } = await apiClient.post('/api/applications', payload);
+  // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
+  const { data: response } = await apiClient.post('/api/applications', data);
   return response;
 };
 
@@ -126,15 +126,15 @@ export const refreshToken = async () => {
 // EMPLOYER
 // ============================================================
 
-export const fetchEmployerJobs = async (userId) => {
-  const uid = userId ?? getCurrentUserId();
-  const { data } = await apiClient.get(`/api/employer/jobs?user_id=${uid}`);
+export const fetchEmployerJobs = async () => {
+  // ⭐ backend ใช้ g.user_id
+  const { data } = await apiClient.get('/api/employer/jobs');
   return data;
 };
 
 export const createEmployerJob = async (data) => {
-  const payload = { user_id: getCurrentUserId(), ...data };
-  const { data: response } = await apiClient.post('/api/employer/jobs', payload);
+  // ⭐ user_id ไม่ต้องส่ง
+  const { data: response } = await apiClient.post('/api/employer/jobs', data);
   return response;
 };
 
@@ -196,14 +196,14 @@ export const fetchMatchScore = async (jobId, userId) => {
 // ============================================================
 
 export const fetchFavorites = async () => {
-  const uid = getCurrentUserId();
-  const { data } = await apiClient.get(`/api/favorites?user_id=${uid}`);
+  // ⭐ backend ใช้ g.user_id จาก cookie
+  const { data } = await apiClient.get('/api/favorites');
   return data;
 };
 
 export const toggleFavorite = async (jobId) => {
+  // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id
   const { data } = await apiClient.post('/api/favorites/toggle', {
-    user_id: getCurrentUserId(),
     job_id: jobId,
   });
   return data;

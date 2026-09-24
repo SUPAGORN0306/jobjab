@@ -69,7 +69,7 @@ export default function AvatarUploader({
       // สร้าง FormData
       const formData = new FormData();
       formData.append('avatar', croppedBlob, 'avatar.jpg');
-      formData.append('user_id', userId);
+      // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
 
       // Upload — ใช้ apiClient (cookies อัตโนมัติ)
       const { data } = await apiClient.post('/api/upload/avatar', formData, {
