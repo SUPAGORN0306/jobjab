@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "./AuthContext";
 import { fetchFavorites, toggleFavorite as apiToggleFavorite } from "../api";
+import { toast } from 'sonner';
 
 const FavoritesContext = createContext(null);
 
@@ -84,7 +85,7 @@ export function FavoritesProvider({ children }) {
   const toggleFavorite = useCallback(
     async (job) => {
       if (!user) {
-        alert("Please login first to save favorites");
+        toast.error("กรุณาเข้าสู่ระบบก่อนบันทึกงาน");
         return;
       }
 
@@ -100,7 +101,7 @@ export function FavoritesProvider({ children }) {
         }
       } catch (err) {
         console.error('Error toggling favorite:', err);
-        alert(err.message || 'Failed to update favorite. Please try again.');
+        toast.error(err.message || 'Failed to update favorite. Please try again.');
       }
     },
     [user]

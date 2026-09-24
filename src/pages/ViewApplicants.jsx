@@ -17,6 +17,7 @@ import {
   Inbox,
 } from 'lucide-react';
 import '../styles/employer/ViewApplicants.css';
+import { toast } from 'sonner';
 
 export default function ViewApplicants() {
   const { jobId } = useParams();
@@ -61,7 +62,7 @@ export default function ViewApplicants() {
       const data = await fetchApplicationSnapshot(app.id);
       setSnapshot(data);
     } catch (err) {
-      alert('Error: ' + err.message);
+      toast.error(err.message);
       setSelectedApp(null);
     } finally {
       setSnapshotLoading(false);
@@ -87,7 +88,7 @@ export default function ViewApplicants() {
         }));
       }
     } catch (err) {
-      alert('Error: ' + err.message);
+      toast.error(err.message);
     } finally {
       setUpdating(false);
     }
@@ -111,7 +112,7 @@ export default function ViewApplicants() {
   // ⭐ เปิด resume preview — ใช้ URL ตรง
   const handleViewResume = (url, applicantName = '') => {
     if (!url) {
-      alert('No resume available for this applicant');
+      toast.error('No resume available for this applicant');
       return;
     }
     setResumeUrl(url);

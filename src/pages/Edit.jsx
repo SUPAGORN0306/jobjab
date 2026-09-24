@@ -9,6 +9,7 @@ import ResumeUploader from '../components/ResumeUploader';
 import { Briefcase, GraduationCap, X } from 'lucide-react';
 
 import '../styles/candidate/Edit.css';
+import { toast } from 'sonner';
 
 export default function Edit() {
   const navigate = useNavigate();
@@ -272,7 +273,7 @@ export default function Edit() {
       });
       navigate('/profile');
     } catch (err) {
-      alert('❌ Save failed: ' + err.message);
+      toast.error('Save failed: ' + err.message);
     } finally {
       setSaving(false);
     }

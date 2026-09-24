@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import '../styles/candidate/Apply.css';
+import { toast } from 'sonner';
 
 const PENDING_APP_KEY = 'pendingApplication';
 
@@ -312,11 +313,11 @@ export default function Apply() {
     e.preventDefault();
 
     if (!formData.fullName.trim()) {
-      alert('Please enter your full name');
+      toast.error('Please enter your full name');
       return;
     }
     if (!formData.email.trim()) {
-      alert('Please enter your email');
+      toast.error('Please enter your email');
       return;
     }
 
@@ -329,16 +330,14 @@ export default function Apply() {
           timestamp: Date.now(),
         })
       );
-      alert(
-        'Please login to submit your application.\n' +
-        'Your information has been saved and will be restored after login.'
-      );
+      toast.error('Please login to submit your application.\n' +
+        'Your information has been saved and will be restored after login.');
       navigate('/login');
       return;
     }
 
     if (!formData.resumeUrl) {
-      alert('Please upload your resume first');
+      toast.error('Please upload your resume first');
       return;
     }
 
@@ -384,10 +383,10 @@ export default function Apply() {
 
       const result = await submitApplication(payload);
       localStorage.removeItem(PENDING_APP_KEY);
-      alert(`Success!\n${result.message}\nApplication ID: ${result.application_id}`);
+      toast.success(`สมัครสำเร็จ! ${result.message || ''} (ID: ${result.application_id})`);
       navigate('/status');
     } catch (err) {
-      alert('Error: ' + err.message);
+      toast.error(err.message);
     } finally {
       setSubmitting(false);
     }

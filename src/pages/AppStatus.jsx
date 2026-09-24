@@ -14,6 +14,7 @@ import {
   Calendar as CalendarIcon,
 } from 'lucide-react';
 import '../styles/candidate/AppStatus.css';
+import { toast } from 'sonner';
 
 export default function AppStatus() {
   const [applications, setApplications] = useState([]);
@@ -177,7 +178,7 @@ export default function AppStatus() {
       const data = await fetchApplicationDetail(app.id);
       setSnapshot(data);
     } catch (err) {
-      alert('Error: ' + err.message);
+      toast.error(err.message);
       setSelectedApp(null);
     } finally {
       setSnapshotLoading(false);

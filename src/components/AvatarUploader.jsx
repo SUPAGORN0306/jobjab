@@ -3,6 +3,7 @@ import apiClient from '../apiClient';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
 import '../styles/components/AvatarUploader.css';
+import { toast } from 'sonner';
 
 export default function AvatarUploader({
   currentImage,
@@ -84,7 +85,7 @@ export default function AvatarUploader({
         onUploadSuccess(data.image_url);
       }
 
-      alert('✅ Avatar uploaded successfully!');
+      toast.success('Avatar uploaded successfully!');
     } catch (err) {
       setError(err.message);
     } finally {

@@ -21,6 +21,7 @@ import {
   Search,
   Send,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // ============================================
 // TIME AGO HELPER
@@ -131,7 +132,7 @@ export default function EmployerDashboard() {
 
     try {
       const result = await createEmployerJob(form);
-      alert(`${result.message}\nJob ID: ${result.job_id}`);
+      toast.success(`${result.message || 'สร้างงานสำเร็จ'} (Job ID: ${result.job_id})`);
 
       setForm({
         job_title: '',

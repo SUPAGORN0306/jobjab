@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Toaster } from 'sonner';
 
 import Splash from './pages/Splash.jsx';
 import Login from './pages/Login.jsx';
@@ -77,6 +78,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <FavoritesProvider>
         <RouterProvider router={router} />
+        <Toaster
+          position="top-center"
+          richColors
+          closeButton
+          duration={3000}
+        />
       </FavoritesProvider>
     </AuthProvider>
   </React.StrictMode>,

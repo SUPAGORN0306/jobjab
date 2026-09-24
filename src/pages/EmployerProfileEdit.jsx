@@ -5,6 +5,7 @@ import { fetchFullProfile, updateProfile } from '../api';
 import apiClient from '../apiClient';
 import CompanyLogoUploader from '../components/CompanyLogoUploader';
 import '../styles/candidate/Edit.css';
+import { toast } from 'sonner';
 
 export default function EmployerProfileEdit() {
   const navigate = useNavigate();
@@ -62,10 +63,10 @@ export default function EmployerProfileEdit() {
     setSaving(true);
     try {
       await updateProfile(form);
-      alert('Profile updated successfully');
+      toast.success('อัปเดตโปรไฟล์สำเร็จ');
       navigate('/employer/profile');
     } catch (err) {
-      alert('Error: ' + err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
