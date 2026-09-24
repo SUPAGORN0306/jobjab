@@ -1,3 +1,7 @@
+/* ============================================ */
+/* MAIN CARD                                     */
+/* ============================================ */
+
 .recommend-list {
   margin-top: 30px;
 }
@@ -109,6 +113,10 @@
   color: #ef4444;
 }
 
+.Recommended-favorite-btn.is-favorited {
+  color: #ef4444;
+}
+
 .Recommended-tags {
   display: flex;
   flex-wrap: wrap;
@@ -154,6 +162,10 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
+/* ============================================ */
+/* BADGE COLORS                                  */
+/* ============================================ */
+
 .green-badge {
   background-color: rgba(39, 174, 96, 0.15);
   color: #2ecc71;
@@ -178,10 +190,6 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.Recommended-favorite-btn.is-favorited {
-  color: #ef4444;
-}
-
 /* ============================================ */
 /* LOGO COLORS                                   */
 /* ============================================ */
@@ -196,7 +204,7 @@
 .logo-quant-researcher { background: linear-gradient(135deg, #ef4444, #b91c1c); }
 
 /* ============================================ */
-/* 📲 TABLET — max-width: 1080px                */
+/* TABLET — max-width: 1080px                    */
 /* ============================================ */
 
 @media (max-width: 1080px) {
@@ -207,76 +215,7 @@
 }
 
 /* ============================================ */
-/* 📲 TABLET — max-width: 768px                 */
-/* ============================================ */
-
-/* @media (max-width: 768px) {
-  .Recommended-card {
-    padding: 8px 10px !important;
-    border-radius: 10px !important;
-    gap: 6px !important;
-  }
-
-  .Recommended-company-info {
-    gap: 6px !important;
-  }
-
-  .Recommended-logo {
-    width: 28px !important;
-    height: 28px !important;
-    border-radius: 8px !important;
-    font-size: 0.7rem !important;
-  }
-
-  .Recommended-company-info h4 {
-    font-size: 0.7rem !important;
-    margin-bottom: 0 !important;
-    line-height: 1.2 !important;
-  }
-
-  .Recommended-company-info span {
-    font-size: 0.58rem !important;
-    line-height: 1.2 !important;
-  }
-
-  .Recommended-favorite-btn {
-    font-size: 0.85rem !important;
-  }
-
-  .Recommended-tags {
-    gap: 3px !important;
-  }
-
-  .Recommended-tags span {
-    padding: 1px 5px !important;
-    font-size: 0.52rem !important;
-    border-radius: 8px !important;
-  }
-
-  .Recommended-card-bottom {
-    padding-top: 6px !important;
-    margin-top: 2px !important;
-  }
-
-  .Recommended-salary {
-    font-size: 0.65rem !important;
-    line-height: 1.2 !important;
-  }
-
-  .Recommended-applicants {
-    font-size: 0.55rem !important;
-    line-height: 1.2 !important;
-  }
-
-  .Recommended-match-badge {
-    padding: 2px 6px !important;
-    font-size: 0.6rem !important;
-    border-radius: 6px !important;
-  }
-} */
-
-/* ============================================ */
-/* 📱 MOBILE — max-width: 430px                 */
+/* MOBILE — max-width: 430px                     */
 /* ============================================ */
 
 @media (max-width: 430px) {
@@ -345,203 +284,7 @@
 }
 
 /* ============================================ */
-/* ⭐ FEATURED CARD (Mobile Only) ⭐              */
-/* ============================================ */
-
-.featured-card-wrapper {
-  display: none;   /* ซ่อนบน desktop */
-}
-
-@media (max-width: 768px) {
-  .featured-card-wrapper {
-    display: block;
-    width: 100%;
-    margin-bottom: 24px;
-    position: relative;
-  }
-
-  /* ⭐ Gradient Border */
-  .featured-card {
-    position: relative;
-    background: linear-gradient(
-      135deg,
-      rgba(240, 209, 84, 0.15) 0%,
-      rgba(128, 255, 213, 0.1) 100%
-    );
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    border-radius: 20px;
-    padding: 2px;
-    box-shadow: 
-      0 0 30px rgba(240, 209, 84, 0.25),
-      0 8px 24px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-  }
-
-  .featured-card::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 22px;
-    padding: 2px;
-    background: linear-gradient(
-      135deg,
-      #f0d154 0%,
-      #f3d86b 50%,
-      #80ffd5 100%
-    );
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .featured-card-inner {
-    background: rgba(220, 220, 220, 0.18);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 18px;
-    padding: 14px 16px;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-height: 160px;
-  }
-
-  /* ⭐ Badge "TOP PICK FOR YOU" */
-  .featured-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
-    color: #1C274C;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    width: fit-content;
-    box-shadow: 0 4px 12px rgba(240, 209, 84, 0.4);
-  }
-
-  .featured-badge svg {
-    width: 11px;
-    height: 11px;
-  }
-
-  /* Featured card content */
-  .featured-card-inner .Recommended-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .featured-card-inner .Recommended-company-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .featured-card-inner .Recommended-logo {
-    width: 46px !important;
-    height: 46px !important;
-    border-radius: 14px !important;
-    font-size: 1.2rem !important;
-  }
-
-  .featured-card-inner h4 {
-    font-size: 1.05rem !important;
-    margin: 0 0 3px 0 !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-  }
-
-  .featured-card-inner .Recommended-company-info span {
-    font-size: 0.78rem !important;
-    color: #94a3b8 !important;
-  }
-
-  .featured-card-inner .Recommended-tags {
-    gap: 6px !important;
-  }
-
-  .featured-card-inner .Recommended-tags span {
-    background: rgba(255, 255, 255, 0.1) !important;
-    padding: 4px 10px !important;
-    font-size: 0.68rem !important;
-    border-radius: 14px !important;
-  }
-
-  .featured-card-inner .Recommended-card-bottom {
-    padding-top: 10px !important;
-    margin-top: 4px !important;
-  }
-
-  .featured-card-inner .Recommended-salary {
-    font-size: 1rem !important;
-    color: #fbbf24 !important;
-  }
-
-  .featured-card-inner .Recommended-applicants {
-    font-size: 0.72rem !important;
-    margin-top: 2px !important;
-  }
-
-  .featured-card-inner .Recommended-match-badge {
-    padding: 5px 12px !important;
-    font-size: 0.82rem !important;
-    border-radius: 10px !important;
-  }
-
-  /* ============================================ */
-  /* ⭐ 2x2 GRID — Recommended cards (mobile)     */
-  /* ============================================ */
-
-  .horizontal-scroll-wrapper {
-    padding: 0 !important;
-  }
-
-  .horizontal-scroll {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;  /* ⭐ 2x2 grid */
-    grid-template-rows: auto !important;
-    grid-auto-flow: row !important;
-    grid-auto-columns: unset !important;
-    gap: 10px !important;
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
-    padding: 0 !important;
-    scroll-snap-type: none !important;
-    width: 100% !important;
-    max-height: none !important;
-    height: auto !important;
-  }
-
-  .scroll-arrow {
-    display: none !important;
-  }
-
-  .horizontal-card {
-    width: 100% !important;
-    height: auto !important;
-    scroll-snap-align: none !important;
-  }
-
-  .horizontal-card .Recommended-card {
-    flex: unset !important;
-    min-height: unset !important;
-    height: 100% !important;
-  }
-}
-
-/* ============================================ */
-/* ⭐ FEATURED CARD (Mobile Only) ⭐              */
+/* FEATURED CARD (Mobile Only)                   */
 /* ============================================ */
 
 .featured-card-wrapper {
@@ -556,7 +299,7 @@
     position: relative;
   }
 
-  /* ⭐ Gradient Border */
+  /* Gradient Border */
   .featured-card {
     position: relative;
     background: linear-gradient(
@@ -568,7 +311,7 @@
     background-clip: padding-box;
     border-radius: 20px;
     padding: 2px;
-    box-shadow: 
+    box-shadow:
       0 0 30px rgba(240, 209, 84, 0.25),
       0 8px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
@@ -581,7 +324,7 @@
     border-radius: 22px;
     padding: 2px;
     background: linear-gradient(135deg, #f0d154 0%, #f3d86b 50%, #80ffd5 100%);
-    -webkit-mask: 
+    -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -604,6 +347,7 @@
     min-height: 160px;
   }
 
+  /* Badge "TOP PICK FOR YOU" */
   .featured-badge {
     display: inline-flex;
     align-items: center;
@@ -690,7 +434,7 @@
   }
 
   /* ============================================ */
-  /* ⭐ HORIZONTAL SCROLL (กลับมา) ⭐              */
+  /* HORIZONTAL SCROLL                             */
   /* ============================================ */
 
   .horizontal-scroll-wrapper {
@@ -699,9 +443,9 @@
   }
 
   .horizontal-scroll {
-    display: flex !important;                /* ⭐ flex row */
+    display: flex !important;
     flex-direction: row !important;
-    overflow-x: auto !important;             /* ⭐ scroll แนวนอน */
+    overflow-x: auto !important;
     overflow-y: hidden !important;
     gap: 12px !important;
     padding: 4px 4px 16px 4px !important;
@@ -711,10 +455,9 @@
     max-height: none !important;
   }
 
-  /* ⭐ การ์ดเล็ก — 280px */
   .horizontal-card {
     scroll-snap-align: start !important;
-    flex: 0 0 280px !important;               /* ⭐ กว้าง 280px */
+    flex: 0 0 280px !important;
     width: 280px !important;
     height: auto !important;
   }
@@ -725,7 +468,6 @@
     height: 100% !important;
   }
 
-  /* ⭐ Scrollbar */
   .horizontal-scroll::-webkit-scrollbar {
     height: 6px !important;
   }
@@ -735,7 +477,6 @@
     border-radius: 10px !important;
   }
 
-  /* ⭐ Scroll arrows — ซ่อนบน mobile */
   .scroll-arrow {
     display: none !important;
   }
@@ -743,7 +484,7 @@
 
 @media (max-width: 430px) {
   .horizontal-card {
-    flex: 0 0 260px !important;               /* ⭐ เล็กลง */
+    flex: 0 0 260px !important;
     width: 260px !important;
   }
 
