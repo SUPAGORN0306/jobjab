@@ -8,6 +8,7 @@ import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import { fetchJobsWithMatch } from '../api';
 import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
+import { JobListSkeleton } from "../components/Skeleton";
 
 // ============================================
 // SEARCH HELPERS
@@ -358,11 +359,7 @@ function AllJobs() {
       </div>
 
       {/* ⭐ JOB GRID ⭐ */}
-      {loading && (
-        <div className="all-jobs-empty">
-          <p>Loading jobs...</p>
-        </div>
-      )}
+      {loading && <JobListSkeleton count={6} />}
 
       {!loading && filteredJobs.length === 0 && (
         <div className="all-jobs-empty">

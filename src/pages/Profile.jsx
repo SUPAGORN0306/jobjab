@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchFullProfile } from '../api';
 import { useAuth } from '../context/AuthContext';
 import '../styles/candidate/Profile.css';
+import { ProfileSkeleton } from "../components/Skeleton";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -61,9 +62,7 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="profile-container">
-        <p style={{ padding: '40px 0', textAlign: 'center', color: '#8c9bae' }}>
-          Loading profile...
-        </p>
+        <ProfileSkeleton />
       </div>
     );
   }

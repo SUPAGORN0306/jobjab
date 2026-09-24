@@ -3,6 +3,7 @@ import '../styles/home/RecommendedCard.css';
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { getMatchBadgeClass } from '../utils/matchBadge.js';
+import { FavoriteSkeleton } from "../components/Skeleton";
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -43,11 +44,7 @@ export default function Favorite() {
           <span>{favorites.length} saved jobs</span>
         </div>
 
-        {loading && (
-          <p style={{ fontSize: '0.85rem', color: '#8c9bae' }}>
-            Loading favorites...
-          </p>
-        )}
+        {loading && <FavoriteSkeleton count={3} />}
 
         {!loading && favorites.length === 0 && (
           <p style={{ fontSize: '0.85rem', color: '#8c9bae' }}>

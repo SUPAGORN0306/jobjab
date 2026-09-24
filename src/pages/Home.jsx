@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
+import { JobListSkeleton } from "../components/Skeleton";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import { fetchJobsWithMatch } from '../api';
@@ -488,8 +489,8 @@ function Home() {
           </div>
 
           {loading && (
-            <div className="horizontal-scroll-empty">
-              <p className="text-white text-base font-medium m-0">Loading...</p>
+            <div style={{ padding: '0 4px' }}>
+              <JobListSkeleton count={3} />
             </div>
           )}
 
