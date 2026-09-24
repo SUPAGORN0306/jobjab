@@ -44,12 +44,14 @@ export const getCurrentUserName = () => {
 
 export const fetchFullProfile = async (userId) => {
   const uid = userId ?? getCurrentUserId();
+  if (!uid) throw new Error('User not authenticated');
   const { data } = await apiClient.get(`/api/profile/${uid}/full`);
   return data;
 };
 
 export const updateProfile = async (data, userId) => {
   const uid = userId ?? getCurrentUserId();
+  if (!uid) throw new Error('User not authenticated');
   const { data: response } = await apiClient.put(`/api/profile/${uid}`, {
     ...data,
     profile_image: data.profile_image || undefined,
@@ -83,6 +85,7 @@ export const submitApplication = async (data) => {
 
 export const fetchUserApplications = async (userId) => {
   const uid = userId ?? getCurrentUserId();
+  if (!uid) throw new Error('User not authenticated');
   const { data } = await apiClient.get(`/api/applications/user/${uid}`);
   return data;
 };
@@ -175,18 +178,20 @@ export const fetchSkills = async () => {
 
 export const fetchJobsWithMatch = async (userId) => {
   const uid = userId ?? getCurrentUserId();
-  const { data } = await apiClient.get(`/api/jobs?user_id=${uid}`);
+  // uid = null ได้ → /api/jobs ไม่มี match score
+  const { data } = await apiClient.get(`/api/jobs${uid ? `?user_id=${uid}` : ''}`);
   return data;
 };
 
 export const fetchJobDetailWithMatch = async (jobId, userId) => {
   const uid = userId ?? getCurrentUserId();
-  const { data } = await apiClient.get(`/api/jobs/${jobId}?user_id=${uid}`);
+  const { data } = await apiClient.get(`/api/jobs/${jobId}${uid ? `?user_id=${uid}` : ''}`);
   return data;
 };
 
 export const fetchMatchScore = async (jobId, userId) => {
   const uid = userId ?? getCurrentUserId();
+  if (!uid) throw new Error('User not authenticated');
   const { data } = await apiClient.get(`/api/match-score/${jobId}?user_id=${uid}`);
   return data;
 };
