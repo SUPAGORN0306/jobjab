@@ -1,5 +1,5 @@
-import { API_ORIGIN } from '../utils/apiUrl';
 import React, { useState, useCallback, useRef } from 'react';
+import apiClient from '../apiClient';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
 import '../styles/components/AvatarUploader.css';
@@ -71,17 +71,10 @@ export default function AvatarUploader({
       formData.append('avatar', croppedBlob, 'avatar.jpg');
       formData.append('user_id', userId);
 
-      // Upload
-      const res = await fetch(`${API_ORIGIN}/api/upload/avatar`, {
-        method: 'POST',
-        body: formData,
+      // Upload — ใช้ apiClient (cookies อัตโนมัติ)
+      const { data } = await apiClient.post('/api/upload/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Upload failed');
-      }
 
       // สำเร็จ
       setIsCropping(false);

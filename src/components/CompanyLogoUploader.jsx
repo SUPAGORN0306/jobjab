@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Building2 } from 'lucide-react';
-import { API_ORIGIN } from '../utils/apiUrl';
+import apiClient from '../apiClient';
 import '../styles/components/AvatarUploader.css';
 
 export default function CompanyLogoUploader({
@@ -30,13 +30,11 @@ export default function CompanyLogoUploader({
       formData.append('logo', file);
       formData.append('user_id', userId);
 
-      const res = await fetch(`${API_ORIGIN}/api/upload/company-logo`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      const { data } = await apiClient.post(
+        '/api/upload/company-logo',
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
 
       setPreview(data.image_url);
       onUploadSuccess?.(data.image_url);

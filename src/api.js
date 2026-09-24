@@ -196,7 +196,8 @@ export const fetchMatchScore = async (jobId, userId) => {
 // ============================================================
 
 export const fetchFavorites = async () => {
-  const { data } = await apiClient.get('/api/favorites');
+  const uid = getCurrentUserId();
+  const { data } = await apiClient.get(`/api/favorites?user_id=${uid}`);
   return data;
 };
 

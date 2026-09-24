@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { FileText, Upload, Trash2, Eye, X, CheckCircle, AlertCircle } from 'lucide-react';
-import { API_BASE } from '../utils/apiUrl';
+import apiClient from '../apiClient';
 
 export default function ResumeUploader({
   currentResume,
@@ -43,16 +43,9 @@ export default function ResumeUploader({
       formData.append('resume', file);
       formData.append('user_id', userId);
 
-      const res = await fetch(`${API_BASE}/upload/resume`, {
-        method: 'POST',
-        body: formData,
+      const { data } = await apiClient.post('/api/upload/resume', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Upload failed');
-      }
 
       setSuccess('Resume uploaded successfully!');
 
@@ -81,15 +74,7 @@ export default function ResumeUploader({
       setIsDeleting(true);
       setError(null);
 
-      const res = await fetch(`${API_BASE}/resume/${userId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Delete failed');
-      }
+      await apiClient.delete(`/api/resume/${userId}`);
 
       setSuccess('Resume deleted successfully!');
 
