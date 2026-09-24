@@ -16,6 +16,11 @@ import {
   Flame,
   Info,
   ArrowRight,
+  Cpu,
+  BarChart3,
+  Brain,
+  MessageSquare,
+  TrendingUp,
 } from 'lucide-react';
 
 import '../styles/home/Home.css';
@@ -70,11 +75,11 @@ const getJobLogoClass = (title) => {
 // ============================================
 
 const TRENDING_CATEGORIES = [
-  { label: "ML Engineer", icon: "🤖" },
-  { label: "Data Analyst", icon: "📊" },
-  { label: "AI Researcher", icon: "🧠" },
-  { label: "NLP Engineer", icon: "💬" },
-  { label: "Data Scientist", icon: "📈" },
+  { label: "ML Engineer", Icon: Cpu },
+  { label: "Data Analyst", Icon: BarChart3 },
+  { label: "AI Researcher", Icon: Brain },
+  { label: "NLP Engineer", Icon: MessageSquare },
+  { label: "Data Scientist", Icon: TrendingUp },
 ];
 
 // ============================================
@@ -338,7 +343,7 @@ function Home() {
                   setPosition(position === cat.label ? "all" : cat.label);
                 }}
               >
-                <span>{cat.icon}</span>
+                <cat.Icon size={14} />
                 <span>{cat.label}</span>
               </button>
             ))}

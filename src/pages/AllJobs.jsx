@@ -10,7 +10,7 @@ import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
 import { JobListSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
-import { Search } from "lucide-react";
+import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 
 // ============================================
 // SEARCH HELPERS
@@ -351,10 +351,10 @@ function AllJobs() {
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="match">🎯 Match Score</SelectItem>
-              <SelectItem value="newest">🆕 Newest</SelectItem>
-              <SelectItem value="salary_high">💰 Salary: High to Low</SelectItem>
-              <SelectItem value="salary_low">💵 Salary: Low to High</SelectItem>
+              <SelectItem value="match"><Target size={14} style={{ display: "inline", marginRight: 6 }} />Match Score</SelectItem>
+              <SelectItem value="newest"><Sparkles size={14} style={{ display: "inline", marginRight: 6 }} />Newest</SelectItem>
+              <SelectItem value="salary_high"><TrendingDown size={14} style={{ display: "inline", marginRight: 6 }} />Salary: High to Low</SelectItem>
+              <SelectItem value="salary_low"><TrendingUp size={14} style={{ display: "inline", marginRight: 6 }} />Salary: Low to High</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -445,7 +445,7 @@ function AllJobs() {
       {/* END MESSAGE */}
       {!loading && !hasMore && filteredJobs.length > 0 && (
         <p className="all-jobs-end-message">
-          ✨ You've seen all {filteredJobs.length} jobs
+          You've seen all {filteredJobs.length} jobs
         </p>
       )}
     </div>

@@ -4,6 +4,7 @@ import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
 import '../styles/components/AvatarUploader.css';
 import { toast } from 'sonner';
+import { AlertCircle } from 'lucide-react';
 
 export default function AvatarUploader({
   currentImage,
@@ -141,7 +142,7 @@ export default function AvatarUploader({
             JPG, PNG, GIF, WEBP — Max 5 MB
           </p>
 
-          {error && <p className="avatar-error">❌ {error}</p>}
+          {error && <p className="avatar-error" style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}><AlertCircle size={14} />{error}</p>}
         </>
       )}
 
@@ -206,7 +207,7 @@ export default function AvatarUploader({
               </button>
             </div>
 
-            {error && <p className="crop-error">❌ {error}</p>}
+            {error && <p className="crop-error" style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}><AlertCircle size={14} />{error}</p>}
           </div>
         </div>
       )}
