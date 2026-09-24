@@ -9,6 +9,8 @@ import { fetchJobsWithMatch } from '../api';
 import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
 import { JobListSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
+import { Search } from "lucide-react";
 
 // ============================================
 // SEARCH HELPERS
@@ -362,14 +364,13 @@ function AllJobs() {
       {loading && <JobListSkeleton count={6} />}
 
       {!loading && filteredJobs.length === 0 && (
-        <div className="all-jobs-empty">
-          <span className="all-jobs-empty-icon">🔍</span>
-          <h3>No jobs match your filters</h3>
-          <p>Try adjusting your search or clearing filters</p>
-          <button className="all-jobs-empty-btn" onClick={clearFilters}>
-            Clear all filters
-          </button>
-        </div>
+        <EmptyState
+          icon={Search}
+          title="ไม่พบงานที่ตรงกับตัวกรอง"
+          description="ลองปรับการค้นหาหรือล้างตัวกรอง"
+          actionLabel="ล้างตัวกรองทั้งหมด"
+          onAction={clearFilters}
+        />
       )}
 
       {!loading && visibleJobs.length > 0 && (

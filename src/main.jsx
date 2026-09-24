@@ -34,6 +34,7 @@ import ErrorBoundary from './components/ErrorBoundary.jsx';
 import './styles/global.css';
 import './styles/tabbar.css';
 import './styles/components/ErrorBoundary.css';
+import './styles/components/EmptyState.css';
 
 const router = createBrowserRouter([
   { path: "/", element: <Splash /> },

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchEmployerJobs } from '../api';
 import { Briefcase, MapPin, Users, ArrowRight } from 'lucide-react';
-
+import EmptyState from "../components/EmptyState";
 // ============================================
 // JOB LOGO CLASS
 // ============================================
@@ -91,12 +91,11 @@ export default function EmployerJobs() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="emp-empty">
-            <div className="emp-empty-icon">
-              <Briefcase size={40} />
-            </div>
-            <p className="emp-empty-title">No jobs found</p>
-          </div>
+          <EmptyState
+            icon={Briefcase}
+            title="ยังไม่มีงานที่ประกาศ"
+            description="เริ่มประกาศงานแรกของคุณ เพื่อหาผู้สมัครที่ใช่"
+          />
         ) : (
           <div className="job-list-grid">
             {filtered.map((job) => (

@@ -1,0 +1,83 @@
+.empty-state-component {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  gap: 12px;
+}
+
+.empty-state-compact {
+  padding: 32px 16px;
+  gap: 8px;
+}
+
+.empty-state-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.08);
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.empty-state-compact .empty-state-icon-wrap {
+  width: 72px;
+  height: 72px;
+}
+
+.empty-state-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.empty-state-compact .empty-state-title {
+  font-size: 1rem;
+}
+
+.empty-state-description {
+  font-size: 0.9rem;
+  color: #718096;
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+.empty-state-action {
+  margin-top: 8px;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.empty-state-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Dark mode (bonus) */
+@media (prefers-color-scheme: dark) {
+  .empty-state-title {
+    color: #f7fafc;
+  }
+
+  .empty-state-description {
+    color: #a0aec0;
+  }
+
+  .empty-state-icon-wrap {
+    background: rgba(102, 126, 234, 0.15);
+  }
+}

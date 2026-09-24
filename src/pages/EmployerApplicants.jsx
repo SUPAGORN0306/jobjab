@@ -11,6 +11,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { API_BASE } from '../utils/apiUrl';
+import EmptyState from "../components/EmptyState";
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -181,12 +182,11 @@ export default function EmployerApplicants() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="emp-empty">
-            <div className="emp-empty-icon">
-              <Inbox size={40} />
-            </div>
-            <p className="emp-empty-title">No applicants</p>
-          </div>
+          <EmptyState
+            icon={Users}
+            title="ยังไม่มีผู้สมัคร"
+            description="เมื่อมีผู้สมัครงานของคุณ จะแสดงที่นี่"
+          />
         ) : (
           <div className="job-list-grid">
             {filtered.map((app) => (

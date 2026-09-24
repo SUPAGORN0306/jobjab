@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { getMatchBadgeClass } from '../utils/matchBadge.js';
 import { FavoriteSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
+import { Heart } from "lucide-react";
 
 const getJobLogoClass = (title) => {
   switch (title) {
@@ -47,9 +49,13 @@ export default function Favorite() {
         {loading && <FavoriteSkeleton count={3} />}
 
         {!loading && favorites.length === 0 && (
-          <p style={{ fontSize: '0.85rem', color: '#8c9bae' }}>
-            No favorites yet — heart a job on the Home page to save it here.
-          </p>
+          <EmptyState
+            icon={Heart}
+            title="ยังไม่มีงานที่บันทึกไว้"
+            description="กดหัวใจที่งานที่สนใจ เพื่อบันทึกไว้ดูทีหลัง"
+            actionLabel="ไปดูงาน"
+            onAction={() => navigate('/home')}
+          />
         )}
 
         {!loading && favorites.length > 0 && (

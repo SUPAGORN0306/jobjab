@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import '../styles/candidate/AppStatus.css';
 import { toast } from 'sonner';
+import EmptyState from "../components/EmptyState";
 
 export default function AppStatus() {
   const [applications, setApplications] = useState([]);
@@ -264,9 +265,13 @@ export default function AppStatus() {
           </div>
 
           {filteredApplications.length === 0 ? (
-            <div className="empty-state">
-              <p>No applications found</p>
-            </div>
+            <EmptyState
+                icon={FileText}
+                title="ยังไม่มีใบสมัคร"
+                description="คุณยังไม่ได้สมัครงานใดๆ ลองหางานที่สนใจ"
+                actionLabel="หางาน"
+                onAction={() => window.location.href = '/home'}
+              />
           ) : (
             <div className="application-list">
               {filteredApplications.map((app) => {
