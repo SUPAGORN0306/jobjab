@@ -25,6 +25,7 @@ import EmployerJobs from './pages/EmployerJobs.jsx';
 import EmployerApplicants from './pages/EmployerApplicants.jsx';
 import EmployerProfile from './pages/EmployerProfile.jsx';
 import EmployerProfileEdit from './pages/EmployerProfileEdit.jsx';
+import EmployerAnalytics from './pages/EmployerAnalytics.jsx';
 
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <EmployerDashboard /> },
       { path: "jobs", element: <EmployerJobs /> },
       { path: "applicants", element: <EmployerApplicants /> },
+      { path: "analytics", element: <EmployerAnalytics /> },
       { path: "profile", element: <EmployerProfile /> },
       { path: "profile/edit", element: <EmployerProfileEdit /> },
       { path: "jobs/:jobId/applicants", element: <ViewApplicants /> },

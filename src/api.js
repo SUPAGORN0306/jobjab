@@ -213,3 +213,12 @@ export const toggleFavorite = async (jobId) => {
   });
   return data;
 };
+
+// ============================================================
+// EMPLOYER: ANALYTICS
+// ============================================================
+
+export const fetchEmployerAnalytics = async () => {
+  const { data } = await apiClient.get('/api/employer/analytics');
+  return data;
+};
