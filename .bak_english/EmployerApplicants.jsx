@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchEmployerJobs, fetchJobApplications } from '../api';
+import { fetchEmployerJobs } from '../api';
 import {
   Users,
   Mail,
@@ -10,6 +10,7 @@ import {
   Eye,
   ArrowRight,
 } from 'lucide-react';
+import { API_BASE } from '../utils/apiUrl';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
@@ -75,8 +76,10 @@ export default function EmployerApplicants() {
 
         const promises = jobs.map(async (job) => {
           try {
-            // ⭐ ใช้ apiClient (cookies อัตโนมัติ)
-            const data = await fetchJobApplications(job.id);
+            const res = await fetch(
+              `${API_BASE}/employer/jobs/${job.id}/applications`
+            );
+            const data = await res.json();
             return (data.applications || []).map((a) => ({
               ...a,
               job_title: job.job_title,
@@ -172,8 +175,8 @@ export default function EmployerApplicants() {
         {filtered.length === 0 ? (
           <EmptyState
             icon={Users}
-            title="No applicants yet"
-            description="When candidates apply to your jobs, they will appear here"
+            title="ยังไม่มีผู้สมัคร"
+            description="เมื่อมีผู้สมัครงานของคุณ จะแสดงที่นี่"
           />
         ) : (
           <div className="job-list-grid">
