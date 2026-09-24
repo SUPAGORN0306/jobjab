@@ -12,6 +12,7 @@ import { JobListSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
 import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
+import { getJobLogoClass } from '../utils/jobLogo';
 
 // ============================================
 // SEARCH HELPERS
@@ -47,19 +48,6 @@ const matchesQuery = (text, query) => {
 // JOB LOGO CLASS
 // ============================================
 
-const getJobLogoClass = (title) => {
-  switch (title) {
-    case "AI Product Manager": return "logo-ai-product-manager";
-    case "AI Researcher": return "logo-ai-researcher";
-    case "Computer Vision Engineer": return "logo-computer-vision";
-    case "Data Analyst": return "logo-data-analyst";
-    case "Data Scientist": return "logo-data-scientist";
-    case "ML Engineer": return "logo-ml-engineer";
-    case "NLP Engineer": return "logo-nlp-engineer";
-    case "Quant Researcher": return "logo-quant-researcher";
-    default: return "bg-blue-500";
-  }
-};
 
 // ============================================
 // COMPONENT

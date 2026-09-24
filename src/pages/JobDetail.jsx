@@ -4,20 +4,8 @@ import "../styles/candidate/JobDetail.css";
 import { useAuth } from '../context/AuthContext';
 import { fetchJobDetailWithMatch } from '../api';
 import usePageTitle from '../hooks/usePageTitle';
+import { getJobLogoClass } from '../utils/jobLogo';
 
-const getJobLogoClass = (title) => {
-  switch (title) {
-    case "AI Product Manager": return "logo-ai-product-manager";
-    case "AI Researcher": return "logo-ai-researcher";
-    case "Computer Vision Engineer": return "logo-computer-vision";
-    case "Data Analyst": return "logo-data-analyst";
-    case "Data Scientist": return "logo-data-scientist";
-    case "ML Engineer": return "logo-ml-engineer";
-    case "NLP Engineer": return "logo-nlp-engineer";
-    case "Quant Researcher": return "logo-quant-researcher";
-    default: return "bg-blue-500";
-  }
-};
 
 function JobDetail() {
   usePageTitle("Job Details", { description: "View job details and match score" });

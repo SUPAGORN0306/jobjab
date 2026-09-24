@@ -4,23 +4,11 @@ import { fetchEmployerJobs } from '../api';
 import { Briefcase, MapPin, Users, ArrowRight } from 'lucide-react';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
+import { getJobLogoClass } from '../utils/jobLogo';
 // ============================================
 // JOB LOGO CLASS
 // ============================================
 
-const getJobLogoClass = (title) => {
-  switch (title) {
-    case "AI Product Manager": return "logo-ai-product-manager";
-    case "AI Researcher": return "logo-ai-researcher";
-    case "Computer Vision Engineer": return "logo-computer-vision";
-    case "Data Analyst": return "logo-data-analyst";
-    case "Data Scientist": return "logo-data-scientist";
-    case "ML Engineer": return "logo-ml-engineer";
-    case "NLP Engineer": return "logo-nlp-engineer";
-    case "Quant Researcher": return "logo-quant-researcher";
-    default: return "bg-blue-500";
-  }
-};
 
 export default function EmployerJobs() {
   usePageTitle("My Jobs", { description: "Your posted jobs" });
