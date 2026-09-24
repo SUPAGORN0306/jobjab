@@ -41,8 +41,13 @@ npm-debug.log*
 # ============================================
 # Backups
 # ============================================
-src.backup/
-src.backup-*
+.bak_*/
 *.bak
 *.backup
+*.backup-*
+*.bak_*
 *.old
+src.backup/
+src.backup-*
+*.jsx.backup*
+*.js.backup*
