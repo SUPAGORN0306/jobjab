@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "./AuthContext";
 import { fetchFavorites, toggleFavorite as apiToggleFavorite } from "../api";
 
@@ -9,24 +9,30 @@ export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ⭐ โหลด favorites จาก API ตอน mount
+  // ============================================================
+  // LOAD FAVORITES
+  // ============================================================
   useEffect(() => {
+    let cancelled = false;
+
     const loadFavorites = async () => {
-      // ยังไม่ login → ไม่โหลด
       if (!user) {
-        setFavorites([]);
-        setLoading(false);
+        if (!cancelled) {
+          setFavorites([]);
+          setLoading(false);
+        }
         return;
       }
 
       try {
-        setLoading(true);
+        if (!cancelled) setLoading(true);
         const data = await fetchFavorites();
 
-        // ⭐ แปลงข้อมูลจาก DB เป็นรูปแบบที่ UI ใช้
+        if (cancelled) return;
+
         const mapped = (data.favorites || []).map((f) => ({
-          id: f.job_id,                        // ⭐ ใช้ job_id เป็น id หลัก
-          favorite_id: f.id,                   // ⭐ เก็บ favorite_id
+          id: f.job_id,
+          favorite_id: f.id,
           title: f.job_title,
           company: f.company_name,
           job_title: f.job_title,
@@ -45,47 +51,76 @@ export function FavoritesProvider({ children }) {
       } catch (err) {
         console.error('Error loading favorites:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadFavorites();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
-  const isFavorited = (jobId) => {
-    return favorites.some((job) => job.id === jobId || job.job_id === jobId);
-  };
+  // ============================================================
+  // SET for O(1) isFavorited lookup
+  // ============================================================
+  const favoriteIds = useMemo(
+    () => new Set(favorites.map((f) => f.id)),
+    [favorites]
+  );
 
-  // ⭐ toggleFavorite — เรียก API
-  const toggleFavorite = async (job) => {
-    // ยังไม่ login → แจ้งเตือน
-    if (!user) {
-      alert("Please login first to save favorites");
-      return;
-    }
+  // ============================================================
+  // isFavorited — memoized
+  // ============================================================
+  const isFavorited = useCallback(
+    (jobId) => favoriteIds.has(jobId),
+    [favoriteIds]
+  );
 
-    try {
-      const data = await apiToggleFavorite(job.id);
-
-      if (data.favorited) {
-        // ⭐ เพิ่มเข้า state
-        setFavorites((prev) => [...prev, job]);
-      } else {
-        // ⭐ ลบออกจาก state
-        setFavorites((prev) =>
-          prev.filter((f) => f.id !== job.id && f.job_id !== job.id)
-        );
+  // ============================================================
+  // toggleFavorite — memoized
+  // ============================================================
+  const toggleFavorite = useCallback(
+    async (job) => {
+      if (!user) {
+        alert("Please login first to save favorites");
+        return;
       }
-    } catch (err) {
-      console.error('Error toggling favorite:', err);
-      alert(err.message || 'Failed to update favorite. Please try again.');
-    }
-  };
+
+      try {
+        const data = await apiToggleFavorite(job.id);
+
+        if (data.favorited) {
+          setFavorites((prev) => [...prev, job]);
+        } else {
+          setFavorites((prev) =>
+            prev.filter((f) => f.id !== job.id && f.job_id !== job.id)
+          );
+        }
+      } catch (err) {
+        console.error('Error toggling favorite:', err);
+        alert(err.message || 'Failed to update favorite. Please try again.');
+      }
+    },
+    [user]
+  );
+
+  // ============================================================
+  // CONTEXT VALUE — memoized
+  // ============================================================
+  const value = useMemo(
+    () => ({
+      favorites,
+      isFavorited,
+      toggleFavorite,
+      loading,
+    }),
+    [favorites, isFavorited, toggleFavorite, loading]
+  );
 
   return (
-    <FavoritesContext.Provider
-      value={{ favorites, isFavorited, toggleFavorite, loading }}
-    >
+    <FavoritesContext.Provider value={value}>
       {children}
     </FavoritesContext.Provider>
   );

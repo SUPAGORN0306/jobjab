@@ -7,7 +7,7 @@
 // - Login: เรียก API + setUser (ไม่ต้อง localStorage)
 // - Logout: call API (revoke token) + setUser(null)
 // - SwitchRole: set state (backend ส่ง roles มา)
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 import {
   fetchMe,
@@ -129,23 +129,26 @@ export function AuthProvider({ children }) {
   // ============================================================
   // CONTEXT VALUE
   // ============================================================
-  const value = {
-    // State
-    user,
-    activeRole,
-    loading,
+  const value = useMemo(
+    () => ({
+      // State
+      user,
+      activeRole,
+      loading,
 
-    // Derived
-    isAuthenticated: !!user,
-    userId: user?.id ?? null,
+      // Derived
+      isAuthenticated: !!user,
+      userId: user?.id ?? null,
 
-    // Actions
-    login,
-    register,
-    logout,
-    switchRole,
-    refreshUser,
-  };
+      // Actions
+      login,
+      register,
+      logout,
+      switchRole,
+      refreshUser,
+    }),
+    [user, activeRole, loading, login, register, logout, switchRole, refreshUser]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
