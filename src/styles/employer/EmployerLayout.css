@@ -680,10 +680,11 @@ select.emp-field option {
   flex-wrap: wrap;
 }
 
+/* ⭐ Generic badge — ใช้กับ status ที่ไม่ระบุ (fallback) */
 .emp-badge-active {
-  background: rgba(128, 255, 213, 0.12);
-  color: #80ffd5;
-  border: 1px solid rgba(128, 255, 213, 0.25);
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.25);
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 0.65rem;
@@ -1286,16 +1287,18 @@ select.emp-field option {
   white-space: nowrap;
 }
 
+/* ⭐ active → green (ตรงกับ Candidate interview) */
 .emp-job-status-badge.active {
-  background: rgba(128, 255, 213, 0.12);
-  border: 1px solid rgba(128, 255, 213, 0.3);
-  color: #80ffd5;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #34d399;
 }
 
+/* ⭐ paused → gray (ตรงกับ Candidate rejected) */
 .emp-job-status-badge.paused {
-  background: rgba(240, 209, 84, 0.12);
-  border: 1px solid rgba(240, 209, 84, 0.3);
-  color: #f0d154;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
 }
 
 /* Action buttons */
@@ -1695,25 +1698,28 @@ select.emp-field option {
   color: #38bdf8;
 }
 
-.emp-stat-pill.reviewing { color: #f0d154; }
+/* ⭐ reviewing → pink (ตรงกับ Candidate) */
+.emp-stat-pill.reviewing { color: #f472b6; }
 .emp-stat-pill.reviewing .emp-stat-pill-icon {
-  background: rgba(240, 209, 84, 0.12);
-  border: 1px solid rgba(240, 209, 84, 0.3);
-  color: #f0d154;
+  background: rgba(244, 114, 182, 0.12);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  color: #f472b6;
 }
 
-.emp-stat-pill.interview { color: #80ffd5; }
+/* ⭐ interview → green (ตรงกับ Candidate) */
+.emp-stat-pill.interview { color: #34d399; }
 .emp-stat-pill.interview .emp-stat-pill-icon {
-  background: rgba(128, 255, 213, 0.1);
-  border: 1px solid rgba(128, 255, 213, 0.3);
-  color: #80ffd5;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #34d399;
 }
 
-.emp-stat-pill.rejected { color: #fca5a5; }
+/* ⭐ rejected → gray (ตรงกับ Candidate) */
+.emp-stat-pill.rejected { color: #94a3b8; }
 .emp-stat-pill.rejected .emp-stat-pill-icon {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
 }
 
 @media (max-width: 1100px) {

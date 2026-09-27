@@ -25,9 +25,9 @@ import { ApplicantListSkeleton } from '../components/EmployerSkeleton';
 const STATUS_CONFIG = {
   all:       { icon: Users,        label: 'Total',     color: '#f0d154' },
   applied:   { icon: Clock,        label: 'Applied',   color: '#38bdf8' },
-  reviewing: { icon: MessageSquare, label: 'Reviewing', color: '#f0d154' },
-  interview: { icon: CheckCircle,  label: 'Interview', color: '#80ffd5' },
-  rejected:  { icon: XCircle,      label: 'Rejected',  color: '#fca5a5' },
+  reviewing: { icon: MessageSquare, label: 'Reviewing', color: '#f472b6' },
+  interview: { icon: CheckCircle,  label: 'Interview', color: '#34d399' },
+  rejected:  { icon: XCircle,      label: 'Rejected',  color: '#94a3b8' },
 };
 
 const getStatusColor = (status) => {
@@ -35,11 +35,11 @@ const getStatusColor = (status) => {
     case 'applied':
       return { bg: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.5)', color: '#38bdf8' };
     case 'reviewing':
-      return { bg: 'rgba(240, 209, 84, 0.12)', border: 'rgba(240, 209, 84, 0.45)', color: '#f0d154' };
+      return { bg: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.5)', color: '#f472b6' };
     case 'interview':
-      return { bg: 'rgba(128, 255, 213, 0.12)', border: 'rgba(128, 255, 213, 0.45)', color: '#80ffd5' };
+      return { bg: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.5)', color: '#34d399' };
     case 'rejected':
-      return { bg: 'rgba(239, 68, 68, 0.12)', border: 'rgba(239, 68, 68, 0.45)', color: '#fca5a5' };
+      return { bg: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.5)', color: '#94a3b8' };
     default:
       return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255, 255, 255, 0.15)', color: '#d3dae4' };
   }
@@ -170,7 +170,22 @@ export default function EmployerApplicants() {
                   </div>
                 </div>
                 <div className="emp-job-actions">
-                  <span className="emp-badge-active">{app.status}</span>
+                  <span
+                    className="status-badge"
+                    style={{
+                      background: getStatusColor(app.status).bg,
+                      color: getStatusColor(app.status).color,
+                      borderColor: getStatusColor(app.status).border,
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      fontSize: '0.68rem',
+                      fontWeight: '600',
+                      border: '1px solid',
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {app.status}
+                  </span>
                   <button
                     className="emp-action-btn emp-action-view"
                     onClick={() => navigate(`/employer/jobs/${app.job_id}/applicants`)}

@@ -155,14 +155,14 @@
   gap: 8px;
 }
 
-/* .type-card {
+.type-card {
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 10px;
   transition: all 0.2s ease;
-} */
+}
 /* 
 .type-card:hover {
   background-color: rgba(255, 255, 255, 0.15);
@@ -186,11 +186,13 @@
 }
 
 .dot {
-  width: 1px;
-  height: 1px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: #8c9bae;
   display: inline-block;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .dot-active {
