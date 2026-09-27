@@ -308,22 +308,51 @@
   align-items: center;
   gap: 8px;
   padding: 12px 22px;
-  background: #f0d154;
+  background: linear-gradient(135deg, #f0d154 0%, #f3d86b 100%);
   color: #1C274C;
   border: none;
   border-radius: 14px;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 4px 12px rgba(240, 209, 84, 0.3);
+}
+
+/* Shine sweep */
+.emp-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.emp-btn-primary:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 .emp-btn-primary:hover:not(:disabled) {
-  background: #f3d86b;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(240, 209, 84, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 12px 28px rgba(240, 209, 84, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .emp-btn-primary:disabled {
@@ -366,19 +395,76 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 18px;
-  padding: 18px;
-  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Top highlight — glass shine */
+.emp-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 100%
+  );
+  border-radius: 20px 20px 50% 50%;
+  pointer-events: none;
+}
+
+/* Glow effect on hover — colored */
+.emp-stat-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(240, 209, 84, 0.15) 0%,
+    transparent 50%,
+    rgba(128, 255, 213, 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(20px);
 }
 
 .emp-stat-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(240, 209, 84, 0.2);
-  transform: translateY(-3px);
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(240, 209, 84, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+    0 16px 40px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(240, 209, 84, 0.15);
+}
+
+.emp-stat-card:hover::after {
+  opacity: 1;
 }
 
 .emp-stat-icon {
@@ -443,11 +529,50 @@
   width: 100%;
   padding: 28px;
   box-sizing: border-box;
-  border-radius: 20px;
-  background: rgba(220, 220, 220, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(220, 220, 220, 0.08) 0%,
+      rgba(180, 180, 180, 0.04) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Top shine */
+.emp-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.emp-section:hover {
+  border-color: rgba(240, 209, 84, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 20px 48px rgba(0, 0, 0, 0.25),
+    0 4px 12px rgba(240, 209, 84, 0.1);
 }
 
 .emp-section-form {
@@ -616,17 +741,82 @@ select.emp-field option {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  transition: all 0.25s ease;
-  background: rgba(220, 220, 220, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 20px 22px;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Left accent stripe — colored */
+.emp-job-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(240, 209, 84, 0.8) 0%,
+    rgba(240, 209, 84, 0.2) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+/* Shimmer — on hover */
+.emp-job-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  transition: left 0.7s ease;
+  pointer-events: none;
 }
 
 .emp-job-card:hover {
-  background: rgba(220, 220, 220, 0.1);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+  border-color: rgba(240, 209, 84, 0.35);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(240, 209, 84, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(240, 209, 84, 0.15),
+    0 0 24px rgba(240, 209, 84, 0.15);
+}
+
+.emp-job-card:hover::before {
+  opacity: 1;
+}
+
+.emp-job-card:hover::after {
+  left: 100%;
 }
 
 .emp-job-logo {
@@ -1287,18 +1477,44 @@ select.emp-field option {
   white-space: nowrap;
 }
 
-/* ⭐ active → green (ตรงกับ Candidate interview) */
+/* ⭐ active → green + glow */
 .emp-job-status-badge.active {
-  background: rgba(52, 211, 153, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.4);
   color: #34d399;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.25);
+  position: relative;
 }
 
-/* ⭐ paused → gray (ตรงกับ Candidate rejected) */
+.emp-job-status-badge.active::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #34d399;
+  transform: translateY(-50%);
+  box-shadow: 0 0 6px #34d399;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+  50% { opacity: 0.5; transform: translateY(-50%) scale(0.8); }
+}
+
+/* ⭐ paused → gray */
 .emp-job-status-badge.paused {
   background: rgba(148, 163, 184, 0.12);
   border: 1px solid rgba(148, 163, 184, 0.3);
   color: #94a3b8;
+}
+
+/* padding adjustment for dot */
+.emp-job-status-badge.active {
+  padding-left: 18px;
 }
 
 /* Action buttons */
@@ -1628,26 +1844,121 @@ select.emp-field option {
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border-radius: 16px;
-  background: rgba(220, 220, 220, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.25s ease;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.emp-stat-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
 
 .emp-stat-pill:hover {
-  background: rgba(220, 220, 220, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+  border-color: currentColor;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
 }
 
+.emp-stat-pill:hover::before {
+  opacity: 0.05;
+}
+
+/* Colored shadow per pill */
+.emp-stat-pill.total:hover {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(240, 209, 84, 0.25);
+}
+
+.emp-stat-pill.applied:hover {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(56, 189, 248, 0.25);
+}
+
+.emp-stat-pill.reviewing:hover {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(244, 114, 182, 0.25);
+}
+
+.emp-stat-pill.interview:hover {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(52, 211, 153, 0.25);
+}
+
+.emp-stat-pill.rejected:hover {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(148, 163, 184, 0.25);
+}
+
+/* Active state — glow */
 .emp-stat-pill.active {
   border-color: currentColor;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 2px currentColor inset;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+}
+
+.emp-stat-pill.active.total {
+  box-shadow:
+    0 0 0 2px rgba(240, 209, 84, 0.4) inset,
+    0 8px 24px rgba(240, 209, 84, 0.2);
+}
+
+.emp-stat-pill.active.applied {
+  box-shadow:
+    0 0 0 2px rgba(56, 189, 248, 0.4) inset,
+    0 8px 24px rgba(56, 189, 248, 0.2);
+}
+
+.emp-stat-pill.active.reviewing {
+  box-shadow:
+    0 0 0 2px rgba(244, 114, 182, 0.4) inset,
+    0 8px 24px rgba(244, 114, 182, 0.2);
+}
+
+.emp-stat-pill.active.interview {
+  box-shadow:
+    0 0 0 2px rgba(52, 211, 153, 0.4) inset,
+    0 8px 24px rgba(52, 211, 153, 0.2);
+}
+
+.emp-stat-pill.active.rejected {
+  box-shadow:
+    0 0 0 2px rgba(148, 163, 184, 0.4) inset,
+    0 8px 24px rgba(148, 163, 184, 0.2);
 }
 
 .emp-stat-pill-icon {
@@ -1850,4 +2161,303 @@ select.emp-field option {
 
 .emp-action-btn:hover:not(:disabled) svg {
   transform: scale(1.1);
+}
+
+/* ============================================ */
+/* SPRINT 15: EMPLOYER CALENDAR                  */
+/* ============================================ */
+
+.employer-calendar-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Calendar Card */
+.employer-calendar-column .calendar-card {
+  position: relative;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.employer-calendar-column .calendar-card:hover {
+  border-color: rgba(240, 209, 84, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* React Calendar — dark theme */
+.employer-calendar-column .react-calendar {
+  background: transparent !important;
+  border: none !important;
+  font-family: inherit !important;
+  width: 100% !important;
+  color: #f6f8f6 !important;
+  font-size: 0.7rem !important;
+}
+
+.employer-calendar-column .react-calendar__navigation {
+  display: flex;
+  margin-bottom: 6px;
+  height: 28px;
+}
+
+.employer-calendar-column .react-calendar__navigation button {
+  background: transparent !important;
+  border: none !important;
+  color: #f6f8f6 !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  min-width: 28px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.employer-calendar-column .react-calendar__navigation button:hover {
+  background: rgba(240, 209, 84, 0.15) !important;
+  color: #f0d154 !important;
+  transform: scale(1.1);
+}
+
+.employer-calendar-column .react-calendar__navigation button:disabled {
+  background: transparent !important;
+  color: #4a5568 !important;
+}
+
+.employer-calendar-column .react-calendar__navigation__label {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+}
+
+.employer-calendar-column .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: #8c9bae;
+  margin-bottom: 4px;
+}
+
+.employer-calendar-column .react-calendar__month-view__weekdays__weekday {
+  padding: 4px 0;
+}
+
+.employer-calendar-column .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  border: none;
+}
+
+.employer-calendar-column .react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+
+.employer-calendar-column .react-calendar__tile {
+  background: transparent !important;
+  border: none !important;
+  color: #f6f8f6 !important;
+  font-size: 0.68rem !important;
+  padding: 6px 2px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  aspect-ratio: 1 / 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+}
+
+.employer-calendar-column .react-calendar__tile:hover {
+  background: rgba(240, 209, 84, 0.12) !important;
+  transform: scale(1.1) !important;
+}
+
+.employer-calendar-column .react-calendar__tile--now {
+  background: rgba(240, 209, 84, 0.15) !important;
+  color: #f0d154 !important;
+  font-weight: 700 !important;
+  box-shadow: inset 0 0 0 1px rgba(240, 209, 84, 0.4);
+}
+
+.employer-calendar-column .react-calendar__tile--now:hover {
+  background: rgba(240, 209, 84, 0.25) !important;
+}
+
+.employer-calendar-column .react-calendar__tile--active {
+  background: linear-gradient(135deg, #f0d154, #f3d86b) !important;
+  color: #1C274C !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(240, 209, 84, 0.4);
+}
+
+.employer-calendar-column .react-calendar__tile--active:hover {
+  transform: scale(1.15) !important;
+}
+
+.employer-calendar-column .react-calendar__month-view__days__day--neighboringMonth {
+  color: #4a5568 !important;
+  opacity: 0.4 !important;
+}
+
+.employer-calendar-column .react-calendar__month-view__days__day--weekend {
+  color: #f6f8f6 !important;
+}
+
+/* Calendar Dots */
+.employer-calendar-column .calendar-dots {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+}
+
+.employer-calendar-column .calendar-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: dotPulse 2s ease infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* Selected Day Card */
+.employer-calendar-column .selected-day-card {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 14px 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.employer-calendar-column .selected-day-card:hover {
+  border-color: rgba(240, 209, 84, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.employer-calendar-column .selected-day-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #f0d154;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.employer-calendar-column .event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.employer-calendar-column .event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+}
+
+.employer-calendar-column .event-item:hover {
+  background: rgba(240, 209, 84, 0.08);
+  border-color: rgba(240, 209, 84, 0.25);
+  transform: translateX(3px);
+}
+
+.employer-calendar-column .event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.employer-calendar-column .event-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.employer-calendar-column .event-status {
+  font-size: 0.58rem;
+  color: #8c9bae;
+  margin: 0 0 2px 0;
+  text-transform: capitalize;
+}
+
+.employer-calendar-column .event-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #f6f8f6;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employer-calendar-column .empty-events {
+  font-size: 0.68rem;
+  color: #8c9bae;
+  font-style: italic;
+  text-align: center;
+  margin: 4px 0;
+}
+
+/* 2-Column Layout (Jobs + Calendar) */
+.employer-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+  width: 100%;
+  margin-top: 0;
+}
+
+@media (max-width: 1100px) {
+  .employer-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchEmployerJobs, createEmployerJob } from '../api';
+import { fetchEmployerJobs, createEmployerJob, fetchJobApplications } from '../api';
 import { useAuth } from '../context/AuthContext';
 import {
   Briefcase,
@@ -24,6 +24,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { StatsGridSkeleton, JobListSkeleton } from '../components/EmployerSkeleton';
+import EmployerCalendar from '../components/EmployerCalendar';
 
 // ============================================
 // CONSTANTS
@@ -328,15 +329,38 @@ export default function EmployerDashboard() {
   const { user, logout } = useAuth();
 
   const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showPostForm, setShowPostForm] = useState(false);
 
-  const loadJobs = () => {
+  const loadJobs = async () => {
     setLoading(true);
-    fetchEmployerJobs()
-      .then((data) => setJobs(data.jobs || []))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    try {
+      const data = await fetchEmployerJobs();
+      const jobsList = data.jobs || [];
+      setJobs(jobsList);
+
+      // ⭐ Fetch applications ของทุก job
+      const appPromises = jobsList.map(async (job) => {
+        try {
+          const appData = await fetchJobApplications(job.id);
+          return (appData.applications || []).map((a) => ({
+            ...a,
+            job_title: job.job_title,
+            job_id: job.id,
+          }));
+        } catch {
+          return [];
+        }
+      });
+
+      const appResults = await Promise.all(appPromises);
+      setApplications(appResults.flat());
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -452,78 +476,84 @@ export default function EmployerDashboard() {
         />
       </section>
 
-      <section className="emp-section">
-        <div className="emp-section-header">
-          <h2>
-            <Briefcase size={18} />
-            Your Job Postings ({jobs.length})
-          </h2>
-          {jobs.length > 5 && (
-            <button
-              className="emp-btn-glass emp-btn-sm"
-              onClick={() => navigate('/employer/jobs')}
-            >
-              View All ({jobs.length})
-              <ArrowRight size={14} />
-            </button>
-          )}
-        </div>
-
-        {jobs.length === 0 ? (
-          <div className="emp-empty">
-            <div className="emp-empty-icon">
-              <Briefcase size={40} />
-            </div>
-            <p className="emp-empty-title">No jobs posted yet</p>
-            <p className="emp-empty-sub">
-              Click "Post New Job" to create your first listing
-            </p>
+      {/* ⭐ Grid: Jobs + Calendar */}
+      <div className="employer-dashboard-grid">
+        <section className="emp-section">
+          <div className="emp-section-header">
+            <h2>
+              <Briefcase size={18} />
+              Your Job Postings ({jobs.length})
+            </h2>
+            {jobs.length > 5 && (
+              <button
+                className="emp-btn-glass emp-btn-sm"
+                onClick={() => navigate('/employer/jobs')}
+              >
+                View All ({jobs.length})
+                <ArrowRight size={14} />
+              </button>
+            )}
           </div>
-        ) : (
-          <div className="emp-job-list">
-            {jobs.slice(0, 5).map((job) => (
-              <div className="emp-job-card" key={job.id}>
-                <div className={`emp-job-logo ${getJobLogoClass(job.job_title)}`}>
-                  {job.job_title?.charAt(0) || 'J'}
-                </div>
 
-                <div className="emp-job-info">
-                  <h3>{job.job_title}</h3>
-                  <div className="emp-job-meta">
-                    <span>
-                      <MapPin size={12} />
-                      {job.location || 'N/A'}
-                    </span>
-                    <span>
-                      <Briefcase size={12} />
-                      {job.employment_type}
-                    </span>
-                    <span>
-                      <Users size={12} />
-                      {job.applicant_count} applicant
-                      {job.applicant_count !== 1 ? 's' : ''}
-                    </span>
-                    <span>
-                      <Calendar size={12} />
-                      {timeAgo(job.posted_date)}
-                    </span>
+          {jobs.length === 0 ? (
+            <div className="emp-empty">
+              <div className="emp-empty-icon">
+                <Briefcase size={40} />
+              </div>
+              <p className="emp-empty-title">No jobs posted yet</p>
+              <p className="emp-empty-sub">
+                Click "Post New Job" to create your first listing
+              </p>
+            </div>
+          ) : (
+            <div className="emp-job-list">
+              {jobs.slice(0, 5).map((job) => (
+                <div className="emp-job-card" key={job.id}>
+                  <div className={`emp-job-logo ${getJobLogoClass(job.job_title)}`}>
+                    {job.job_title?.charAt(0) || 'J'}
+                  </div>
+
+                  <div className="emp-job-info">
+                    <h3>{job.job_title}</h3>
+                    <div className="emp-job-meta">
+                      <span>
+                        <MapPin size={12} />
+                        {job.location || 'N/A'}
+                      </span>
+                      <span>
+                        <Briefcase size={12} />
+                        {job.employment_type}
+                      </span>
+                      <span>
+                        <Users size={12} />
+                        {job.applicant_count} applicant
+                        {job.applicant_count !== 1 ? 's' : ''}
+                      </span>
+                      <span>
+                        <Calendar size={12} />
+                        {timeAgo(job.posted_date)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="emp-job-actions">
+                    <button
+                      className="emp-action-btn emp-action-view"
+                      onClick={() => navigate(`/employer/jobs/${job.id}/applicants`)}
+                    >
+                      <Users size={14} />
+                      View ({job.applicant_count})
+                    </button>
                   </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </section>
 
-                <div className="emp-job-actions">
-                  <button
-                    className="emp-action-btn emp-action-view"
-                    onClick={() => navigate(`/employer/jobs/${job.id}/applicants`)}
-                  >
-                    <Users size={14} />
-                    View ({job.applicant_count})
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        {/* ⭐ Calendar */}
+        <EmployerCalendar applications={applications} jobs={jobs} />
+      </div>
 
       <section className="emp-landing">
         <div className="emp-landing-grid">
