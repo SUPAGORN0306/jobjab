@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
+import { JobListSkeleton } from '../components/EmployerSkeleton';
 
 // ============================================
 // CONSTANTS
@@ -271,7 +272,26 @@ export default function EmployerJobs() {
   if (loading) {
     return (
       <div className="employer-container">
-        <p className="employer-loading">Loading jobs...</p>
+        <section className="emp-hero">
+          <div className="emp-hero-content">
+            <span className="emp-hero-tag">
+              <Briefcase size={14} />
+              MY JOBS
+            </span>
+            <h1>All Job Postings</h1>
+            <p className="emp-hero-subtitle">Loading jobs...</p>
+          </div>
+        </section>
+
+        <section className="emp-section">
+          <div className="emp-section-header">
+            <h2>
+              <Briefcase size={18} />
+              Job List
+            </h2>
+          </div>
+          <JobListSkeleton count={4} />
+        </section>
       </div>
     );
   }

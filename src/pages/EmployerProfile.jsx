@@ -14,6 +14,24 @@ import {
   UserCheck,
 } from 'lucide-react';
 import usePageTitle from '../hooks/usePageTitle';
+import useCountUp from '../hooks/useCountUp';
+import { StatsGridSkeleton } from '../components/EmployerSkeleton';
+
+// ============================================
+// MINI STAT (with count-up)
+// ============================================
+
+function MiniStat({ icon: Icon, value, label }) {
+  const animated = useCountUp(Number(value) || 0, 800);
+
+  return (
+    <div className="employer-mini-stat">
+      <Icon size={18} />
+      <span className="stat-num">{animated}</span>
+      <span className="stat-lbl">{label}</span>
+    </div>
+  );
+}
 
 export default function EmployerProfile() {
   usePageTitle("Company Profile", { description: "Your company profile" });
@@ -73,7 +91,17 @@ export default function EmployerProfile() {
   if (loading) {
     return (
       <div className="employer-container">
-        <p className="employer-loading">Loading profile...</p>
+        <section className="emp-hero">
+          <div className="emp-hero-content">
+            <span className="emp-hero-tag">
+              <Building2 size={14} />
+              COMPANY PROFILE
+            </span>
+            <h1>Loading profile...</h1>
+          </div>
+        </section>
+
+        <StatsGridSkeleton count={3} />
       </div>
     );
   }
@@ -255,21 +283,9 @@ export default function EmployerProfile() {
           <div className="employer-profile-card">
             <h3 className="employer-section-title">Overview</h3>
             <div className="employer-stats-row">
-              <div className="employer-mini-stat">
-                <Briefcase size={18} />
-                <span className="stat-num">{jobs.length}</span>
-                <span className="stat-lbl">Posted jobs</span>
-              </div>
-              <div className="employer-mini-stat">
-                <Users size={18} />
-                <span className="stat-num">{totalApplicants}</span>
-                <span className="stat-lbl">Total applicants</span>
-              </div>
-              <div className="employer-mini-stat">
-                <UserCheck size={18} />
-                <span className="stat-num">{activeJobs}</span>
-                <span className="stat-lbl">Active jobs</span>
-              </div>
+              <MiniStat icon={Briefcase} value={jobs.length} label="Posted jobs" />
+              <MiniStat icon={Users} value={totalApplicants} label="Total applicants" />
+              <MiniStat icon={UserCheck} value={activeJobs} label="Active jobs" />
             </div>
           </div>
 

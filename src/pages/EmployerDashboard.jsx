@@ -21,7 +21,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
+import useCountUp from '../hooks/useCountUp';
 import { getJobLogoClass } from '../utils/jobLogo';
+import { StatsGridSkeleton, JobListSkeleton } from '../components/EmployerSkeleton';
 
 // ============================================
 // CONSTANTS
@@ -291,6 +293,31 @@ function PostJobModal({ user, onClose, onPosted }) {
 }
 
 // ============================================
+// STAT CARD (with count-up animation)
+// ============================================
+
+function StatCard({ icon: Icon, label, value, detail, variant = 'default', animate = false }) {
+  const animated = useCountUp(animate ? Number(value) || 0 : 0, 800);
+  const display = animate ? animated : value;
+  const isSuccess = variant === 'success';
+
+  return (
+    <div className="emp-stat-card">
+      <div className={`emp-stat-icon${isSuccess ? ' emp-stat-icon-success' : ''}`}>
+        <Icon size={22} />
+      </div>
+      <div className="emp-stat-content">
+        <span className="emp-stat-label">{label}</span>
+        <span className={isSuccess ? 'emp-stat-value-success' : 'emp-stat-value'}>
+          {display}
+        </span>
+        <span className="emp-stat-detail">{detail}</span>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
 // MAIN COMPONENT
 // ============================================
 
@@ -330,7 +357,28 @@ export default function EmployerDashboard() {
   if (loading) {
     return (
       <div className="employer-container">
-        <p className="employer-loading">Loading dashboard...</p>
+        <section className="emp-hero">
+          <div className="emp-hero-content">
+            <span className="emp-hero-tag">
+              <Sparkles size={14} />
+              EMPLOYER DASHBOARD
+            </span>
+            <h1>Welcome back</h1>
+            <p className="emp-hero-subtitle">Loading dashboard...</p>
+          </div>
+        </section>
+
+        <StatsGridSkeleton count={4} />
+
+        <section className="emp-section">
+          <div className="emp-section-header">
+            <h2>
+              <Briefcase size={18} />
+              Your Job Postings
+            </h2>
+          </div>
+          <JobListSkeleton count={3} />
+        </section>
       </div>
     );
   }
@@ -370,55 +418,38 @@ export default function EmployerDashboard() {
       </section>
 
       <section className="emp-stats-grid">
-        <div className="emp-stat-card">
-          <div className="emp-stat-icon">
-            <Briefcase size={22} />
-          </div>
-          <div className="emp-stat-content">
-            <span className="emp-stat-label">Active Postings</span>
-            <span className="emp-stat-value">{jobs.length}</span>
-            <span className="emp-stat-detail">{activeJobs} active</span>
-          </div>
-        </div>
-
-        <div className="emp-stat-card">
-          <div className="emp-stat-icon">
-            <Users size={22} />
-          </div>
-          <div className="emp-stat-content">
-            <span className="emp-stat-label">Total Applicants</span>
-            <span className="emp-stat-value">{totalApplicants}</span>
-            <span className="emp-stat-detail">
-              across {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
-            </span>
-          </div>
-        </div>
-
-        <div className="emp-stat-card">
-          <div className="emp-stat-icon">
-            <TrendingUp size={22} />
-          </div>
-          <div className="emp-stat-content">
-            <span className="emp-stat-label">Jobs with Applicants</span>
-            <span className="emp-stat-value">{jobsWithApplicants}</span>
-            <span className="emp-stat-detail">
-              {jobs.length > 0
-                ? `${Math.round((jobsWithApplicants / jobs.length) * 100)}% conversion`
-                : 'No jobs yet'}
-            </span>
-          </div>
-        </div>
-
-        <div className="emp-stat-card">
-          <div className="emp-stat-icon emp-stat-icon-success">
-            <CheckCircle size={22} />
-          </div>
-          <div className="emp-stat-content">
-            <span className="emp-stat-label">Status</span>
-            <span className="emp-stat-value-success">Active</span>
-            <span className="emp-stat-detail">Account is active</span>
-          </div>
-        </div>
+        <StatCard
+          icon={Briefcase}
+          label="Active Postings"
+          value={jobs.length}
+          detail={`${activeJobs} active`}
+          animate
+        />
+        <StatCard
+          icon={Users}
+          label="Total Applicants"
+          value={totalApplicants}
+          detail={`across ${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}`}
+          animate
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="Jobs with Applicants"
+          value={jobsWithApplicants}
+          detail={
+            jobs.length > 0
+              ? `${Math.round((jobsWithApplicants / jobs.length) * 100)}% conversion`
+              : 'No jobs yet'
+          }
+          animate
+        />
+        <StatCard
+          icon={CheckCircle}
+          label="Status"
+          value="Active"
+          detail="Account is active"
+          variant="success"
+        />
       </section>
 
       <section className="emp-section">

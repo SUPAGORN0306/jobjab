@@ -35,6 +35,7 @@ import { getJobLogoClass } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
 import EmptyState from '../components/EmptyState';
+import { ChartSkeleton, AnalyticsGridSkeleton } from '../components/EmployerSkeleton';
 import '../styles/employer/EmployerAnalytics.css';
 
 // ============================================
@@ -145,7 +146,7 @@ export default function EmployerAnalytics() {
   if (loading) {
     return (
       <div className="employer-container">
-        <div className="analytics-hero">
+        <section className="analytics-hero">
           <div className="analytics-hero-content">
             <span className="analytics-hero-tag">
               <BarChart3 size={14} />
@@ -154,6 +155,15 @@ export default function EmployerAnalytics() {
             <h1>Insights & Performance</h1>
             <p className="analytics-hero-subtitle">Loading analytics...</p>
           </div>
+        </section>
+
+        <AnalyticsGridSkeleton count={4} />
+
+        <ChartSkeleton height={280} />
+
+        <div className="analytics-chart-2col">
+          <ChartSkeleton height={280} />
+          <ChartSkeleton height={280} />
         </div>
       </div>
     );
