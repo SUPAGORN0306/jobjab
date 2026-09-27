@@ -100,7 +100,7 @@ function EditJobModal({ job, onClose, onSaved }) {
             <div className="job-edit-field job-edit-full">
               <label>Position *</label>
               <select value={form.job_title} onChange={(e) => handleChange('job_title', e.target.value)}>
-                <option value="">-- Select Position --</option>
+                <option value="">Select Position</option>
                 {JOB_TITLES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
