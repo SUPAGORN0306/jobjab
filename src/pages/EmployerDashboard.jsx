@@ -17,73 +17,52 @@ import {
   Zap,
   BarChart3,
   ArrowRight,
-  FileText,
-  Search,
-  Send,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 
 // ============================================
-// TIME AGO HELPER
+// CONSTANTS
+// ============================================
+
+const JOB_TITLES = [
+  'AI Product Manager', 'AI Researcher', 'Computer Vision Engineer',
+  'Data Analyst', 'Data Scientist', 'ML Engineer',
+  'NLP Engineer', 'Quant Researcher',
+];
+
+const INDUSTRIES = [
+  'Tech', 'Finance', 'Healthcare', 'Education',
+  'Retail', 'E-commerce', 'Automotive',
+];
+
+const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship'];
+const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior', 'Lead'];
+
+// ============================================
+// TIME AGO
 // ============================================
 
 const timeAgo = (dateStr) => {
   if (!dateStr) return 'N/A';
   const date = new Date(dateStr);
   const seconds = Math.floor((new Date() - date) / 1000);
-
   if (seconds < 60) return 'Just now';
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
   if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-
   return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+    month: 'short', day: 'numeric', year: 'numeric',
   });
 };
 
 // ============================================
-// JOB LOGO CLASS
+// POST JOB MODAL
 // ============================================
 
-
-const JOB_TITLES = [
-  'AI Product Manager',
-  'AI Researcher',
-  'Computer Vision Engineer',
-  'Data Analyst',
-  'Data Scientist',
-  'ML Engineer',
-  'NLP Engineer',
-  'Quant Researcher',
-];
-
-const INDUSTRIES = [
-  'Tech',
-  'Finance',
-  'Healthcare',
-  'Education',
-  'Retail',
-  'E-commerce',
-  'Automotive',
-];
-
-export default function EmployerDashboard() {
-  usePageTitle("Employer Dashboard", { description: "Manage your job postings" });
-
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showPostForm, setShowPostForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
+function PostJobModal({ user, onClose, onPosted }) {
   const [form, setForm] = useState({
     job_title: '',
     company_name: user?.company || '',
@@ -100,61 +79,242 @@ export default function EmployerDashboard() {
     responsibilities: '',
     requirements: '',
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchEmployerJobs();
-        setJobs(data.jobs || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setError(null);
 
     try {
       const result = await createEmployerJob(form);
-      toast.success(`${result.message || 'Job posted successfully'} (Job ID: ${result.job_id})`);
-
-      setForm({
-        job_title: '',
-        company_name: user?.company || '',
-        location: '',
-        employment_type: 'Full-time',
-        experience_level: 'Mid',
-        salary_min: '',
-        salary_max: '',
-        skills_required: '',
-        tools_preferred: '',
-        industry: user?.industry || '',
-        company_size: '',
-        about_role: '',
-        responsibilities: '',
-        requirements: '',
-      });
-      setShowPostForm(false);
-
-      const data = await fetchEmployerJobs();
-      setJobs(data.jobs || []);
+      toast.success(`${result.message || 'Job posted successfully'} (ID: ${result.job_id})`);
+      onPosted();
+      onClose();
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || 'Failed to post job');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+  return (
+    <div className="job-edit-modal-overlay" onClick={onClose}>
+      <div className="job-edit-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="job-edit-modal-header">
+          <h2>
+            <Plus size={18} />
+            Post a New Job
+          </h2>
+          <button className="job-edit-modal-close" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+          <div className="job-edit-modal-body">
+            <div className="form-grid">
+              <div className="form-field form-field-full">
+                <label className="form-field-label">
+                  Position <span className="required">*</span>
+                </label>
+                <select
+                  value={form.job_title}
+                  onChange={(e) => handleChange('job_title', e.target.value)}
+                  required
+                >
+                  <option value="">Select Position</option>
+                  {JOB_TITLES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">
+                  Company <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.company_name}
+                  onChange={(e) => handleChange('company_name', e.target.value)}
+                  placeholder="Acme Inc."
+                  required
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Location</label>
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={(e) => handleChange('location', e.target.value)}
+                  placeholder="Bangkok"
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Employment Type</label>
+                <select
+                  value={form.employment_type}
+                  onChange={(e) => handleChange('employment_type', e.target.value)}
+                >
+                  {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Experience Level</label>
+                <select
+                  value={form.experience_level}
+                  onChange={(e) => handleChange('experience_level', e.target.value)}
+                >
+                  {EXPERIENCE_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Salary Min (USD)</label>
+                <input
+                  type="number"
+                  value={form.salary_min}
+                  onChange={(e) => handleChange('salary_min', e.target.value)}
+                  placeholder="50000"
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Salary Max (USD)</label>
+                <input
+                  type="number"
+                  value={form.salary_max}
+                  onChange={(e) => handleChange('salary_max', e.target.value)}
+                  placeholder="100000"
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Industry</label>
+                <select
+                  value={form.industry}
+                  onChange={(e) => handleChange('industry', e.target.value)}
+                >
+                  <option value="">Select</option>
+                  {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label className="form-field-label">Company Size</label>
+                <input
+                  type="text"
+                  value={form.company_size}
+                  onChange={(e) => handleChange('company_size', e.target.value)}
+                  placeholder="50-100"
+                />
+              </div>
+
+              <div className="form-field form-field-full">
+                <label className="form-field-label">Skills Required</label>
+                <input
+                  type="text"
+                  value={form.skills_required}
+                  onChange={(e) => handleChange('skills_required', e.target.value)}
+                  placeholder="Python, SQL, React"
+                />
+              </div>
+
+              <div className="form-field form-field-full">
+                <label className="form-field-label">Tools Preferred</label>
+                <input
+                  type="text"
+                  value={form.tools_preferred}
+                  onChange={(e) => handleChange('tools_preferred', e.target.value)}
+                  placeholder="Docker, Git"
+                />
+              </div>
+
+              <div className="form-field form-field-full">
+                <label className="form-field-label">About the Role</label>
+                <textarea
+                  rows={3}
+                  value={form.about_role}
+                  onChange={(e) => handleChange('about_role', e.target.value)}
+                  placeholder="Describe the role..."
+                />
+              </div>
+
+              <div className="form-field form-field-full">
+                <label className="form-field-label">Responsibilities</label>
+                <textarea
+                  rows={3}
+                  value={form.responsibilities}
+                  onChange={(e) => handleChange('responsibilities', e.target.value)}
+                  placeholder="What will they do?"
+                />
+              </div>
+
+              <div className="form-field form-field-full">
+                <label className="form-field-label">Requirements</label>
+                <textarea
+                  rows={3}
+                  value={form.requirements}
+                  onChange={(e) => handleChange('requirements', e.target.value)}
+                  placeholder="What do they need?"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="job-edit-modal-footer">
+            <button
+              type="button"
+              className="job-edit-btn job-edit-btn-cancel"
+              onClick={onClose}
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="job-edit-btn job-edit-btn-save"
+              disabled={submitting}
+            >
+              {submitting ? 'Publishing...' : 'Publish Job'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
+
+export default function EmployerDashboard() {
+  usePageTitle("Employer Dashboard", { description: "Manage your job postings" });
+
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showPostForm, setShowPostForm] = useState(false);
+
+  const loadJobs = () => {
+    setLoading(true);
+    fetchEmployerJobs()
+      .then((data) => setJobs(data.jobs || []))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
   const handleLogout = () => {
     if (window.confirm('Logout?')) {
@@ -162,6 +322,10 @@ export default function EmployerDashboard() {
       navigate('/');
     }
   };
+
+  const totalApplicants = jobs.reduce((sum, j) => sum + (j.applicant_count || 0), 0);
+  const jobsWithApplicants = jobs.filter((j) => (j.applicant_count || 0) > 0).length;
+  const activeJobs = jobs.filter((j) => (j.status_key || 'active') === 'active').length;
 
   if (loading) {
     return (
@@ -171,20 +335,8 @@ export default function EmployerDashboard() {
     );
   }
 
-  const totalApplicants = jobs.reduce(
-    (sum, j) => sum + (j.applicant_count || 0),
-    0
-  );
-
-  const jobsWithApplicants = jobs.filter(
-    (j) => (j.applicant_count || 0) > 0
-  ).length;
-
-  const activeJobs = jobs.filter((j) => j.status === 'Active').length;
-
   return (
     <div className="employer-container">
-      {/* ============ HERO ============ */}
       <section className="emp-hero">
         <div className="emp-hero-content">
           <span className="emp-hero-tag">
@@ -192,7 +344,7 @@ export default function EmployerDashboard() {
             EMPLOYER DASHBOARD
           </span>
           <h1>
-            Welcome back, <span>{user?.name || 'Recruiter'}</span>
+            Welcome back, <span>{user?.name || user?.full_name || 'Recruiter'}</span>
           </h1>
           <p className="emp-hero-subtitle">
             <Building2 size={14} />
@@ -209,10 +361,7 @@ export default function EmployerDashboard() {
               Post New Job
             </button>
 
-            <button
-              className="emp-btn-glass"
-              onClick={handleLogout}
-            >
+            <button className="emp-btn-glass" onClick={handleLogout}>
               <LogOut size={16} />
               Log out
             </button>
@@ -220,9 +369,6 @@ export default function EmployerDashboard() {
         </div>
       </section>
 
-      {error && <div className="emp-error">{error}</div>}
-
-      {/* ============ STATS ============ */}
       <section className="emp-stats-grid">
         <div className="emp-stat-card">
           <div className="emp-stat-icon">
@@ -275,179 +421,19 @@ export default function EmployerDashboard() {
         </div>
       </section>
 
-      {/* ============ POST FORM ============ */}
-      {showPostForm && (
-        <section className="emp-section emp-section-form">
-          <div className="emp-section-header">
-            <h2>
-              <Plus size={18} />
-              Post a New Job
-            </h2>
-            <button
-              className="emp-btn-glass"
-              onClick={() => setShowPostForm(false)}
-            >
-              Cancel
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="emp-form">
-            <div className="emp-form-grid">
-              <select
-                className="emp-field"
-                required
-                value={form.job_title}
-                onChange={(e) => handleChange('job_title', e.target.value)}
-              >
-                <option value="">-- Select Position --</option>
-                {JOB_TITLES.map((title) => (
-                  <option key={title} value={title}>
-                    {title}
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="text"
-                placeholder="Company Name *"
-                required
-                value={form.company_name}
-                onChange={(e) => handleChange('company_name', e.target.value)}
-                className="emp-field"
-              />
-
-              <input
-                type="text"
-                placeholder="Location"
-                value={form.location}
-                onChange={(e) => handleChange('location', e.target.value)}
-                className="emp-field"
-              />
-
-              <select
-                value={form.employment_type}
-                onChange={(e) => handleChange('employment_type', e.target.value)}
-                className="emp-field"
-              >
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
-
-              <select
-                value={form.experience_level}
-                onChange={(e) => handleChange('experience_level', e.target.value)}
-                className="emp-field"
-              >
-                <option value="Junior">Junior</option>
-                <option value="Mid">Mid</option>
-                <option value="Senior">Senior</option>
-              </select>
-
-              <input
-                type="number"
-                placeholder="Salary Min (USD)"
-                value={form.salary_min}
-                onChange={(e) => handleChange('salary_min', e.target.value)}
-                className="emp-field"
-              />
-
-              <input
-                type="number"
-                placeholder="Salary Max (USD)"
-                value={form.salary_max}
-                onChange={(e) => handleChange('salary_max', e.target.value)}
-                className="emp-field"
-              />
-
-              <select
-                value={form.industry}
-                onChange={(e) => handleChange('industry', e.target.value)}
-                className="emp-field"
-              >
-                <option value="">Select Industry</option>
-                {INDUSTRIES.map((ind) => (
-                  <option key={ind} value={ind}>
-                    {ind}
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="text"
-                placeholder="Skills Required (comma separated)"
-                value={form.skills_required}
-                onChange={(e) => handleChange('skills_required', e.target.value)}
-                className="emp-field emp-field-full"
-              />
-
-              <input
-                type="text"
-                placeholder="Tools Preferred"
-                value={form.tools_preferred}
-                onChange={(e) => handleChange('tools_preferred', e.target.value)}
-                className="emp-field emp-field-full"
-              />
-
-              <textarea
-                placeholder="About the role"
-                rows={3}
-                value={form.about_role}
-                onChange={(e) => handleChange('about_role', e.target.value)}
-                className="emp-field emp-field-full"
-              />
-
-              <textarea
-                placeholder="Responsibilities"
-                rows={3}
-                value={form.responsibilities}
-                onChange={(e) => handleChange('responsibilities', e.target.value)}
-                className="emp-field emp-field-full"
-              />
-
-              <textarea
-                placeholder="Requirements"
-                rows={3}
-                value={form.requirements}
-                onChange={(e) => handleChange('requirements', e.target.value)}
-                className="emp-field emp-field-full"
-              />
-            </div>
-
-            <div className="emp-form-actions">
-            <button
-              className="emp-btn-glass"
-              onClick={() => setShowPostForm(false)}
-            >
-              Cancel
-            </button>
-              <button
-                type="submit"
-                className="emp-btn-primary emp-btn-full"
-                disabled={submitting}
-              >
-                {submitting ? 'Publishing...' : 'Publish Job'}
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
-
-      {/* ============ JOB LIST ============ */}
       <section className="emp-section">
         <div className="emp-section-header">
           <h2>
             <Briefcase size={18} />
             Your Job Postings ({jobs.length})
           </h2>
-          {!showPostForm && (
+          {jobs.length > 5 && (
             <button
               className="emp-btn-glass emp-btn-sm"
-              onClick={() => setShowPostForm(true)}
+              onClick={() => navigate('/employer/jobs')}
             >
-              <Plus size={14} />
-              Post New Job
+              View All ({jobs.length})
+              <ArrowRight size={14} />
             </button>
           )}
         </div>
@@ -464,7 +450,7 @@ export default function EmployerDashboard() {
           </div>
         ) : (
           <div className="emp-job-list">
-            {jobs.map((job) => (
+            {jobs.slice(0, 5).map((job) => (
               <div className="emp-job-card" key={job.id}>
                 <div className={`emp-job-logo ${getJobLogoClass(job.job_title)}`}>
                   {job.job_title?.charAt(0) || 'J'}
@@ -495,15 +481,12 @@ export default function EmployerDashboard() {
 
                 <div className="emp-job-actions">
                   <button
-                    className="emp-btn-glass emp-btn-sm"
-                    onClick={() =>
-                      navigate(`/employer/jobs/${job.id}/applicants`)
-                    }
+                    className="emp-action-btn emp-action-view"
+                    onClick={() => navigate(`/employer/jobs/${job.id}/applicants`)}
                   >
                     <Users size={14} />
-                    View Applicants ({job.applicant_count})
+                    View ({job.applicant_count})
                   </button>
-                  <span className="emp-badge-active">{job.status}</span>
                 </div>
               </div>
             ))}
@@ -511,7 +494,6 @@ export default function EmployerDashboard() {
         )}
       </section>
 
-      {/* ============ LANDING 1: WHY JOBJAB ============ */}
       <section className="emp-landing">
         <div className="emp-landing-grid">
           <div className="emp-landing-image">
@@ -563,7 +545,6 @@ export default function EmployerDashboard() {
         </div>
       </section>
 
-      {/* ============ LANDING 2: HOW IT WORKS ============ */}
       <section className="emp-landing emp-landing-reverse">
         <div className="emp-landing-grid">
           <div className="emp-landing-content">
@@ -573,8 +554,7 @@ export default function EmployerDashboard() {
             </span>
             <h2>Post a job in 3 simple steps</h2>
             <p className="emp-landing-desc">
-              From posting to hiring — we make the process effortless. Post jobs,
-              review applicants, and build your dream team.
+              From posting to hiring — we make the process effortless.
             </p>
 
             <div className="emp-landing-steps">
@@ -618,13 +598,10 @@ export default function EmployerDashboard() {
         </div>
       </section>
 
-      {/* ============ CTA ============ */}
       <section className="emp-cta">
         <div className="emp-cta-content">
           <h2>Ready to hire your next team member?</h2>
-          <p>
-            Post a job and reach thousands of qualified candidates on JOBJAB.
-          </p>
+          <p>Post a job and reach thousands of qualified candidates on JOBJAB.</p>
           <button
             className="emp-btn-primary"
             onClick={() => setShowPostForm(true)}
@@ -634,6 +611,14 @@ export default function EmployerDashboard() {
           </button>
         </div>
       </section>
+
+      {showPostForm && (
+        <PostJobModal
+          user={user}
+          onClose={() => setShowPostForm(false)}
+          onPosted={loadJobs}
+        />
+      )}
     </div>
   );
 }

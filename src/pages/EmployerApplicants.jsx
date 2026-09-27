@@ -5,57 +5,43 @@ import {
   Users,
   Mail,
   MapPin,
-  Inbox,
   Briefcase,
   Eye,
   ArrowRight,
+  CheckCircle,
+  Clock,
+  MessageSquare,
+  XCircle,
 } from 'lucide-react';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
-
+import { ApplicantListSkeleton } from '../components/EmployerSkeleton';
 
 // ============================================
-// STATUS COLOR MAP
+// STATUS CONFIG
 // ============================================
+
+const STATUS_CONFIG = {
+  all:       { icon: Users,        label: 'Total',     color: '#f0d154' },
+  applied:   { icon: Clock,        label: 'Applied',   color: '#38bdf8' },
+  reviewing: { icon: MessageSquare, label: 'Reviewing', color: '#f0d154' },
+  interview: { icon: CheckCircle,  label: 'Interview', color: '#80ffd5' },
+  rejected:  { icon: XCircle,      label: 'Rejected',  color: '#fca5a5' },
+};
 
 const getStatusColor = (status) => {
   switch (status) {
     case 'applied':
-      return {
-        bg: 'rgba(56, 189, 248, 0.15)',
-        border: 'rgba(56, 189, 248, 0.5)',
-        color: '#38bdf8',
-        bgActive: 'rgba(56, 189, 248, 0.25)',
-      };
+      return { bg: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.5)', color: '#38bdf8' };
     case 'reviewing':
-      return {
-        bg: 'rgba(240, 209, 84, 0.12)',
-        border: 'rgba(240, 209, 84, 0.45)',
-        color: '#f0d154',
-        bgActive: 'rgba(240, 209, 84, 0.25)',
-      };
+      return { bg: 'rgba(240, 209, 84, 0.12)', border: 'rgba(240, 209, 84, 0.45)', color: '#f0d154' };
     case 'interview':
-      return {
-        bg: 'rgba(128, 255, 213, 0.12)',
-        border: 'rgba(128, 255, 213, 0.45)',
-        color: '#80ffd5',
-        bgActive: 'rgba(128, 255, 213, 0.25)',
-      };
+      return { bg: 'rgba(128, 255, 213, 0.12)', border: 'rgba(128, 255, 213, 0.45)', color: '#80ffd5' };
     case 'rejected':
-      return {
-        bg: 'rgba(239, 68, 68, 0.12)',
-        border: 'rgba(239, 68, 68, 0.45)',
-        color: '#fca5a5',
-        bgActive: 'rgba(239, 68, 68, 0.22)',
-      };
+      return { bg: 'rgba(239, 68, 68, 0.12)', border: 'rgba(239, 68, 68, 0.45)', color: '#fca5a5' };
     default:
-      return {
-        bg: 'rgba(255, 255, 255, 0.05)',
-        border: 'rgba(255, 255, 255, 0.15)',
-        color: '#d3dae4',
-        bgActive: 'rgba(255, 255, 255, 0.12)',
-      };
+      return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255, 255, 255, 0.15)', color: '#d3dae4' };
   }
 };
 
@@ -75,7 +61,6 @@ export default function EmployerApplicants() {
 
         const promises = jobs.map(async (job) => {
           try {
-            // ⭐ ใช้ apiClient (cookies อัตโนมัติ)
             const data = await fetchJobApplications(job.id);
             return (data.applications || []).map((a) => ({
               ...a,
@@ -97,14 +82,6 @@ export default function EmployerApplicants() {
     };
     load();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="employer-container">
-        <p className="employer-loading">Loading applicants...</p>
-      </div>
-    );
-  }
 
   const filtered =
     filter === 'all' ? all : all.filter((a) => a.status === filter);
@@ -133,47 +110,49 @@ export default function EmployerApplicants() {
       </section>
 
       <section className="emp-section">
-        <div className="emp-section-header">
-          <h2>
-            <Users size={18} />
-            Filter by Status
-          </h2>
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: '8px',
-            flexWrap: 'wrap',
-            marginBottom: '20px',
-          }}
-        >
-          {['all', 'applied', 'reviewing', 'interview', 'rejected'].map((f) => {
-            const colors = getStatusColor(f);
-            const isActive = filter === f;
+        {/* Stat Cards */}
+        <div className="emp-stat-row">
+          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
+            const Icon = cfg.icon;
+            const isActive = filter === key;
             return (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className="emp-filter-chip"
-                style={{
-                  background: isActive ? colors.bgActive : colors.bg,
-                  borderColor: isActive ? colors.color : colors.border,
-                  color: colors.color,
-                  boxShadow: isActive ? `0 4px 12px ${colors.bgActive}` : 'none',
-                }}
+              <div
+                key={key}
+                className={`emp-stat-pill ${key} ${isActive ? 'active' : ''}`}
+                onClick={() => setFilter(key)}
+                style={isActive ? { borderColor: cfg.color, background: `${cfg.color}15` } : {}}
               >
-                {f.charAt(0).toUpperCase() + f.slice(1)} ({counts[f]})
-              </button>
+                <div className="emp-stat-pill-icon">
+                  <Icon size={20} />
+                </div>
+                <div className="emp-stat-pill-content">
+                  <span className="emp-stat-pill-value">{counts[key]}</span>
+                  <span className="emp-stat-pill-label">{cfg.label}</span>
+                </div>
+              </div>
             );
           })}
         </div>
 
-        {filtered.length === 0 ? (
+        {/* List */}
+        <div className="emp-section-header" style={{ marginTop: 24 }}>
+          <h2>
+            <Users size={18} />
+            {filter === 'all' ? 'All Applicants' : STATUS_CONFIG[filter].label} ({filtered.length})
+          </h2>
+        </div>
+
+        {loading ? (
+          <ApplicantListSkeleton count={3} />
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={Users}
-            title="No applicants yet"
-            description="When candidates apply to your jobs, they will appear here"
+            title={filter === 'all' ? "No applicants yet" : `No ${STATUS_CONFIG[filter].label.toLowerCase()} applicants`}
+            description={
+              filter === 'all'
+                ? "When candidates apply to your jobs, they will appear here"
+                : "Try a different status filter"
+            }
           />
         ) : (
           <div className="job-list-grid">
@@ -185,29 +164,16 @@ export default function EmployerApplicants() {
                 <div className="emp-job-info">
                   <h3>{app.full_name}</h3>
                   <div className="emp-job-meta">
-                    <span>
-                      <Mail size={12} />
-                      {app.email}
-                    </span>
-                    <span>
-                      <MapPin size={12} />
-                      {app.location || 'N/A'}
-                    </span>
-                    <span>
-                      <Briefcase size={12} />
-                      {app.job_title}
-                    </span>
+                    <span><Mail size={12} />{app.email}</span>
+                    <span><MapPin size={12} />{app.location || 'N/A'}</span>
+                    <span><Briefcase size={12} />{app.job_title}</span>
                   </div>
                 </div>
                 <div className="emp-job-actions">
                   <span className="emp-badge-active">{app.status}</span>
-
                   <button
-                    className="emp-btn-glass emp-btn-sm"
-                    onClick={() =>
-                      navigate(`/employer/jobs/${app.job_id}/applicants`)
-                    }
-                    title="View full profile"
+                    className="emp-action-btn emp-action-view"
+                    onClick={() => navigate(`/employer/jobs/${app.job_id}/applicants`)}
                   >
                     <Eye size={14} />
                     View

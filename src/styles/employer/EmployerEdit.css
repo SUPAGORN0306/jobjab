@@ -1,0 +1,125 @@
+/* ============================================ */
+/* EMPLOYER EDIT PROFILE                         */
+/* ============================================ */
+
+.employer-edit-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 1080px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 100px 40px 100px 100px;
+  box-sizing: border-box;
+  color: #fafafa;
+}
+
+.employer-edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.employer-edit-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.employer-edit-header p {
+  font-size: 0.85rem;
+  color: #8c9bae;
+  margin: 0;
+}
+
+.employer-edit-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Grid — Logo + Form */
+.employer-edit-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Left — Logo card */
+.employer-edit-logo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 24px;
+  border-radius: 20px;
+  background: rgba(220, 220, 220, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 100px;
+}
+
+.employer-edit-company-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin: 0;
+}
+
+.employer-edit-company-meta {
+  font-size: 0.75rem;
+  color: #8c9bae;
+  text-align: center;
+  margin: 0;
+}
+
+/* Right — Form card */
+.employer-edit-form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px;
+  border-radius: 20px;
+  background: rgba(220, 220, 220, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .employer-edit-container {
+    padding: 100px 24px 60px 24px;
+  }
+
+  .employer-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .employer-edit-logo-card {
+    position: static;
+  }
+}
+
+@media (max-width: 500px) {
+  .employer-edit-container {
+    padding: 90px 16px 60px 16px;
+  }
+
+  .employer-edit-header-actions {
+    width: 100%;
+  }
+
+  .employer-edit-header-actions button {
+    flex: 1;
+  }
+}

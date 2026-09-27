@@ -4,9 +4,23 @@ import { useAuth } from '../context/AuthContext';
 import { fetchFullProfile, updateProfile } from '../api';
 import apiClient from '../apiClient';
 import CompanyLogoUploader from '../components/CompanyLogoUploader';
-import '../styles/candidate/Edit.css';
+import {
+  Building2,
+  User,
+  Phone,
+  MapPin,
+  FileText,
+  Save,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
+import '../styles/employer/EmployerEdit.css';
+
+const INDUSTRIES = [
+  'Tech', 'Finance', 'Healthcare', 'Education',
+  'Retail', 'E-commerce', 'Automotive', 'Other',
+];
 
 export default function EmployerProfileEdit() {
   usePageTitle("Edit Company", { description: "Update company information" });
@@ -77,162 +91,137 @@ export default function EmployerProfileEdit() {
 
   if (loading) {
     return (
-      <div className="edit-container">
-        <p className="edit-loading">Loading profile...</p>
+      <div className="employer-edit-container">
+        <p style={{ textAlign: 'center', padding: '60px 0', color: '#8c9bae' }}>
+          Loading profile...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="edit-container">
-      {/* ============ HEADER ============ */}
-      <div className="edit-header">
+    <div className="employer-edit-container">
+      <div className="employer-edit-header">
         <div>
           <h1>Edit Company Profile</h1>
-          <p className="edit-sub-title">
-            Update your company information
-          </p>
+          <p>Update your company information and contact details</p>
         </div>
-        <div className="edit-header-actions">
+
+        <div className="employer-edit-header-actions">
           <button
-            className="cancel-btn"
+            className="form-btn form-btn-secondary"
             onClick={() => navigate('/employer/profile')}
             disabled={saving}
           >
+            <X size={14} />
             Cancel
           </button>
-          <button className="save-btn" onClick={handleSave} disabled={saving}>
+          <button
+            className="form-btn form-btn-primary"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            <Save size={14} />
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>
 
-      {error && <div className="edit-error">{error}</div>}
+      {error && (
+        <div className="emp-error" style={{ marginBottom: 20 }}>
+          {error}
+        </div>
+      )}
 
-      {/* ============ SINGLE CARD (ไม่ใช้ grid 2 columns) ============ */}
-      <div className="edit-card-right" style={{ maxWidth: '100%' }}>
-        <h3 className="section-title">
-          Company Information
-        </h3>
+      <div className="employer-edit-grid">
+        <div className="employer-edit-logo-card">
+          <CompanyLogoUploader
+            currentImage={companyLogo}
+            userId={user?.id}
+            onUploadSuccess={handleLogoUploaded}
+          />
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '280px 1fr',
-            gap: '20px',
-            marginTop: '16px',
-          }}
-        >
-          {/* Logo + Company info (left inner) */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '16px',
-            }}
-          >
-            <CompanyLogoUploader
-              currentImage={companyLogo}
-              userId={user?.id}
-              onUploadSuccess={handleLogoUploaded}
-            />
-
-            <div style={{ textAlign: 'center', width: '100%' }}>
-              <h3
-                style={{
-                  fontSize: '1rem',
-                  color: '#fff',
-                  margin: '0 0 4px 0',
-                }}
-              >
-                {user?.company || 'Your Company'}
-              </h3>
-              <p
-                style={{
-                  fontSize: '0.72rem',
-                  color: '#697382',
-                  margin: 0,
-                }}
-              >
-                {user?.industry || 'Industry N/A'}
-              </p>
-            </div>
+          <div style={{ textAlign: 'center' }}>
+            <h3 className="employer-edit-company-name">
+              {user?.company || 'Your Company'}
+            </h3>
+            <p className="employer-edit-company-meta">
+              {user?.industry || 'Industry N/A'}
+            </p>
           </div>
+        </div>
 
-          {/* Form fields (right inner) */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-            }}
-          >
-            {/* Full Name */}
-            <div className="edit-field">
-              <span className="field-label">
-                Contact Person <span className="required">*</span>
-              </span>
+        <div className="employer-edit-form-card">
+          <h2 className="form-section-title">
+            <Building2 size={18} />
+            Company Information
+          </h2>
+
+          <div className="form-grid">
+            <div className="form-field form-field-full">
+              <label className="form-field-label">
+                <User size={12} />
+                Contact Person
+                <span className="required">*</span>
+              </label>
               <input
                 type="text"
-                className="field-input"
                 placeholder="e.g. John Smith"
                 value={form.full_name}
                 onChange={(e) => handleChange('full_name', e.target.value)}
               />
             </div>
 
-            {/* Phone */}
-            <div className="edit-field">
-              <span className="field-label">Phone</span>
+            <div className="form-field">
+              <label className="form-field-label">
+                <Phone size={12} />
+                Phone
+              </label>
               <input
-                type="text"
-                className="field-input"
+                type="tel"
                 placeholder="e.g. +66 91 234 5678"
                 value={form.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
               />
             </div>
 
-            {/* Location */}
-            <div className="edit-field">
-              <span className="field-label">Location</span>
+            <div className="form-field">
+              <label className="form-field-label">
+                <MapPin size={12} />
+                Location
+              </label>
               <input
                 type="text"
-                className="field-input"
                 placeholder="e.g. Bangkok, Thailand"
                 value={form.location}
                 onChange={(e) => handleChange('location', e.target.value)}
               />
             </div>
 
-            {/* Industry */}
-            <div className="edit-field">
-              <span className="field-label">Industry</span>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">
+                <Building2 size={12} />
+                Industry
+              </label>
               <select
-                className="field-input"
                 value={form.industry}
                 onChange={(e) => handleChange('industry', e.target.value)}
               >
                 <option value="">-- Select Industry --</option>
-                <option value="Tech">Tech</option>
-                <option value="Finance">Finance</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="E-commerce">E-commerce</option>
-                <option value="Education">Education</option>
-                <option value="Automotive">Automotive</option>
-                <option value="Retail">Retail</option>
-                <option value="Other">Other</option>
+                {INDUSTRIES.map((ind) => (
+                  <option key={ind} value={ind}>{ind}</option>
+                ))}
               </select>
             </div>
 
-            {/* Bio */}
-            <div className="edit-field">
-              <span className="field-label">Bio / About</span>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">
+                <FileText size={12} />
+                Bio / About
+              </label>
               <textarea
-                className="field-input"
-                rows={4}
-                placeholder="Tell candidates about your company..."
+                rows={5}
+                placeholder="Tell candidates about your company culture, mission, and what makes you a great place to work..."
                 value={form.bio}
                 onChange={(e) => handleChange('bio', e.target.value)}
               />

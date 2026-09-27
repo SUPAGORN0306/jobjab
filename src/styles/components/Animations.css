@@ -1,0 +1,209 @@
+/* ============================================ */
+/* GLOBAL ANIMATIONS                             */
+/* ============================================ */
+
+/* Fade + Slide Up */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide In from Right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Pulse */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Bounce In */
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Ripple (for buttons) */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Count-up shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================ */
+/* APPLY TO PAGE CONTAINERS                      */
+/* ============================================ */
+
+.employer-container > *,
+.employer-edit-container > * {
+  animation: fadeSlideUp 0.4s ease-out backwards;
+}
+
+.employer-container > *:nth-child(1) { animation-delay: 0.05s; }
+.employer-container > *:nth-child(2) { animation-delay: 0.1s; }
+.employer-container > *:nth-child(3) { animation-delay: 0.15s; }
+.employer-container > *:nth-child(4) { animation-delay: 0.2s; }
+.employer-container > *:nth-child(5) { animation-delay: 0.25s; }
+.employer-container > *:nth-child(6) { animation-delay: 0.3s; }
+.employer-container > *:nth-child(7) { animation-delay: 0.35s; }
+
+/* ============================================ */
+/* CARD HOVER LIFT                               */
+/* ============================================ */
+
+.emp-job-card,
+.applicant-card,
+.analytics-stat-card,
+.employer-profile-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.emp-job-card:hover,
+.applicant-card:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(240, 209, 84, 0.1);
+}
+
+.analytics-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(240, 209, 84, 0.15);
+}
+
+/* ============================================ */
+/* BUTTON ACTIVE SCALE                           */
+/* ============================================ */
+
+.emp-btn-primary:active:not(:disabled),
+.emp-btn-glass:active:not(:disabled),
+.emp-action-btn:active:not(:disabled),
+.form-btn:active:not(:disabled),
+.job-edit-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* ============================================ */
+/* ICON SPIN (for loading)                       */
+/* ============================================ */
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/* STAT VALUE SHIMMER (when loading)             */
+/* ============================================ */
+
+.stat-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ============================================ */
+/* TIMELINE PULSE                                */
+/* ============================================ */
+
+.timeline-dot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============================================ */
+/* STATUS BADGE PULSE (for active)               */
+/* ============================================ */
+
+.emp-job-status-badge.active,
+.emp-badge-active {
+  position: relative;
+}
+
+.emp-job-status-badge.active::before,
+.emp-badge-active::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  animation: pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ============================================ */
+/* REDUCE MOTION (accessibility)                 */
+/* ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .employer-container > *,
+  .employer-edit-container > * {
+    animation: none;
+  }
+
+  .emp-job-card:hover,
+  .applicant-card:hover,
+  .analytics-stat-card:hover {
+    transform: none;
+  }
+
+  .spin,
+  .timeline-dot,
+  .emp-job-status-badge.active::before,
+  .emp-badge-active::before {
+    animation: none;
+  }
+}

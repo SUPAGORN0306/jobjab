@@ -33,6 +33,7 @@ import {
 import { fetchEmployerAnalytics } from '../api';
 import { getJobLogoClass } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
+import useCountUp from '../hooks/useCountUp';
 import EmptyState from '../components/EmptyState';
 import '../styles/employer/EmployerAnalytics.css';
 
@@ -74,12 +75,21 @@ function CustomTooltip({ active, payload, label }) {
 // STAT CARD
 // ============================================
 
-function StatCard({ icon: Icon, label, value, trend, color = 'yellow' }) {
+function StatCard({ icon: Icon, label, value, trend, color = 'yellow', animate = false }) {
   const TrendIcon = trend?.direction === 'up' ? ArrowUp
                   : trend?.direction === 'down' ? ArrowDown
                   : Minus;
 
   const trendClass = trend?.direction || 'stable';
+
+  // ⭐ Count-up — แยกตัวเลขจาก % หรือ string
+  const numericValue = typeof value === 'number'
+    ? value
+    : parseInt(String(value).replace(/[^0-9]/g, ''), 10) || 0;
+  const suffix = typeof value === 'string' && value.includes('%') ? '%' : '';
+  const animated = useCountUp(animate ? numericValue : 0, 800);
+
+  const displayValue = animate ? `${animated}${suffix}` : value;
 
   return (
     <div className="analytics-stat-card">
@@ -87,7 +97,7 @@ function StatCard({ icon: Icon, label, value, trend, color = 'yellow' }) {
         <Icon size={22} />
       </div>
       <div className="analytics-stat-content">
-        <span className="analytics-stat-value">{value}</span>
+        <span className="analytics-stat-value">{displayValue}</span>
         <span className="analytics-stat-label">{label}</span>
         {trend && (
           <span className={`analytics-stat-trend ${trendClass}`}>
@@ -300,24 +310,28 @@ export default function EmployerAnalytics() {
           label="Total Jobs"
           value={data.summary.total_jobs}
           color="yellow"
+          animate
         />
         <StatCard
           icon={Users}
           label="Total Applicants"
           value={data.summary.total_applicants}
           color="mint"
+          animate
         />
         <StatCard
           icon={TrendingUp}
           label="Active Jobs"
           value={data.summary.active_jobs}
           color="blue"
+          animate
         />
         <StatCard
           icon={CheckCircle}
           label="Response Rate"
           value={`${data.summary.response_rate}%`}
           color="purple"
+          animate
         />
       </section>
 
@@ -370,6 +384,7 @@ export default function EmployerAnalytics() {
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
+                  animationDuration={800}
                   dataKey="count"
                   stroke="#f0d154"
                   strokeWidth={3}
@@ -406,6 +421,7 @@ export default function EmployerAnalytics() {
                   innerRadius={60}
                   outerRadius={90}
                   paddingAngle={4}
+                  animationDuration={800}
                   stroke="none"
                 >
                   {pieData.map((entry, i) => (
@@ -491,6 +507,7 @@ export default function EmployerAnalytics() {
                   fill="#f0d154"
                   radius={[0, 8, 8, 0]}
                   maxBarSize={24}
+                  animationDuration={800}
                 />
               </BarChart>
             </ResponsiveContainer>

@@ -96,84 +96,84 @@ function EditJobModal({ job, onClose, onSaved }) {
         </div>
 
         <div className="job-edit-modal-body">
-          <div className="job-edit-grid">
-            <div className="job-edit-field job-edit-full">
-              <label>Position *</label>
+          <div className="form-grid">
+            <div className="form-field form-field-full">
+              <label className="form-field-label">Position *</label>
               <select value={form.job_title} onChange={(e) => handleChange('job_title', e.target.value)}>
                 <option value="">Select Position</option>
                 {JOB_TITLES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
 
-            <div className="job-edit-field">
-              <label>Company Name *</label>
+            <div className="form-field">
+              <label className="form-field-label">Company Name *</label>
               <input type="text" value={form.company_name} onChange={(e) => handleChange('company_name', e.target.value)} placeholder="Acme Inc." />
             </div>
 
-            <div className="job-edit-field">
-              <label>Location</label>
+            <div className="form-field">
+              <label className="form-field-label">Location</label>
               <input type="text" value={form.location} onChange={(e) => handleChange('location', e.target.value)} placeholder="Bangkok" />
             </div>
 
-            <div className="job-edit-field">
-              <label>Employment Type</label>
+            <div className="form-field">
+              <label className="form-field-label">Employment Type</label>
               <select value={form.employment_type} onChange={(e) => handleChange('employment_type', e.target.value)}>
                 {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
 
-            <div className="job-edit-field">
-              <label>Experience Level</label>
+            <div className="form-field">
+              <label className="form-field-label">Experience Level</label>
               <select value={form.experience_level} onChange={(e) => handleChange('experience_level', e.target.value)}>
                 {EXPERIENCE_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>
 
-            <div className="job-edit-field">
-              <label>Salary Min (USD)</label>
+            <div className="form-field">
+              <label className="form-field-label">Salary Min (USD)</label>
               <input type="number" value={form.salary_min} onChange={(e) => handleChange('salary_min', e.target.value)} placeholder="50000" />
             </div>
 
-            <div className="job-edit-field">
-              <label>Salary Max (USD)</label>
+            <div className="form-field">
+              <label className="form-field-label">Salary Max (USD)</label>
               <input type="number" value={form.salary_max} onChange={(e) => handleChange('salary_max', e.target.value)} placeholder="100000" />
             </div>
 
-            <div className="job-edit-field">
-              <label>Industry</label>
+            <div className="form-field">
+              <label className="form-field-label">Industry</label>
               <select value={form.industry} onChange={(e) => handleChange('industry', e.target.value)}>
                 <option value="">-- Select --</option>
                 {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
               </select>
             </div>
 
-            <div className="job-edit-field">
-              <label>Company Size</label>
+            <div className="form-field">
+              <label className="form-field-label">Company Size</label>
               <input type="text" value={form.company_size} onChange={(e) => handleChange('company_size', e.target.value)} placeholder="50-100" />
             </div>
 
-            <div className="job-edit-field job-edit-full">
-              <label>Skills Required (comma separated)</label>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">Skills Required (comma separated)</label>
               <input type="text" value={form.skills_required} onChange={(e) => handleChange('skills_required', e.target.value)} placeholder="Python, SQL" />
             </div>
 
-            <div className="job-edit-field job-edit-full">
-              <label>Tools Preferred</label>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">Tools Preferred</label>
               <input type="text" value={form.tools_preferred} onChange={(e) => handleChange('tools_preferred', e.target.value)} placeholder="Docker, Git" />
             </div>
 
-            <div className="job-edit-field job-edit-full">
-              <label>About the Role</label>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">About the Role</label>
               <textarea rows={3} value={form.about_role} onChange={(e) => handleChange('about_role', e.target.value)} />
             </div>
 
-            <div className="job-edit-field job-edit-full">
-              <label>Responsibilities</label>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">Responsibilities</label>
               <textarea rows={3} value={form.responsibilities} onChange={(e) => handleChange('responsibilities', e.target.value)} />
             </div>
 
-            <div className="job-edit-field job-edit-full">
-              <label>Requirements</label>
+            <div className="form-field form-field-full">
+              <label className="form-field-label">Requirements</label>
               <textarea rows={3} value={form.requirements} onChange={(e) => handleChange('requirements', e.target.value)} />
             </div>
           </div>
