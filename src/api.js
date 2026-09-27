@@ -222,3 +222,28 @@ export const fetchEmployerAnalytics = async () => {
   const { data } = await apiClient.get('/api/employer/analytics');
   return data;
 };
+
+// ============================================================
+// EMPLOYER: JOB MANAGEMENT (Sprint 11)
+// ============================================================
+
+export const updateEmployerJob = async (jobId, data) => {
+  const { data: response } = await apiClient.put(
+    `/api/employer/jobs/${jobId}`,
+    data
+  );
+  return response;
+};
+
+export const deleteEmployerJob = async (jobId) => {
+  const { data } = await apiClient.delete(`/api/employer/jobs/${jobId}`);
+  return data;
+};
+
+export const updateJobStatus = async (jobId, status) => {
+  const { data } = await apiClient.patch(
+    `/api/employer/jobs/${jobId}/status`,
+    { status }
+  );
+  return data;
+};
