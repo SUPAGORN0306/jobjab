@@ -2,7 +2,7 @@ import React from 'react';
 import { X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import "../components/FilterSheet.css";
+import "../styles/components/FilterSheet.css";
 
 export default function FilterSheet({
   isOpen,
