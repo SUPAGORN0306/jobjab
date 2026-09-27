@@ -25,6 +25,7 @@ import useCountUp from '../hooks/useCountUp';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { StatsGridSkeleton, JobListSkeleton } from '../components/EmployerSkeleton';
 import EmployerCalendar from '../components/EmployerCalendar';
+import EmptyState from '../components/EmptyState';
 
 // ============================================
 // CONSTANTS
@@ -496,15 +497,13 @@ export default function EmployerDashboard() {
           </div>
 
           {jobs.length === 0 ? (
-            <div className="emp-empty">
-              <div className="emp-empty-icon">
-                <Briefcase size={40} />
-              </div>
-              <p className="emp-empty-title">No jobs posted yet</p>
-              <p className="emp-empty-sub">
-                Click "Post New Job" to create your first listing
-              </p>
-            </div>
+            <EmptyState
+              icon={Briefcase}
+              title="No jobs posted yet"
+              description='Click "Post New Job" to create your first listing'
+              actionLabel="Post a Job"
+              onAction={() => setShowPostForm(true)}
+            />
           ) : (
             <div className="emp-job-list">
               {jobs.slice(0, 5).map((job) => (

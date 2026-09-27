@@ -19,6 +19,7 @@ import {
 import '../styles/employer/ViewApplicants.css';
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
+import EmptyState from '../components/EmptyState';
 
 export default function ViewApplicants() {
   usePageTitle("Applicant Details", { description: "Review candidate details" });
@@ -150,11 +151,11 @@ export default function ViewApplicants() {
       {error && <div className="applicants-error">{error}</div>}
 
       {applications.length === 0 ? (
-        <div className="empty-applicants">
-          <Inbox size={40} style={{ color: '#8c9bae', marginBottom: '12px' }} />
-          <p className="empty-title">No Applicant</p>
-          <p className="empty-sub">Wait for application</p>
-        </div>
+        <EmptyState
+          icon={Inbox}
+          title="No applicants yet"
+          description="When candidates apply to this job, they'll appear here"
+        />
       ) : (
         <div className="applicants-grid">
           {applications.map((app) => {
