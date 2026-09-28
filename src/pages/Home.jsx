@@ -4,7 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
-import { JobListSkeleton } from "../components/Skeleton";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import { fetchJobsWithMatch } from '../api';
@@ -27,6 +26,7 @@ import '../styles/home/Home.css';
 import '../styles/home/RecommendedCard.css';
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
+import PageLoader from '../components/PageLoader';
 
 // ============================================
 // SEARCH HELPERS
@@ -484,11 +484,7 @@ function Home() {
             </div>
           </div>
 
-          {loading && (
-            <div style={{ padding: '0 4px' }}>
-              <JobListSkeleton count={3} />
-            </div>
-          )}
+          {loading && <PageLoader message="Loading jobs..." />}
 
           {!loading && filteredJobs.length === 0 && (
             <div className="horizontal-scroll-empty">

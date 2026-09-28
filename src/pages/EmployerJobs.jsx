@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
-import { JobListSkeleton } from '../components/EmployerSkeleton';
+import PageLoader from '../components/PageLoader';
 import { EmployerHero } from '../components/employer';
 
 // ============================================
@@ -287,7 +287,7 @@ export default function EmployerJobs() {
               Job List
             </h2>
           </div>
-          <JobListSkeleton count={4} />
+          <PageLoader message="Loading jobs..." />
         </section>
       </div>
     );

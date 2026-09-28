@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
 import { formatPhone } from '../utils/phone';
+import PageLoader from '../components/PageLoader';
 
 export default function AppStatus() {
   usePageTitle("Application Status", { description: "Track your job applications" });

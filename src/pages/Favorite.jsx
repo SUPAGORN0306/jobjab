@@ -4,12 +4,12 @@ import '../styles/home/RecommendedCard.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { getMatchBadgeClass } from '../utils/matchBadge.js';
-import { FavoriteSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
 import { Heart } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import MatchModal from '../components/MatchModal';
+import PageLoader from '../components/PageLoader';
 
 
 export default function Favorite() {
@@ -40,7 +40,7 @@ export default function Favorite() {
           <span>{favorites.length} saved jobs</span>
         </div>
 
-        {loading && <FavoriteSkeleton count={3} />}
+        {loading && <PageLoader message="Loading favorites..." />}
 
         {!loading && favorites.length === 0 && (
           <EmptyState

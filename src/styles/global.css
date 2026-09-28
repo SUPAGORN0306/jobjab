@@ -117,3 +117,159 @@
   background-repeat: no-repeat;
   z-index: -1;
 }
+
+/* ════════════════════════════════════════════════════════════
+   SKELETON — Global styles (dark theme + shimmer)
+   ════════════════════════════════════════════════════════════ */
+
+.skel-base {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skelShimmer 1.8s ease-in-out infinite;
+  border-radius: 6px;
+  display: block;
+}
+
+@keyframes skelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Shape helpers */
+.skel-logo       { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.skel-logo-lg    { width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; }
+.skel-avatar     { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; }
+.skel-avatar-lg  { width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0; }
+.skel-circle     { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; }
+.skel-icon-lg    { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; }
+
+.skel-line-xl    { height: 22px; border-radius: 5px; }
+.skel-line-lg    { height: 14px; border-radius: 4px; }
+.skel-line-md    { height: 11px; border-radius: 3px; }
+.skel-line-sm    { height: 10px; border-radius: 3px; }
+.skel-line-xs    { height: 8px; border-radius: 3px; }
+.skel-line-full  { height: 10px; width: 100%; }
+.skel-line-5of6  { height: 10px; width: 83%; }
+
+.skel-tag        { height: 22px; width: 60px; border-radius: 20px; }
+.skel-pill       { height: 22px; width: 70px; border-radius: 20px; }
+.skel-btn        { height: 32px; width: 80px; border-radius: 10px; }
+.skel-btn-lg     { height: 36px; width: 100px; border-radius: 10px; }
+.skel-block      { border-radius: 12px; }
+
+/* Layout helpers */
+.skel-row        { display: flex; gap: 12px; align-items: flex-start; }
+.skel-row-between { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.skel-col-flex   { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.skel-tag-row    { display: flex; gap: 6px; margin-top: 12px; }
+.skel-body-lines { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.skel-footer     { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+
+/* Card containers */
+.skel-job-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.skel-fav-card {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.skel-app-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.skel-profile {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.skel-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.skel-profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skel-fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.skel-no-pointer {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PAGE LOADER — Spinner กลางจอ
+   ════════════════════════════════════════════════════════════ */
+
+.page-loader {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 40px 20px;
+  animation: fadeIn 0.3s ease both;
+}
+
+.page-loader-full {
+  min-height: 100vh;
+}
+
+.page-loader-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(240, 209, 84, 0.15);
+  border-top-color: #f0d154;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.page-loader-text {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #8c9bae;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

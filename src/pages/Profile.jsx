@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchFullProfile } from '../api';
 import { useAuth } from '../context/AuthContext';
 import '../styles/candidate/Profile.css';
-import { ProfileSkeleton } from "../components/Skeleton";
+import PageLoader from '../components/PageLoader';
 import usePageTitle from '../hooks/usePageTitle';
 import { formatPhone } from '../utils/phone';
 
@@ -66,7 +66,7 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="profile-container">
-        <ProfileSkeleton />
+        <PageLoader message="Loading profile..." />
       </div>
     );
   }

@@ -8,7 +8,7 @@ import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import { fetchJobsWithMatch } from '../api';
 import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
-import { JobListSkeleton } from "../components/Skeleton";
+import PageLoader from '../components/PageLoader';
 import EmptyState from "../components/EmptyState";
 import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
@@ -352,7 +352,7 @@ function AllJobs() {
       </div>
 
       {/* ⭐ JOB GRID ⭐ */}
-      {loading && <JobListSkeleton count={6} />}
+      <PageLoader message="Loading jobs..." />
 
       {!loading && filteredJobs.length === 0 && (
         <EmptyState

@@ -16,7 +16,7 @@ import { getJobLogoClass, getJobLogoColor } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
 import EmptyState from '../components/EmptyState';
-import { AnalyticsGridSkeleton, ChartSkeleton } from '../components/EmployerSkeleton';
+import PageLoader from '../components/PageLoader';
 import { EmployerHero } from '../components/employer';
 import { toast } from 'sonner';
 import '../styles/employer/EmployerAnalytics.css';
@@ -253,8 +253,7 @@ export default function EmployerAnalytics() {
       <div className="employer-container ax-page">
         <EmployerHero variant="analytics" tag="ANALYTICS" tagIcon={BarChart3}
           title="Insights & Performance" subtitle="Loading analytics..." />
-        <AnalyticsGridSkeleton count={4} />
-        <ChartSkeleton height={240} />
+        <PageLoader message="Loading analytics..." />
       </div>
     );
   }

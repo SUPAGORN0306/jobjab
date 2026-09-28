@@ -22,11 +22,11 @@ import {
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
-import { StatsGridSkeleton, JobListSkeleton } from '../components/EmployerSkeleton';
 import EmployerCalendar from '../components/EmployerCalendar';
 import EmptyState from '../components/EmptyState';
 import useEmployerData from '../hooks/useEmployerData';
 import { EmployerHero, EmployerStat } from '../components/employer';
+import PageLoader from '../components/PageLoader';
 
 // ============================================
 // CONSTANTS
@@ -420,20 +420,9 @@ export default function EmployerDashboard() {
           tag="EMPLOYER DASHBOARD"
           tagIcon={Sparkles}
           title="Welcome back"
-          subtitle="Loading dashboard..."
+          subtitle="Manage your job postings and applicants"
         />
-
-        <StatsGridSkeleton count={4} />
-
-        <section className="emp-section">
-          <div className="emp-section-header">
-            <h2>
-              <Briefcase size={18} />
-              Your Job Postings
-            </h2>
-          </div>
-          <JobListSkeleton count={3} />
-        </section>
+        <PageLoader message="Loading dashboard..." />
       </div>
     );
   }
