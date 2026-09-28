@@ -17,6 +17,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import { StatsGridSkeleton } from '../components/EmployerSkeleton';
 import { EmployerHero, EmployerStat } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
+import { formatPhone } from '../utils/phone';
 
 export default function EmployerProfile() {
   usePageTitle("Company Profile", { description: "Your company profile" });
@@ -206,7 +207,7 @@ export default function EmployerProfile() {
                   Phone
                 </span>
                 <div className={`employer-field-box ${!profile?.phone ? 'empty' : ''}`}>
-                  {profile?.phone || 'Not provided'}
+                  {profile?.phone ? formatPhone(profile.phone) : 'Not provided'}
                 </div>
               </div>
 

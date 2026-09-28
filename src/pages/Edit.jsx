@@ -11,6 +11,7 @@ import { Briefcase, GraduationCap, X } from 'lucide-react';
 import '../styles/candidate/Edit.css';
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
+import { formatPhone } from '../utils/phone';
 
 export default function Edit() {
   usePageTitle("Edit Profile", { description: "Update your profile information" });

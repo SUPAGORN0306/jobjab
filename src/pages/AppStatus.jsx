@@ -17,6 +17,7 @@ import '../styles/candidate/AppStatus.css';
 import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
+import { formatPhone } from '../utils/phone';
 
 export default function AppStatus() {
   usePageTitle("Application Status", { description: "Track your job applications" });
@@ -491,7 +492,7 @@ export default function AppStatus() {
                         <Phone size={12} /> Phone
                       </span>
                       <span className="modal-value">
-                        {snapshot.application.phone || '-'}
+                        {snapshot.application.phone ? formatPhone(snapshot.application.phone) : '-'}
                       </span>
                     </div>
                     <div>

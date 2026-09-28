@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/candidate/Profile.css';
 import { ProfileSkeleton } from "../components/Skeleton";
 import usePageTitle from '../hooks/usePageTitle';
+import { formatPhone } from '../utils/phone';
 
 export default function Profile() {
   usePageTitle("Profile", { description: "Your profile and resume" });
@@ -228,7 +229,7 @@ export default function Profile() {
               </div>
               <div className="contact-field">
                 <span className="field-label">Phone</span>
-                <div className="field-box">{profile?.phone || '-'}</div>
+                <div className="field-box">{profile?.phone ? formatPhone(profile.phone) : '-'}</div>
               </div>
               <div className="contact-field">
                 <span className="field-label">Location</span>

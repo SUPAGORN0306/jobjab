@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
 import '../styles/employer/EmployerEdit.css';
+import { formatPhone } from '../utils/phone';
 
 const INDUSTRIES = [
   'Tech', 'Finance', 'Healthcare', 'Education',

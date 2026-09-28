@@ -20,6 +20,7 @@ import { AnalyticsGridSkeleton, ChartSkeleton } from '../components/EmployerSkel
 import { EmployerHero } from '../components/employer';
 import { toast } from 'sonner';
 import '../styles/employer/EmployerAnalytics.css';
+import { formatPhone } from '../utils/phone';
 
 // ─── Constants ───
 const STATUS_META = {
@@ -209,7 +210,7 @@ export default function EmployerAnalytics() {
         ...exportData.applicants.map((a) => [
           `"${(a.full_name || '').replace(/"/g, '""')}"`,
           `"${(a.email || '').replace(/"/g, '""')}"`,
-          `"${(a.phone || '').replace(/"/g, '""')}"`,
+          `"${a.phone ? formatPhone(a.phone) : ''}"`,
           `"${(a.location || '').replace(/"/g, '""')}"`,
           `"${(a.job_title || '').replace(/"/g, '""')}"`,
           `"${(a.company_name || '').replace(/"/g, '""')}"`,

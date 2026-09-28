@@ -29,6 +29,7 @@ import { ApplicantListSkeleton } from '../components/EmployerSkeleton';
 import { EmployerHero } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
 import { fetchApplicationSnapshot, updateApplicationStatus } from '../api';
+import { formatPhone } from '../utils/phone';
 
 // ============================================
 // CONFIG
@@ -543,7 +544,7 @@ export default function EmployerApplicants() {
                     </div>
                     <div>
                       <span className="modal-label"><Phone size={12} /> Phone</span>
-                      <span className="modal-value">{snapshot.application.phone || '-'}</span>
+                      <span className="modal-value">{snapshot.application.phone ? formatPhone(snapshot.application.phone) : '-'}</span>
                     </div>
                     <div>
                       <span className="modal-label"><MapPin size={12} /> Location</span>
