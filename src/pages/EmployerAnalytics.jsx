@@ -1,189 +1,259 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Activity,
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  Briefcase,
-  CheckCircle,
-  Download,
-  Minus,
-  PieChart as PieIcon,
-  Plus,
-  TrendingUp,
-  Trophy,
-  Users,
-  Inbox,
-  Sparkles,
+  Activity, BarChart3, Briefcase, Download, Inbox,
+  PieChart as PieIcon, Sparkles, Trophy, Users, Zap,
 } from 'lucide-react';
 import {
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Area, AreaChart, PieChart, Pie, Cell, BarChart, Bar,
 } from 'recharts';
-import { fetchEmployerAnalytics } from '../api';
-import { getJobLogoClass } from '../utils/jobLogo';
+import { fetchEmployerAnalytics, exportEmployerAnalytics } from '../api';
+import { getJobLogoClass, getJobLogoColor } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
 import EmptyState from '../components/EmptyState';
-import { ChartSkeleton, AnalyticsGridSkeleton } from '../components/EmployerSkeleton';
+import { AnalyticsGridSkeleton, ChartSkeleton } from '../components/EmployerSkeleton';
 import { EmployerHero } from '../components/employer';
 import { toast } from 'sonner';
 import '../styles/employer/EmployerAnalytics.css';
 
-// ============================================
-// CONSTANTS
-// ============================================
-
-const STATUS_COLORS = {
-  applied: '#38bdf8',
-  reviewing: '#f472b6',
-  interview: '#34d399',
-  rejected: '#94a3b8',
-  in_review: '#f472b6',
-  closed: '#94a3b8',
+// ─── Constants ───
+const STATUS_META = {
+  applied:   { label: 'Applied',   color: '#38bdf8' },
+  reviewing: { label: 'Reviewing', color: '#f472b6' },
+  interview: { label: 'Interview', color: '#34d399' },
+  rejected:  { label: 'Rejected',  color: '#94a3b8' },
 };
 
 const PERIOD_OPTIONS = [
-  { value: '7', label: 'Last 7 days' },
-  { value: '30', label: 'Last 30 days' },
-  { value: '90', label: 'Last 90 days' },
+  { value: '7',  short: '7D'  },
+  { value: '30', short: '30D' },
+  { value: '90', short: '90D' },
 ];
 
-// ============================================
-// CUSTOM TOOLTIP
-// ============================================
-
-function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload || !payload.length) return null;
+// ─── Plain tooltip (ไม่ดำ-เหลือง) ───
+function PlainTooltip({ active, payload, label, unit = '' }) {
+  if (!active || !payload?.length) return null;
   return (
-    <div className="analytics-tooltip">
-      <p className="analytics-tooltip-label">{label}</p>
-      <p className="analytics-tooltip-value">{payload[0].value} applications</p>
-    </div>
-  );
-}
-
-// ============================================
-// STAT CARD
-// ============================================
-
-function StatCard({ icon: Icon, label, value, detail, color = 'yellow', animate = false }) {
-  const numericValue = typeof value === 'number'
-    ? value
-    : parseInt(String(value).replace(/[^0-9]/g, ''), 10) || 0;
-  const suffix = typeof value === 'string' && value.includes('%') ? '%' : '';
-  const animated = useCountUp(animate ? numericValue : 0, 800);
-  const displayValue = animate ? `${animated}${suffix}` : value;
-  const isZero = numericValue === 0;
-
-  return (
-    <div className={`analytics-stat-card ${isZero ? 'is-zero' : ''}`}>
-      <div className={`analytics-stat-icon ${color}`}>
-        <Icon size={22} />
-      </div>
-      <div className="analytics-stat-content">
-        <span className="analytics-stat-value">{displayValue}</span>
-        <span className="analytics-stat-label">{label}</span>
-        {detail && <span className="analytics-stat-detail">{detail}</span>}
+    <div className="ax-tip">
+      <div className="ax-tip-label">{label}</div>
+      <div className="ax-tip-value">
+        {payload[0].value}{unit && <span className="ax-tip-unit"> {unit}</span>}
       </div>
     </div>
   );
 }
 
-// ============================================
-// EMPTY CHART STATE
-// ============================================
+// ─── Stat card (ห้ามกด) ───
+function StatCard({ icon: Icon, label, value, detail, color = 'yellow' }) {
+  const numeric = typeof value === 'number' ? value : 0;
+  const animated = useCountUp(numeric, 600);
+  const zero = numeric === 0;
 
+  return (
+    <div className={`ax-stat ${zero ? 'is-zero' : ''}`}>
+      <div className={`ax-stat-icon ${color}`}>
+        <Icon size={18} strokeWidth={2.2} />
+      </div>
+      <div className="ax-stat-body">
+        <span className="ax-stat-label">{label}</span>
+        <span className="ax-stat-value">{animated}</span>
+        {detail && <span className="ax-stat-detail">{detail}</span>}
+      </div>
+    </div>
+  );
+}
+
+// ─── Empty chart ───
 function EmptyChart({ icon: Icon = Inbox, title, description, actionLabel, onAction }) {
   return (
-    <div className="analytics-empty-chart">
-      <div className="analytics-empty-icon">
-        <Icon size={32} strokeWidth={1.5} />
-      </div>
-      <h4 className="analytics-empty-title">{title}</h4>
-      {description && <p className="analytics-empty-desc">{description}</p>}
+    <div className="ax-empty">
+      <div className="ax-empty-icon"><Icon size={22} strokeWidth={1.6} /></div>
+      <h4 className="ax-empty-title">{title}</h4>
+      {description && <p className="ax-empty-desc">{description}</p>}
       {actionLabel && onAction && (
-        <button className="analytics-empty-btn" onClick={onAction}>
-          {actionLabel}
-        </button>
+        <button className="ax-empty-btn" onClick={onAction}>{actionLabel}</button>
       )}
     </div>
   );
 }
 
-// ============================================
-// MAIN
-// ============================================
-
+// ─── Main ───
 export default function EmployerAnalytics() {
   usePageTitle('Analytics', { description: 'Insights and performance metrics' });
-
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [period, setPeriod] = useState('30');
+
+  const [data, setData]             = useState(null);
+  const [loading, setLoading]       = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError]           = useState(null);
+  const [period, setPeriod]         = useState('30');
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
       try {
-        setLoading(true);
-        const result = await fetchEmployerAnalytics();
-        setData(result);
+        if (!data) setLoading(true);
+        else setRefreshing(true);
+        const result = await fetchEmployerAnalytics({ period });
+        if (!cancelled) { setData(result); setError(null); }
       } catch (err) {
         console.error('Analytics fetch error:', err);
-        setError(err.message || 'Failed to load analytics');
+        if (!cancelled) setError(err.message || 'Failed to load analytics');
       } finally {
-        setLoading(false);
+        if (!cancelled) { setLoading(false); setRefreshing(false); }
       }
     };
     load();
-  }, []);
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period]);
 
-  // ============================================
-  // LOADING
-  // ============================================
+  const derived = useMemo(() => {
+    if (!data) return null;
+    const summary  = data.summary || {};
+    const timeline = data.applicants_by_date || [];
+    const pieRaw   = data.applicants_by_status || [];
+    const topJobs  = data.top_jobs || [];
+
+    const pie = pieRaw
+      .filter((s) => STATUS_META[s.status])
+      .map((s) => ({
+        name: STATUS_META[s.status].label,
+        value: s.count,
+        status: s.status,
+        color: STATUS_META[s.status].color,
+      }));
+
+    // Bar: เก็บ job_title เต็มไว้ + สี
+    const bar = topJobs.map((j) => {
+      const short = j.job_title?.length > 18
+        ? j.job_title.slice(0, 16) + '…'
+        : j.job_title;
+      return {
+        name: short,
+        fullName: j.job_title,
+        applicants: j.applicants,
+        color: getJobLogoColor(j.job_title),
+      };
+    });
+
+    const totalApps = summary.total_applicants || 0;
+    const interviewRate = totalApps
+      ? Math.round(((summary.interviews || 0) / totalApps) * 100)
+      : 0;
+
+    return {
+      summary, timeline, pie, bar, topJobs, interviewRate,
+      hasTimeline: timeline.some((d) => d.count > 0),
+      hasPie: pie.some((p) => p.value > 0),
+      hasBar: bar.some((b) => b.applicants > 0),
+      hasAny: totalApps > 0,
+    };
+  }, [data]);
+
+  const goToJobs = () => navigate('/employer/jobs');
+  const goToApplicants = (jobId) =>
+    navigate(jobId ? `/employer/jobs/${jobId}/applicants` : '/employer/applicants');
+
+  const handleExport = async () => {
+    try {
+      toast.loading('Preparing export...', { id: 'export' });
+      const exportData = await exportEmployerAnalytics({ period });
+
+      const rows = [
+        ['JobJab Analytics Export'],
+        ['Period', `Last ${period} days`],
+        ['Generated', exportData.generated_at],
+        [],
+        ['SUMMARY'],
+        ['Metric', 'Value'],
+        ['Total Jobs', exportData.summary.total_jobs],
+        ['Active Jobs', exportData.summary.active_jobs],
+        ['Total Applicants', exportData.summary.total_applicants],
+        ['Response Rate', `${exportData.summary.response_rate}%`],
+        ['Interview Rate', `${exportData.summary.interview_rate}%`],
+        ['Interviews', exportData.summary.interviews],
+        ['Rejected', exportData.summary.rejected],
+        [],
+        ['APPLICANTS'],
+        [
+          'Name', 'Email', 'Phone', 'Location',
+          'Job Applied', 'Company',
+          'Status', 'Applied Date', 'Match Score',
+          'Matched Skills', 'Resume',
+        ],
+        ...exportData.applicants.map((a) => [
+          `"${(a.full_name || '').replace(/"/g, '""')}"`,
+          `"${(a.email || '').replace(/"/g, '""')}"`,
+          `"${(a.phone || '').replace(/"/g, '""')}"`,
+          `"${(a.location || '').replace(/"/g, '""')}"`,
+          `"${(a.job_title || '').replace(/"/g, '""')}"`,
+          `"${(a.company_name || '').replace(/"/g, '""')}"`,
+          a.status || '',
+          a.applied_date ? a.applied_date.slice(0, 10) : '',
+          `${a.match_score}%`,
+          `"${(a.matched_skills || '').replace(/"/g, '""')}"`,
+          a.resume_url ? `"${a.resume_url}"` : 'No resume',
+        ]),
+        [],
+        ['TOP JOBS'],
+        ['Job Title', 'Company', 'Applicants', 'Status'],
+        ...exportData.top_jobs.map((j) => [
+          `"${(j.job_title || '').replace(/"/g, '""')}"`,
+          `"${(j.company_name || '').replace(/"/g, '""')}"`,
+          j.applicants,
+          j.status || 'active',
+        ]),
+      ];
+
+      const csv = '\uFEFF' + rows.map((r) => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `jobjab-analytics-${period}d-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(
+        `Exported: ${exportData.applicants.length} applicants`,
+        { id: 'export' }
+      );
+    } catch (err) {
+      console.error('Export failed:', err);
+      toast.error('Export failed', { id: 'export' });
+    }
+  };
+
+  // ─── Loading ───
   if (loading) {
     return (
-      <div className="employer-container">
+      <div className="employer-container ax-page">
         <EmployerHero
-          variant="analytics"
-          tag="ANALYTICS"
-          tagIcon={BarChart3}
+          variant="analytics" tag="ANALYTICS" tagIcon={BarChart3}
           title="Insights & Performance"
           subtitle="Loading analytics..."
         />
         <AnalyticsGridSkeleton count={4} />
-        <ChartSkeleton height={280} />
-        <div className="analytics-chart-2col">
-          <ChartSkeleton height={280} />
-          <ChartSkeleton height={280} />
+        <ChartSkeleton height={240} />
+        <div className="ax-chart-2col">
+          <ChartSkeleton height={240} />
+          <ChartSkeleton height={240} />
         </div>
       </div>
     );
   }
 
-  // ============================================
-  // ERROR
-  // ============================================
+  // ─── Error ───
   if (error) {
     return (
-      <div className="employer-container">
+      <div className="employer-container ax-page">
         <EmployerHero
-          variant="analytics"
-          tag="ANALYTICS"
-          tagIcon={BarChart3}
+          variant="analytics" tag="ANALYTICS" tagIcon={BarChart3}
           title="Insights & Performance"
           subtitle={<span style={{ color: '#fca5a5' }}>Error: {error}</span>}
         />
@@ -191,16 +261,12 @@ export default function EmployerAnalytics() {
     );
   }
 
-  // ============================================
-  // EMPTY (no jobs at all)
-  // ============================================
+  // ─── No data ───
   if (!data || data.summary.total_jobs === 0) {
     return (
-      <div className="employer-container">
+      <div className="employer-container ax-page">
         <EmployerHero
-          variant="analytics"
-          tag="ANALYTICS"
-          tagIcon={BarChart3}
+          variant="analytics" tag="ANALYTICS" tagIcon={BarChart3}
           title="Insights & Performance"
           subtitle="Real-time view of your hiring pipeline"
         />
@@ -215,382 +281,287 @@ export default function EmployerAnalytics() {
     );
   }
 
-  // ============================================
-  // COMPUTED DATA
-  // ============================================
-  const periodDays = parseInt(period, 10);
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+  const {
+    summary, timeline, pie, bar, topJobs, interviewRate,
+    hasTimeline, hasPie, hasBar, hasAny,
+  } = derived;
 
-  const filteredByDate = (data.applicants_by_date || []).filter(
-    (d) => new Date(d.date) >= cutoffDate
-  );
-  const hasLineData = filteredByDate.length >= 2;
-
-  const pieData = (data.applicants_by_status || []).map((s) => ({
-    name: s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '),
-    value: s.count,
-    status: s.status,
-  }));
-  const hasPieData = pieData.length > 0 && pieData.some((p) => p.value > 0);
-
-  const barData = (data.top_jobs || []).map((j) => ({
-    name: j.job_title,
-    applicants: j.applicants,
-    company: j.company_name,
-  }));
-  const hasBarData = barData.length > 0 && barData.some((b) => b.applicants > 0);
-
-  const totalApplicants = data.summary.total_applicants || 0;
-  const hasAnyApplicants = totalApplicants > 0;
-
-  // ============================================
-  // HANDLERS
-  // ============================================
-  const handleExport = () => {
-    try {
-      const rows = [
-        ['Job Title', 'Company', 'Applicants'],
-        ...(data.top_jobs || []).map((j) => [
-          `"${(j.job_title || '').replace(/"/g, '""')}"`,
-          `"${(j.company_name || '').replace(/"/g, '""')}"`,
-          j.applicants || 0,
-        ]),
-      ];
-      const csv = '\uFEFF' + rows.map((r) => r.join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `jobjab-analytics-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success('CSV downloaded');
-    } catch (err) {
-      toast.error('Failed to export CSV');
-    }
-  };
-
-  const handleRowClick = (jobId) => {
-    navigate(`/employer/jobs/${jobId}/applicants`);
-  };
-
-  // ============================================
-  // RENDER
-  // ============================================
   return (
-    <div className="employer-container">
+    <div className={`employer-container ax-page ${refreshing ? 'is-refreshing' : ''}`}>
       {/* HERO */}
       <EmployerHero
-        variant="analytics"
-        tag="ANALYTICS"
-        tagIcon={BarChart3}
+        variant="analytics" tag="ANALYTICS" tagIcon={BarChart3}
         title="Insights & Performance"
         subtitle="Real-time view of your hiring pipeline"
         actions={
           <>
-            <select
-              className="analytics-period-select"
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-            >
+            <div className="ax-segmented" role="tablist">
               {PERIOD_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <button
+                  key={o.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={period === o.value}
+                  className={`ax-segmented-btn ${period === o.value ? 'is-active' : ''}`}
+                  onClick={() => setPeriod(o.value)}
+                >
+                  {o.short}
+                </button>
               ))}
-            </select>
-            <button className="analytics-export-btn" onClick={handleExport}>
-              <Download size={14} />
-              Export CSV
+            </div>
+            <button className="ax-export" onClick={handleExport}>
+              <Download size={13} strokeWidth={2.5} />
+              Export
             </button>
           </>
         }
       />
 
-      {/* STAT CARDS */}
-      <section className="analytics-stats-grid">
+      {/* STATS */}
+      <section className="ax-stats">
         <StatCard
-          icon={Briefcase}
+          icon={Briefcase} color="yellow"
           label="Total Jobs"
-          value={data.summary.total_jobs}
-          detail={`${data.summary.active_jobs} active`}
-          color="yellow"
-          animate
+          value={summary.total_jobs}
+          detail={`${summary.active_jobs} active`}
         />
         <StatCard
-          icon={Users}
-          label="Total Applicants"
-          value={data.summary.total_applicants}
-          detail={`across ${data.summary.total_jobs} ${data.summary.total_jobs === 1 ? 'job' : 'jobs'}`}
-          color="mint"
-          animate
+          icon={Users} color="mint"
+          label="Applicants"
+          value={summary.total_applicants}
+          detail={`Last ${period} days`}
         />
         <StatCard
-          icon={TrendingUp}
-          label="Active Jobs"
-          value={data.summary.active_jobs}
-          detail="Currently open"
-          color="blue"
-          animate
-        />
-        <StatCard
-          icon={CheckCircle}
+          icon={Zap} color="blue"
           label="Response Rate"
-          value={`${data.summary.response_rate}%`}
-          detail="Replies sent"
-          color="purple"
-          animate
+          value={summary.response_rate}
+          detail="Reviewing + interview"
+        />
+        <StatCard
+          icon={Activity} color="purple"
+          label="Interview Rate"
+          value={interviewRate}
+          detail={`${summary.interviews || 0} interviews`}
         />
       </section>
 
-      {/* LINE CHART */}
-      <section className="analytics-chart-section">
-        <div className="analytics-chart-header">
+      {/* TIMELINE */}
+      <section className="ax-card">
+        <header className="ax-card-header">
           <div>
-            <h3 className="analytics-chart-title">
-              <Activity size={18} />
+            <h3 className="ax-card-title">
+              <Activity size={15} strokeWidth={2.5} />
               Applications Over Time
             </h3>
-            <p className="analytics-chart-subtitle">Last {period} days</p>
+            <p className="ax-card-sub">Daily applications · last {period} days</p>
           </div>
-        </div>
-
-        <div className="analytics-chart-body">
-          {hasLineData ? (
+        </header>
+        <div className="ax-chart-body ax-chart-tall">
+          {hasTimeline ? (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={filteredByDate}>
+              <AreaChart data={timeline} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorApplications" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="axGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#f0d154" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#f0d154" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
+                <CartesianGrid strokeDasharray="2 6" stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis
-                  dataKey="date"
-                  stroke="#8c9bae"
-                  fontSize={11}
+                  dataKey="date" stroke="#697382" fontSize={10}
+                  tickLine={false} axisLine={false}
                   tickFormatter={(d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  minTickGap={24}
                 />
-                <YAxis stroke="#8c9bae" fontSize={11} allowDecimals={false} />
-                <Tooltip content={<CustomTooltip />} />
+                <YAxis
+                  stroke="#697382" fontSize={10}
+                  tickLine={false} axisLine={false}
+                  allowDecimals={false} width={32}
+                />
+                <Tooltip
+                  content={<PlainTooltip unit="applications" />}
+                  cursor={{ stroke: 'rgba(240,209,84,0.3)', strokeWidth: 1 }}
+                />
                 <Area
-                  type="monotone"
-                  animationDuration={800}
-                  dataKey="count"
-                  stroke="#f0d154"
-                  strokeWidth={3}
-                  fill="url(#colorApplications)"
-                  dot={{ fill: '#f0d154', r: 4 }}
-                  activeDot={{ r: 6, fill: '#f0d154', stroke: '#1a1f2e', strokeWidth: 2 }}
+                  type="monotone" dataKey="count"
+                  stroke="#f0d154" strokeWidth={2.5}
+                  fill="url(#axGrad)" dot={false}
+                  activeDot={{ r: 5, fill: '#f0d154', stroke: '#0b0f19', strokeWidth: 2 }}
+                  animationDuration={600}
                 />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
             <EmptyChart
               icon={Activity}
-              title="Not enough data yet"
-              description={
-                hasAnyApplicants
-                  ? `Need at least 2 days of data in the last ${period} days`
-                  : 'Applications will appear here once candidates apply'
-              }
-              actionLabel="Post a Job"
-              onAction={() => navigate('/employer/dashboard')}
+              title="No applications in this period"
+              description={hasAny ? 'Try a longer range' : 'Applications will appear here'}
+              actionLabel={period !== '90' ? 'View 90 days' : null}
+              onAction={period !== '90' ? () => setPeriod('90') : null}
             />
           )}
         </div>
       </section>
 
       {/* PIE + BAR */}
-      <div className="analytics-chart-2col">
-        {/* PIE */}
-        <section className="analytics-chart-section">
-          <div className="analytics-chart-header">
-            <h3 className="analytics-chart-title">
-              <PieIcon size={18} />
-              Applications by Status
+      <div className="ax-chart-2col">
+        {/* Pie */}
+        <section className="ax-card">
+          <header className="ax-card-header">
+            <h3 className="ax-card-title">
+              <PieIcon size={15} strokeWidth={2.5} />
+              By Status
             </h3>
-          </div>
-
-          <div className="analytics-chart-body">
-            {hasPieData ? (
+          </header>
+          <div className="ax-chart-body">
+            {hasPie ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={55}
-                    outerRadius={85}
-                    paddingAngle={4}
-                    animationDuration={800}
-                    stroke="none"
+                    data={pie} dataKey="value" nameKey="name"
+                    cx="50%" cy="50%" innerRadius={48} outerRadius={70}
+                    paddingAngle={3} stroke="none"
+                    animationDuration={600}
                   >
-                    {pieData.map((entry, i) => (
-                      <Cell key={i} fill={STATUS_COLORS[entry.status] || '#8c9bae'} />
+                    {pie.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      background: '#1a1f2e',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      borderRadius: 12,
-                      fontSize: '0.78rem',
-                    }}
-                    labelStyle={{ color: '#8c9bae' }}
-                  />
+                  <Tooltip content={<PlainTooltip unit="applications" />} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
               <EmptyChart
                 icon={PieIcon}
-                title="No applications yet"
-                description="Status breakdown will appear once candidates apply"
+                title="No status data"
+                description="Status breakdown appears once candidates apply"
                 actionLabel="View jobs"
-                onAction={() => navigate('/employer/jobs')}
+                onAction={goToJobs}
               />
             )}
           </div>
-
-          {hasPieData && (
-            <div className="analytics-pie-legend">
-              {pieData.map((entry, i) => (
-                <div className="analytics-pie-legend-item" key={i}>
-                  <span
-                    className="analytics-pie-legend-dot"
-                    style={{ background: STATUS_COLORS[entry.status] || '#8c9bae' }}
-                  />
-                  {entry.name}
-                  <span className="analytics-pie-legend-count">{entry.value}</span>
+          {hasPie && (
+            <div className="ax-legend">
+              {pie.map((entry) => (
+                <div className="ax-legend-item" key={entry.status}>
+                  <span className="ax-legend-dot" style={{ background: entry.color }} />
+                  <span>{entry.name}</span>
+                  <span className="ax-legend-count">{entry.value}</span>
                 </div>
               ))}
             </div>
           )}
         </section>
 
-        {/* BAR */}
-        <section className="analytics-chart-section">
-          <div className="analytics-chart-header">
-            <h3 className="analytics-chart-title">
-              <BarChart3 size={18} />
-              Top 5 Jobs
+        {/* Bar */}
+        <section className="ax-card">
+          <header className="ax-card-header">
+            <h3 className="ax-card-title">
+              <BarChart3 size={15} strokeWidth={2.5} />
+              Top Jobs
             </h3>
-          </div>
-
-          <div className="analytics-chart-body">
-            {hasBarData ? (
+          </header>
+          <div className="ax-chart-body">
+            {hasBar ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barData} layout="vertical" margin={{ left: 20, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" horizontal={false} />
-                  <XAxis type="number" stroke="#8c9bae" fontSize={11} allowDecimals={false} />
+                <BarChart
+                  data={bar} layout="vertical"
+                  margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
+                >
+                  <CartesianGrid strokeDasharray="2 6" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+                  <XAxis
+                    type="number" stroke="#697382" fontSize={10}
+                    tickLine={false} axisLine={false} allowDecimals={false}
+                  />
                   <YAxis
-                    type="category"
-                    dataKey="name"
-                    stroke="#8c9bae"
-                    fontSize={11}
-                    width={110}
+                    type="category" dataKey="name" stroke="#d3dae4" fontSize={11}
+                    width={110} tickLine={false} axisLine={false}
                     tick={{ fill: '#d3dae4' }}
                   />
                   <Tooltip
-                    contentStyle={{
-                      background: '#1a1f2e',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      borderRadius: 12,
-                      fontSize: '0.78rem',
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null;
+                      const item = payload[0].payload;
+                      return (
+                        <div className="ax-tip">
+                          <div className="ax-tip-label">{item.fullName}</div>
+                          <div className="ax-tip-value">
+                            {item.applicants}
+                            <span className="ax-tip-unit"> applications</span>
+                          </div>
+                        </div>
+                      );
                     }}
-                    labelStyle={{ color: '#8c9bae' }}
+                    cursor={{ fill: 'rgba(240,209,84,0.05)' }}
                   />
-                  <Bar
-                    dataKey="applicants"
-                    fill="#f0d154"
-                    radius={[0, 8, 8, 0]}
-                    maxBarSize={28}
-                    animationDuration={800}
-                  />
+                  <Bar dataKey="applicants" radius={[0, 6, 6, 0]} maxBarSize={22} animationDuration={600}>
+                    {bar.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
               <EmptyChart
                 icon={Sparkles}
-                title="No applications to rank yet"
-                description="Once candidates apply, top jobs will be ranked here"
+                title="No applications to rank"
+                description="Once candidates apply, top jobs will rank here"
                 actionLabel="View jobs"
-                onAction={() => navigate('/employer/jobs')}
+                onAction={goToJobs}
               />
             )}
           </div>
         </section>
       </div>
 
-      {/* TOP JOBS TABLE */}
-      {data.top_jobs && data.top_jobs.length > 0 && (
-        <section className="analytics-chart-section">
-          <div className="analytics-chart-header">
-            <h3 className="analytics-chart-title">
-              <Trophy size={18} />
+      {/* TABLE */}
+      {topJobs.length > 0 && (
+        <section className="ax-card">
+          <header className="ax-card-header">
+            <h3 className="ax-card-title">
+              <Trophy size={15} strokeWidth={2.5} />
               Top Performing Jobs
             </h3>
-          </div>
-
-          <div className="analytics-table">
-            <div className="analytics-table-header">
+            <button className="ax-card-link" onClick={goToJobs}>View all →</button>
+          </header>
+          <div className="ax-table">
+            <div className="ax-table-head">
               <span>#</span>
-              <span>Job Title</span>
-              <span style={{ textAlign: 'right' }}>Applicants</span>
-              <span>Status</span>
+              <span>Job</span>
+              <span className="ax-cell-right">Applicants</span>
+              <span className="ax-cell-right">Status</span>
             </div>
-
-            {data.top_jobs.map((job, i) => {
-              const rankClass =
-                i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'grey';
-              const hasApplicants = (job.applicants || 0) > 0;
-
+            {topJobs.map((job, i) => {
+              const rank = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'plain';
+              const isActive = (job.status || 'active') === 'active';
+              const zero = (job.applicants || 0) === 0;
               return (
-                <div
-                  className="analytics-table-row"
+                <button
+                  type="button"
                   key={job.id}
-                  onClick={() => handleRowClick(job.id)}
+                  className="ax-table-row"
+                  onClick={() => goToApplicants(job.id)}
                 >
-                  <span className={`analytics-rank-badge ${rankClass}`}>{i + 1}</span>
-
-                  <div className="analytics-table-title">
-                    <div className={`analytics-table-logo ${getJobLogoClass(job.job_title)}`}>
-                      {job.job_title?.charAt(0) || 'J'}
+                  <span className={`ax-rank ${rank}`}>{i + 1}</span>
+                  <div className="ax-row-job">
+                    <div className={`ax-row-logo ${getJobLogoClass(job.job_title)}`}>
+                      {job.job_title?.charAt(0)?.toUpperCase() || 'J'}
                     </div>
-                    <div className="analytics-table-info">
+                    <div className="ax-row-info">
                       <h4>{job.job_title}</h4>
                       <p>{job.company_name}</p>
                     </div>
                   </div>
-
-                  <span className={`analytics-table-count ${!hasApplicants ? 'is-zero' : ''}`}>
+                  <span className={`ax-row-count ${zero ? 'is-zero' : ''}`}>
                     {job.applicants}
                   </span>
-                  <span className="analytics-table-status">Active</span>
-                </div>
+                  <span className={`ax-row-status ${isActive ? 'is-active' : 'is-paused'}`}>
+                    {isActive ? 'Active' : 'Paused'}
+                  </span>
+                </button>
               );
             })}
           </div>
-        </section>
-      )}
-
-      {/* EMPTY STATE hint — no applicants at all */}
-      {!hasAnyApplicants && (
-        <section className="analytics-cta-banner">
-          <div className="analytics-cta-icon">
-            <Plus size={24} />
-          </div>
-          <div className="analytics-cta-content">
-            <h3>Ready to get your first applicant?</h3>
-            <p>Share your job posting or improve your description to attract candidates.</p>
-          </div>
-          <button className="analytics-cta-btn" onClick={() => navigate('/employer/jobs')}>
-            View jobs →
-          </button>
         </section>
       )}
     </div>

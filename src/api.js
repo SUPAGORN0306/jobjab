@@ -218,8 +218,8 @@ export const toggleFavorite = async (jobId) => {
 // EMPLOYER: ANALYTICS
 // ============================================================
 
-export const fetchEmployerAnalytics = async () => {
-  const { data } = await apiClient.get('/api/employer/analytics');
+export const fetchEmployerAnalytics = async ({ period = '30' } = {}) => {
+  const { data } = await apiClient.get(`/api/employer/analytics?period=${period}`);
   return data;
 };
 
@@ -245,5 +245,11 @@ export const updateJobStatus = async (jobId, status) => {
     `/api/employer/jobs/${jobId}/status`,
     { status }
   );
+  return data;
+};
+
+// ─── Export analytics with full applicant details ───
+export const exportEmployerAnalytics = async ({ period = '30' } = {}) => {
+  const { data } = await apiClient.get(`/api/employer/analytics/export?period=${period}`);
   return data;
 };
