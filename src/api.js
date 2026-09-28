@@ -253,3 +253,9 @@ export const exportEmployerAnalytics = async ({ period = '30' } = {}) => {
   const { data } = await apiClient.get(`/api/employer/analytics/export?period=${period}`);
   return data;
 };
+
+// ─── Analytics widgets (Top Matches / Funnel / Activity) ───
+export const fetchAnalyticsWidgets = async ({ period = '30' } = {}) => {
+  const { data } = await apiClient.get(`/api/employer/analytics/widgets?period=${period}`);
+  return data;
+};
