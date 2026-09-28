@@ -45,7 +45,11 @@ export function FavoritesProvider({ children }) {
           experience_level: f.experience_level,
           employment_type: f.employment_type,
           skills_required: f.skills_required,
-          match_score: 0,
+          tools_preferred: f.tools_preferred,
+          match_score: f.match_score || 0,
+          match_breakdown: f.match_breakdown || { skills: 0, experience: 0, industry: 0 },
+          matched_skills: f.matched_skills || [],
+          missing_skills: f.missing_skills || [],
         }));
 
         setFavorites(mapped);

@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import '../styles/candidate/Favorite.css';
 import '../styles/home/RecommendedCard.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import { getMatchBadgeClass } from '../utils/matchBadge.js';
 import { FavoriteSkeleton } from "../components/Skeleton";
@@ -8,6 +9,7 @@ import EmptyState from "../components/EmptyState";
 import { Heart } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
+import MatchModal from '../components/MatchModal';
 
 
 export default function Favorite() {
@@ -15,6 +17,7 @@ export default function Favorite() {
 
   const navigate = useNavigate();
   const { favorites, toggleFavorite, loading } = useFavorites();
+  const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
 
   const formatSalary = (job) => {
     if (job.salary) return job.salary;
@@ -57,12 +60,13 @@ export default function Favorite() {
               const company = job.company_name || job.company;
 
               return (
-                <div
-                  className="Recommended-card"
+                <Link
+                  to={`/job/${jobId}`}
                   key={jobId}
-                  onClick={() => navigate(`/job/${jobId}`)}
-                  style={{ cursor: 'pointer' }}
+                  className="Recommended-card-link"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
                 >
+                  <div className="Recommended-card">
                   <div className="Recommended-card-top">
                     <div className="Recommended-company-info">
                       <div className={`Recommended-logo ${getJobLogoClass(title)}`}>
@@ -109,16 +113,31 @@ export default function Favorite() {
                       className={`Recommended-match-badge ${getMatchBadgeClass(
                         job.match_score || job.match || 0
                       )}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setSelectedJobForMatch(job);
+                      }}
+                      style={{ cursor: 'pointer' }}
                     >
                       {job.match_score || job.match || 0}%
                     </div>
                   </div>
-                </div>
+                  </div>
+                </Link>
               );
             })}
           </div>
         )}
       </div>
+
+      {/* Match Modal */}
+      {selectedJobForMatch && (
+        <MatchModal
+          job={selectedJobForMatch}
+          onClose={() => setSelectedJobForMatch(null)}
+        />
+      )}
     </div>
   );
 }
