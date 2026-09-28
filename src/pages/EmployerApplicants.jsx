@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight,
   BarChart3,
   Briefcase,
   CheckCircle,
@@ -9,49 +8,100 @@ import {
   Eye,
   FileText,
   GraduationCap,
-  Inbox,
   Mail,
   MapPin,
   MessageSquare,
   Phone,
+  TrendingUp,
+  TrendingDown,
   Users,
   Wrench,
   XCircle,
+  Zap,
+  ArrowRight,
 } from 'lucide-react';
 import EmptyState from "../components/EmptyState";
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { ApplicantListSkeleton } from '../components/EmployerSkeleton';
-import { EmployerHero, EmployerStat } from '../components/employer';
+import { EmployerHero } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
+import { fetchApplicationSnapshot, updateApplicationStatus } from '../api';
 
 // ============================================
-// STATUS CONFIG
+// CONFIG
 // ============================================
 
 const STATUS_CONFIG = {
-  all:       { icon: Users,        label: 'Total',     color: '#f0d154' },
-  applied:   { icon: Clock,        label: 'Applied',   color: '#38bdf8' },
+  all:       { icon: Users,         label: 'Total',     color: '#f0d154' },
+  applied:   { icon: Clock,         label: 'Applied',   color: '#38bdf8' },
   reviewing: { icon: MessageSquare, label: 'Reviewing', color: '#f472b6' },
-  interview: { icon: CheckCircle,  label: 'Interview', color: '#34d399' },
-  rejected:  { icon: XCircle,      label: 'Rejected',  color: '#94a3b8' },
+  interview: { icon: CheckCircle,   label: 'Interview', color: '#34d399' },
+  rejected:  { icon: XCircle,       label: 'Rejected',  color: '#94a3b8' },
 };
 
 const getStatusColor = (status) => {
   switch (status) {
-    case 'applied':
-      return { bg: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.5)', color: '#38bdf8' };
-    case 'reviewing':
-      return { bg: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.5)', color: '#f472b6' };
-    case 'interview':
-      return { bg: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.5)', color: '#34d399' };
-    case 'rejected':
-      return { bg: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.5)', color: '#94a3b8' };
-    default:
-      return { bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255, 255, 255, 0.15)', color: '#d3dae4' };
+    case 'applied':   return { bg: 'rgba(56, 189, 248, 0.15)',   border: 'rgba(56, 189, 248, 0.5)',   color: '#38bdf8' };
+    case 'reviewing': return { bg: 'rgba(244, 114, 182, 0.15)',  border: 'rgba(244, 114, 182, 0.5)',  color: '#f472b6' };
+    case 'interview': return { bg: 'rgba(52, 211, 153, 0.15)',   border: 'rgba(52, 211, 153, 0.5)',   color: '#34d399' };
+    case 'rejected':  return { bg: 'rgba(148, 163, 184, 0.15)',  border: 'rgba(148, 163, 184, 0.5)',  color: '#94a3b8' };
+    default:          return { bg: 'rgba(255, 255, 255, 0.05)',  border: 'rgba(255, 255, 255, 0.15)', color: '#d3dae4' };
   }
 };
+
+// ============================================
+// MINI BAR CHART (SVG-based, lightweight)
+// ============================================
+
+function MiniBarChart({ data = [], height = 48 }) {
+  if (!data.length) {
+    return (
+      <div className="mini-chart-empty" style={{ height }}>
+        <span>No data</span>
+      </div>
+    );
+  }
+
+  const max = Math.max(...data.map((d) => d.count), 1);
+  const barWidth = 100 / data.length;
+
+  return (
+    <div className="mini-chart-wrap" style={{ height }}>
+      <svg
+        viewBox={`0 0 100 ${height}`}
+        preserveAspectRatio="none"
+        className="mini-chart-svg"
+      >
+        {data.map((d, i) => {
+          const h = (d.count / max) * (height - 8);
+          const x = i * barWidth + barWidth * 0.15;
+          const w = barWidth * 0.7;
+          const y = height - h - 4;
+          const isToday = i === data.length - 1;
+
+          return (
+            <rect
+              key={i}
+              x={x}
+              y={y}
+              width={w}
+              height={Math.max(h, 2)}
+              rx={1}
+              fill={isToday ? '#f0d154' : 'rgba(240, 209, 84, 0.4)'}
+              className="mini-chart-bar"
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+// ============================================
+// MAIN
+// ============================================
 
 export default function EmployerApplicants() {
   usePageTitle("Applicants", { description: "Review job applicants" });
@@ -60,20 +110,17 @@ export default function EmployerApplicants() {
   const { applications: all, jobs = [], loading } = useEmployerData();
   const [filter, setFilter] = useState('all');
   const [searchParams, setSearchParams] = useSearchParams();
-  const jobFilter = searchParams.get('job'); // ?job=5
+  const jobFilter = searchParams.get('job');
 
-  // ⭐ Detail modal state
   const [selectedApp, setSelectedApp] = useState(null);
   const [snapshot, setSnapshot] = useState(null);
   const [snapshotLoading, setSnapshotLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
-  // ⭐ Resume viewer state
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [resumeUrl, setResumeUrl] = useState(null);
   const [resumeApplicantName, setResumeApplicantName] = useState('');
 
-  // ⭐ Handle View Details
   const handleViewDetail = async (app) => {
     setSelectedApp(app);
     setSnapshotLoading(true);
@@ -89,7 +136,6 @@ export default function EmployerApplicants() {
     }
   };
 
-  // ⭐ Handle Status Change
   const handleStatusChange = async (applicationId, newStatus) => {
     setUpdating(true);
     try {
@@ -111,7 +157,6 @@ export default function EmployerApplicants() {
     }
   };
 
-  // ⭐ Handle Resume View
   const handleViewResume = (url, applicantName = '') => {
     if (!url) {
       toast.error('No resume available for this applicant');
@@ -122,23 +167,16 @@ export default function EmployerApplicants() {
     setShowResumeModal(true);
   };
 
-  // ⭐ Filter by ?job= param first, then by status
+  // ═══════ FILTER ═══════
   const filtered =
     filter === 'all'
-      ? (jobFilter
-          ? all.filter((a) => String(a.job_id) === String(jobFilter))
-          : all)
+      ? (jobFilter ? all.filter((a) => String(a.job_id) === String(jobFilter)) : all)
       : (jobFilter
           ? all.filter((a) => String(a.job_id) === String(jobFilter) && a.status === filter)
           : all.filter((a) => a.status === filter));
 
-  // ⭐ Job title for context
   const activeJob = jobFilter ? jobs.find((j) => String(j.id) === String(jobFilter)) : null;
-
-  // ⭐ Base set — respect ?job= filter for counts too
-  const baseSet = jobFilter
-    ? all.filter((a) => String(a.job_id) === String(jobFilter))
-    : all;
+  const baseSet = jobFilter ? all.filter((a) => String(a.job_id) === String(jobFilter)) : all;
 
   const counts = {
     all: baseSet.length,
@@ -148,12 +186,81 @@ export default function EmployerApplicants() {
     rejected: baseSet.filter((a) => a.status === 'rejected').length,
   };
 
+  // ═══════ ANALYTICS — Last 7 days ═══════
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (6 - i));
+    return d;
+  });
+
+  const chartData = last7Days.map((date) => {
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const count = baseSet.filter((a) => {
+      if (!a.applied_date) return false;
+      const d = new Date(a.applied_date);
+      return d >= date && d < nextDay;
+    }).length;
+    return {
+      date,
+      count,
+      label: date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0),
+    };
+  });
+
+  const thisWeekTotal = chartData.reduce((sum, d) => sum + d.count, 0);
+
+  // Last week for comparison
+  const lastWeekStart = new Date(today);
+  lastWeekStart.setDate(lastWeekStart.getDate() - 13);
+  const lastWeekEnd = new Date(today);
+  lastWeekEnd.setDate(lastWeekEnd.getDate() - 6);
+
+  const lastWeekTotal = baseSet.filter((a) => {
+    if (!a.applied_date) return false;
+    const d = new Date(a.applied_date);
+    return d >= lastWeekStart && d < lastWeekEnd;
+  }).length;
+
+  const trendPct =
+    lastWeekTotal > 0
+      ? Math.round(((thisWeekTotal - lastWeekTotal) / lastWeekTotal) * 100)
+      : thisWeekTotal > 0
+        ? 100
+        : 0;
+
+  const trendUp = trendPct >= 0;
+
+  // ═══════ RESPONSE RATE ═══════
+  const responded = baseSet.filter(
+    (a) => a.status === 'reviewing' || a.status === 'interview'
+  ).length;
+  const responseRate = baseSet.length > 0 ? Math.round((responded / baseSet.length) * 100) : 0;
+
+  // Avg response time (days between applied and updated for responded)
+  const respondedApps = baseSet.filter(
+    (a) => a.applied_date && a.updated_at && a.status !== 'applied'
+  );
+  const avgDays =
+    respondedApps.length > 0
+      ? (
+          respondedApps.reduce((sum, a) => {
+            const applied = new Date(a.applied_date);
+            const updated = new Date(a.updated_at);
+            return sum + Math.max(0, (updated - applied) / (1000 * 60 * 60 * 24));
+          }, 0) / respondedApps.length
+        ).toFixed(1)
+      : null;
+
   return (
     <div className="employer-container">
       <EmployerHero
-        tag={activeJob ? 'FILTERED VIEW' : 'ALL APPLICANTS'}
+        tag={activeJob ? 'FILTERED VIEW' : 'APPLICANTS'}
         tagIcon={Users}
-        title={activeJob ? activeJob.job_title : 'Applicants Overview'}
+        title={activeJob ? activeJob.job_title : 'Applicants'}
         subtitle={
           activeJob
             ? `${baseSet.length} applicant${baseSet.length !== 1 ? 's' : ''} for this job`
@@ -161,179 +268,240 @@ export default function EmployerApplicants() {
         }
         actions={
           activeJob && (
-            <button
-              className="emp-btn-glass"
-              onClick={() => setSearchParams({})}
-            >
-              ← Back to all applicants
+            <button className="emp-btn-glass" onClick={() => setSearchParams({})}>
+              ← Back to all
             </button>
           )
         }
       />
 
-      <section className="emp-section">
-        {/* Stat Cards */}
-        <div className="emp-stat-row">
-          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-            <EmployerStat
-              key={key}
-              variant="pill"
-              icon={cfg.icon}
-              label={cfg.label}
-              value={counts[key]}
-              color={key}
-              active={filter === key}
-              onClick={() => setFilter(key)}
-            />
-          ))}
-        </div>
+      {/* ═══════ TWO-COLUMN LAYOUT ═══════ */}
+      <div className="applicants-layout">
+        {/* ═══ MAIN (Left) ═══ */}
+        <div className="applicants-main">
+          <div className="applicants-toolbar">
+            <h2 className="applicants-toolbar-title">
+              {filter === 'all' ? 'All Applicants' : STATUS_CONFIG[filter].label}
+              <span className="applicants-toolbar-count">{filtered.length}</span>
+            </h2>
 
-        {/* Job selector + List header */}
-        <div className="emp-section-header" style={{ marginTop: 24 }}>
-          <h2>
-            <Users size={18} />
-            {filter === 'all' ? 'All Applicants' : STATUS_CONFIG[filter].label} ({filtered.length})
-          </h2>
+            {jobs.length > 0 && (
+              <select
+                className="applicants-job-select"
+                value={jobFilter || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val) setSearchParams({ job: val });
+                  else setSearchParams({});
+                }}
+              >
+                <option value="">All Jobs ({all.length})</option>
+                {jobs.map((j) => (
+                  <option key={j.id} value={j.id}>
+                    {j.job_title} ({j.applicant_count || 0})
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
 
-          {jobs.length > 0 && (
-            <select
-              className="analytics-period-select"
-              value={jobFilter || ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val) {
-                  setSearchParams({ job: val });
-                } else {
-                  setSearchParams({});
+          {loading ? (
+            <ApplicantListSkeleton count={3} />
+          ) : filtered.length === 0 ? (
+            <div className="applicants-empty-card">
+              <EmptyState
+                icon={Users}
+                title={
+                  activeJob
+                    ? `No applicants for ${activeJob.job_title}`
+                    : filter === 'all'
+                      ? 'No applicants yet'
+                      : `No ${STATUS_CONFIG[filter].label.toLowerCase()} applicants`
                 }
-              }}
-            >
-              <option value="">All Jobs ({all.length})</option>
-              {jobs.map((j) => (
-                <option key={j.id} value={j.id}>
-                  {j.job_title} ({j.applicant_count || 0})
-                </option>
+                description={
+                  activeJob
+                    ? 'Try a different status filter or view all applicants'
+                    : filter === 'all'
+                      ? "When candidates apply, they'll appear here"
+                      : 'Try a different status filter'
+                }
+                actionLabel={activeJob ? 'View all' : 'Post a Job'}
+                onAction={
+                  activeJob
+                    ? () => setSearchParams({})
+                    : () => navigate('/employer/dashboard')
+                }
+              />
+            </div>
+          ) : (
+            <div className="emp-job-list">
+              {filtered.map((app) => (
+                <div className="emp-job-card" key={app.id}>
+                  <div className={`emp-job-logo ${getJobLogoClass(app.job_title)}`}>
+                    {app.full_name?.charAt(0) || 'U'}
+                  </div>
+                  <div className="emp-job-info">
+                    <h3>{app.full_name}</h3>
+                    <div className="emp-job-meta">
+                      <span><Mail size={12} />{app.email}</span>
+                      <span><MapPin size={12} />{app.location || 'N/A'}</span>
+                      <span><Briefcase size={12} />{app.job_title}</span>
+                    </div>
+                    <div className="app-progress-track">
+                      {['applied', 'reviewing', 'interview', 'rejected'].map((step) => {
+                        const order = ['applied', 'reviewing', 'interview', 'rejected'];
+                        const curr = order.indexOf(app.status);
+                        const idx = order.indexOf(step);
+                        const done = curr >= 0 && idx <= curr;
+                        const rej = app.status === 'rejected';
+                        return (
+                          <div
+                            key={step}
+                            className={`app-progress-node ${done ? 'done' : ''} ${rej && done ? 'rejected' : ''}`}
+                            style={{
+                              background: done ? (rej ? '#94a3b8' : '#34d399') : 'transparent',
+                              borderColor: done ? (rej ? '#94a3b8' : '#34d399') : 'rgba(255,255,255,0.15)',
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div className="app-progress-labels">
+                      <span>Applied</span>
+                      <span>Review</span>
+                      <span>Interview</span>
+                      <span>Closed</span>
+                    </div>
+                  </div>
+                  <div className="emp-job-actions">
+                    <span
+                      className="status-badge"
+                      style={{
+                        background: getStatusColor(app.status).bg,
+                        color: getStatusColor(app.status).color,
+                        borderColor: getStatusColor(app.status).border,
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.68rem',
+                        fontWeight: '600',
+                        border: '1px solid',
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {app.status}
+                    </span>
+                    <button
+                      className="emp-action-btn emp-action-view"
+                      onClick={() => handleViewDetail(app)}
+                    >
+                      <Eye size={14} />
+                      View
+                    </button>
+                    <select
+                      className="status-select"
+                      value={app.status}
+                      disabled={updating}
+                      onChange={(e) => handleStatusChange(app.id, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <option value="applied">Applied</option>
+                      <option value="reviewing">Reviewing</option>
+                      <option value="interview">Interview</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                </div>
               ))}
-            </select>
+            </div>
           )}
         </div>
 
-        {loading ? (
-          <ApplicantListSkeleton count={3} />
-        ) : filtered.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            title={
-              activeJob
-                ? `No applicants for ${activeJob.job_title}`
-                : filter === 'all'
-                  ? "No applicants yet"
-                  : `No ${STATUS_CONFIG[filter].label.toLowerCase()} applicants`
-            }
-            description={
-              activeJob
-                ? "Try a different status filter or view all applicants"
-                : filter === 'all'
-                  ? "When candidates apply to your jobs, they will appear here"
-                  : "Try a different status filter"
-            }
-            actionLabel={activeJob ? "View all applicants" : undefined}
-            onAction={activeJob ? () => setSearchParams({}) : undefined}
-          />
-        ) : (
-          <div className="job-list-grid">
-            {filtered.map((app) => (
-              <div className="emp-job-card" key={app.id}>
-                <div className={`emp-job-logo ${getJobLogoClass(app.job_title)}`}>
-                  {app.job_title?.charAt(0) || 'J'}
-                </div>
-                <div className="emp-job-info">
-                  <h3>{app.full_name}</h3>
-                  <div className="emp-job-meta">
-                    <span><Mail size={12} />{app.email}</span>
-                    <span><MapPin size={12} />{app.location || 'N/A'}</span>
-                    <span><Briefcase size={12} />{app.job_title}</span>
-                  </div>
-
-                  {/* ⭐ Timeline Progress */}
-                  <div className="app-progress-track">
-                    {['applied', 'reviewing', 'interview', 'rejected'].map((step, i) => {
-                      const statusOrder = ['applied', 'reviewing', 'interview', 'rejected'];
-                      const currentIdx = statusOrder.indexOf(app.status);
-                      const stepIdx = statusOrder.indexOf(step);
-                      const isDone = currentIdx >= 0 && stepIdx <= currentIdx;
-                      const isRejected = app.status === 'rejected';
-
-                      return (
-                        <div
-                          key={step}
-                          className={`app-progress-node ${isDone ? 'done' : ''} ${isRejected && isDone ? 'rejected' : ''}`}
-                          style={{
-                            background: isDone
-                              ? isRejected
-                                ? '#94a3b8'
-                                : '#34d399'
-                              : 'transparent',
-                            borderColor: isDone
-                              ? isRejected
-                                ? '#94a3b8'
-                                : '#34d399'
-                              : 'rgba(255,255,255,0.15)',
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="app-progress-labels">
-                    <span>Applied</span>
-                    <span>Review</span>
-                    <span>Interview</span>
-                    <span>Closed</span>
-                  </div>
-                </div>
-                <div className="emp-job-actions">
-                  <span
-                    className="status-badge"
-                    style={{
-                      background: getStatusColor(app.status).bg,
-                      color: getStatusColor(app.status).color,
-                      borderColor: getStatusColor(app.status).border,
-                      padding: '4px 12px',
-                      borderRadius: '20px',
-                      fontSize: '0.68rem',
-                      fontWeight: '600',
-                      border: '1px solid',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {app.status}
-                  </span>
+        {/* ═══ SIDEBAR (Right) ═══ */}
+        <aside className="applicants-sidebar">
+          {/* Filter by Status */}
+          <div className="applicants-sidebar-card">
+            <h3 className="applicants-sidebar-title">
+              <BarChart3 size={14} />
+              Filter by Status
+            </h3>
+            <div className="applicants-status-list">
+              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
+                const Icon = cfg.icon;
+                const isActive = filter === key;
+                return (
                   <button
-                    className="emp-action-btn emp-action-view"
-                    onClick={() => handleViewDetail(app)}
+                    key={key}
+                    className={`applicants-status-item ${isActive ? 'active' : ''}`}
+                    onClick={() => setFilter(key)}
+                    style={{ '--status-color': cfg.color }}
                   >
-                    <Eye size={14} />
-                    View Details
+                    <span className="applicants-status-icon">
+                      <Icon size={14} />
+                    </span>
+                    <span className="applicants-status-label">{cfg.label}</span>
+                    <span className="applicants-status-count">{counts[key]}</span>
                   </button>
-
-                  <select
-                    className="status-select"
-                    value={app.status}
-                    disabled={updating}
-                    onChange={(e) => handleStatusChange(app.id, e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <option value="applied">Applied</option>
-                    <option value="reviewing">Reviewing</option>
-                    <option value="interview">Interview</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </div>
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
-        )}
-      </section>
+
+          {/* Analytics */}
+          <div className="applicants-sidebar-card">
+            <h3 className="applicants-sidebar-title">
+              <TrendingUp size={14} />
+              This Week
+            </h3>
+
+            <div className="applicants-trend">
+              <div className="applicants-trend-value">
+                +{thisWeekTotal}
+                <span className="applicants-trend-unit">application{thisWeekTotal !== 1 ? 's' : ''}</span>
+              </div>
+
+              <div className={`applicants-trend-badge ${trendUp ? 'up' : 'down'}`}>
+                {trendUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                {Math.abs(trendPct)}% from last week
+              </div>
+            </div>
+
+            <MiniBarChart data={chartData} height={48} />
+
+            <div className="applicants-chart-labels">
+              {chartData.map((d, i) => (
+                <span key={i} className={i === chartData.length - 1 ? 'today' : ''}>
+                  {d.label}
+                </span>
+              ))}
+            </div>
+
+            <div className="applicants-sidebar-divider" />
+
+            <div className="applicants-stat-row">
+              <div className="applicants-stat">
+                <Zap size={12} className="applicants-stat-icon" />
+                <span className="applicants-stat-label">Response</span>
+                <span className="applicants-stat-value">{responseRate}%</span>
+              </div>
+              {avgDays !== null && (
+                <div className="applicants-stat">
+                  <Clock size={12} className="applicants-stat-icon" />
+                  <span className="applicants-stat-label">Avg reply</span>
+                  <span className="applicants-stat-value">{avgDays}d</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              className="applicants-sidebar-cta"
+              onClick={() => navigate('/employer/analytics')}
+            >
+              View full analytics
+              <ArrowRight size={12} />
+            </button>
+          </div>
+        </aside>
+      </div>
 
       {/* ═══════ DETAIL MODAL ═══════ */}
       {selectedApp && (
@@ -344,9 +512,7 @@ export default function EmployerApplicants() {
                 <h2>{selectedApp.full_name}</h2>
                 <p className="modal-subtitle">{selectedApp.email}</p>
               </div>
-              <button className="modal-close" onClick={() => setSelectedApp(null)}>
-                ×
-              </button>
+              <button className="modal-close" onClick={() => setSelectedApp(null)}>×</button>
             </div>
 
             {snapshotLoading ? (
@@ -431,12 +597,9 @@ export default function EmployerApplicants() {
                               {exp.company_name} · {exp.location || 'N/A'}
                             </p>
                             <p className="timeline-date">
-                              {exp.start_date || '?'} —{' '}
-                              {exp.is_current ? 'Present' : exp.end_date || '?'}
+                              {exp.start_date || '?'} — {exp.is_current ? 'Present' : exp.end_date || '?'}
                             </p>
-                            {exp.description && (
-                              <p className="timeline-desc">{exp.description}</p>
-                            )}
+                            {exp.description && <p className="timeline-desc">{exp.description}</p>}
                           </div>
                         </div>
                       ))}
@@ -455,8 +618,7 @@ export default function EmployerApplicants() {
                             <h4>{edu.degree} — {edu.field_of_study}</h4>
                             <p className="timeline-company">{edu.institution}</p>
                             <p className="timeline-date">
-                              {edu.start_date || '?'} —{' '}
-                              {edu.is_current ? 'Present' : edu.end_date || '?'}
+                              {edu.start_date || '?'} — {edu.is_current ? 'Present' : edu.end_date || '?'}
                               {edu.gpa ? ` · GPA ${edu.gpa}` : ''}
                             </p>
                           </div>
@@ -496,7 +658,7 @@ export default function EmployerApplicants() {
         </div>
       )}
 
-      {/* ═══════ RESUME PREVIEW MODAL ═══════ */}
+      {/* ═══════ RESUME MODAL ═══════ */}
       {showResumeModal && resumeUrl && (
         <div
           className="modal-overlay"
@@ -555,7 +717,6 @@ export default function EmployerApplicants() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
