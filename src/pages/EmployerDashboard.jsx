@@ -21,11 +21,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
-import useCountUp from '../hooks/useCountUp';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { StatsGridSkeleton, JobListSkeleton } from '../components/EmployerSkeleton';
 import EmployerCalendar from '../components/EmployerCalendar';
 import EmptyState from '../components/EmptyState';
+import useEmployerData from '../hooks/useEmployerData';
+import { EmployerHero, EmployerStat } from '../components/employer';
 
 // ============================================
 // CONSTANTS
@@ -61,6 +62,93 @@ const timeAgo = (dateStr) => {
     month: 'short', day: 'numeric', year: 'numeric',
   });
 };
+
+
+// ============================================
+// ACTION ITEMS — "Today's Tasks"
+// ============================================
+
+function ActionItems({ applications, jobs, onNavigate }) {
+  //  applications  (status = applied)  2 
+  const pendingApps = applications.filter((a) => {
+    if (a.status !== 'applied') return false;
+    if (!a.applied_date) return false;
+    const days = Math.floor(
+      (new Date() - new Date(a.applied_date)) / (1000 * 60 * 60 * 24)
+    );
+    return days >= 2;
+  });
+
+  //  jobs no applicants yet
+  const emptyJobs = jobs.filter(
+    (j) => (j.applicant_count || 0) === 0 && (j.status_key || 'active') === 'active'
+  );
+
+  const items = [];
+
+  if (pendingApps.length > 0) {
+    items.push({
+      icon: 'bell',
+      color: '#f0d154',
+      title: `Reply to ${pendingApps.length} applicant${pendingApps.length > 1 ? 's' : ''}`,
+      subtitle: `Pending more than 2 days`,
+      action: 'Review now',
+      onClick: () => onNavigate('/employer/applicants'),
+    });
+  }
+
+  if (emptyJobs.length > 0) {
+    items.push({
+      icon: 'briefcase',
+      color: '#38bdf8',
+      title: `${emptyJobs.length} job${emptyJobs.length > 1 ? 's' : ''} have no applicants yet`,
+      subtitle: `Try promoting or reviewing the description`,
+      action: 'View jobs',
+      onClick: () => onNavigate('/employer/jobs'),
+    });
+  }
+
+  if (items.length === 0) {
+    return (
+      <section className="emp-action-items emp-action-items-empty">
+        <div className="emp-action-header">
+          <span className="emp-action-emoji">✨</span>
+          <h3>All caught up</h3>
+        </div>
+        <p className="emp-action-empty-text">
+          Nothing needs your attention — take a break!
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="emp-action-items">
+      <div className="emp-action-header">
+        <span className="emp-action-emoji">🔔</span>
+        <h3>Today's Tasks ({items.length})</h3>
+      </div>
+
+      <div className="emp-action-list">
+        {items.map((item, i) => (
+          <div className="emp-action-card" key={i}>
+            <div
+              className="emp-action-dot"
+              style={{ background: item.color, boxShadow: `0 0 12px ${item.color}` }}
+            />
+            <div className="emp-action-content">
+              <h4>{item.title}</h4>
+              <p>{item.subtitle}</p>
+            </div>
+            <button className="emp-action-cta" onClick={item.onClick}>
+              {item.action} →
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 // ============================================
 // POST JOB MODAL
@@ -295,31 +383,6 @@ function PostJobModal({ user, onClose, onPosted }) {
 }
 
 // ============================================
-// STAT CARD (with count-up animation)
-// ============================================
-
-function StatCard({ icon: Icon, label, value, detail, variant = 'default', animate = false }) {
-  const animated = useCountUp(animate ? Number(value) || 0 : 0, 800);
-  const display = animate ? animated : value;
-  const isSuccess = variant === 'success';
-
-  return (
-    <div className="emp-stat-card">
-      <div className={`emp-stat-icon${isSuccess ? ' emp-stat-icon-success' : ''}`}>
-        <Icon size={22} />
-      </div>
-      <div className="emp-stat-content">
-        <span className="emp-stat-label">{label}</span>
-        <span className={isSuccess ? 'emp-stat-value-success' : 'emp-stat-value'}>
-          {display}
-        </span>
-        <span className="emp-stat-detail">{detail}</span>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
 // MAIN COMPONENT
 // ============================================
 
@@ -329,44 +392,19 @@ export default function EmployerDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const [jobs, setJobs] = useState([]);
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    jobs,
+    applications,
+    loading,
+    reload,
+    totalApplicants,
+    activeJobs,
+    jobsWithApplicants,
+    respondedCount,
+    responseRate,
+  } = useEmployerData();
+
   const [showPostForm, setShowPostForm] = useState(false);
-
-  const loadJobs = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchEmployerJobs();
-      const jobsList = data.jobs || [];
-      setJobs(jobsList);
-
-      // ⭐ Fetch applications ของทุก job
-      const appPromises = jobsList.map(async (job) => {
-        try {
-          const appData = await fetchJobApplications(job.id);
-          return (appData.applications || []).map((a) => ({
-            ...a,
-            job_title: job.job_title,
-            job_id: job.id,
-          }));
-        } catch {
-          return [];
-        }
-      });
-
-      const appResults = await Promise.all(appPromises);
-      setApplications(appResults.flat());
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadJobs();
-  }, []);
 
   const handleLogout = () => {
     if (window.confirm('Logout?')) {
@@ -375,23 +413,15 @@ export default function EmployerDashboard() {
     }
   };
 
-  const totalApplicants = jobs.reduce((sum, j) => sum + (j.applicant_count || 0), 0);
-  const jobsWithApplicants = jobs.filter((j) => (j.applicant_count || 0) > 0).length;
-  const activeJobs = jobs.filter((j) => (j.status_key || 'active') === 'active').length;
-
   if (loading) {
     return (
       <div className="employer-container">
-        <section className="emp-hero">
-          <div className="emp-hero-content">
-            <span className="emp-hero-tag">
-              <Sparkles size={14} />
-              EMPLOYER DASHBOARD
-            </span>
-            <h1>Welcome back</h1>
-            <p className="emp-hero-subtitle">Loading dashboard...</p>
-          </div>
-        </section>
+        <EmployerHero
+          tag="EMPLOYER DASHBOARD"
+          tagIcon={Sparkles}
+          title="Welcome back"
+          subtitle="Loading dashboard..."
+        />
 
         <StatsGridSkeleton count={4} />
 
@@ -410,22 +440,19 @@ export default function EmployerDashboard() {
 
   return (
     <div className="employer-container">
-      <section className="emp-hero">
-        <div className="emp-hero-content">
-          <span className="emp-hero-tag">
-            <Sparkles size={14} />
-            EMPLOYER DASHBOARD
-          </span>
-          <h1>
-            Welcome back, <span>{user?.name || user?.full_name || 'Recruiter'}</span>
-          </h1>
-          <p className="emp-hero-subtitle">
-            <Building2 size={14} />
+      <EmployerHero
+        tag="EMPLOYER DASHBOARD"
+        tagIcon={Sparkles}
+        title={<>Welcome back, <span>{user?.name || user?.full_name || 'Recruiter'}</span></>}
+        subtitle={
+          <>
             {user?.company || 'Your Company'}
             {user?.industry && ` · ${user.industry}`}
-          </p>
-
-          <div className="emp-hero-actions">
+          </>
+        }
+        subtitleIcon={Building2}
+        actions={
+          <>
             <button
               className="emp-btn-primary"
               onClick={() => setShowPostForm(true)}
@@ -438,26 +465,30 @@ export default function EmployerDashboard() {
               <LogOut size={16} />
               Log out
             </button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
+
+      <ActionItems
+        applications={applications}
+        jobs={jobs}
+        onNavigate={navigate}
+      />
 
       <section className="emp-stats-grid">
-        <StatCard
+        <EmployerStat
           icon={Briefcase}
           label="Active Postings"
-          value={jobs.length}
-          detail={`${activeJobs} active`}
-          animate
+          value={activeJobs}
+          detail={`${jobs.length} total`}
         />
-        <StatCard
+        <EmployerStat
           icon={Users}
           label="Total Applicants"
           value={totalApplicants}
           detail={`across ${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}`}
-          animate
         />
-        <StatCard
+        <EmployerStat
           icon={TrendingUp}
           label="Jobs with Applicants"
           value={jobsWithApplicants}
@@ -466,14 +497,13 @@ export default function EmployerDashboard() {
               ? `${Math.round((jobsWithApplicants / jobs.length) * 100)}% conversion`
               : 'No jobs yet'
           }
-          animate
         />
-        <StatCard
+        <EmployerStat
           icon={CheckCircle}
-          label="Status"
-          value="Active"
-          detail="Account is active"
-          variant="success"
+          label="Response Rate"
+          value={`${responseRate}%`}
+          detail={`${respondedCount} of ${totalApplicants} replied`}
+          color="success"
         />
       </section>
 
@@ -554,129 +584,11 @@ export default function EmployerDashboard() {
         <EmployerCalendar applications={applications} jobs={jobs} />
       </div>
 
-      <section className="emp-landing">
-        <div className="emp-landing-grid">
-          <div className="emp-landing-image">
-            <img src="/employer.jpg" alt="Hire talent" />
-            <div className="emp-landing-badge">For Employers</div>
-          </div>
-
-          <div className="emp-landing-content">
-            <span className="emp-landing-tag">
-              <Target size={14} />
-              WHY JOBJAB
-            </span>
-            <h2>Find the right talent, faster</h2>
-            <p className="emp-landing-desc">
-              Our AI-powered match score helps you find candidates who truly fit your
-              requirements — no more screening hundreds of unqualified resumes.
-            </p>
-
-            <div className="emp-landing-features">
-              <div className="emp-landing-feature">
-                <div className="emp-landing-icon">
-                  <Target size={20} />
-                </div>
-                <div>
-                  <h4>Smart match score</h4>
-                  <p>AI ranks candidates by skills, experience, and industry fit.</p>
-                </div>
-              </div>
-              <div className="emp-landing-feature">
-                <div className="emp-landing-icon">
-                  <Zap size={20} />
-                </div>
-                <div>
-                  <h4>Real-time applications</h4>
-                  <p>Get notified instantly when new candidates apply.</p>
-                </div>
-              </div>
-              <div className="emp-landing-feature">
-                <div className="emp-landing-icon">
-                  <BarChart3 size={20} />
-                </div>
-                <div>
-                  <h4>Track pipeline</h4>
-                  <p>Move candidates from applied to interview to hired.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="emp-landing emp-landing-reverse">
-        <div className="emp-landing-grid">
-          <div className="emp-landing-content">
-            <span className="emp-landing-tag">
-              <Sparkles size={14} />
-              HOW IT WORKS
-            </span>
-            <h2>Post a job in 3 simple steps</h2>
-            <p className="emp-landing-desc">
-              From posting to hiring — we make the process effortless.
-            </p>
-
-            <div className="emp-landing-steps">
-              <div className="emp-landing-step">
-                <span className="emp-step-number">01</span>
-                <div>
-                  <h4>Post your job</h4>
-                  <p>Fill in the details — title, skills, salary, and requirements.</p>
-                </div>
-              </div>
-              <div className="emp-landing-step">
-                <span className="emp-step-number">02</span>
-                <div>
-                  <h4>Review applicants</h4>
-                  <p>See candidates ranked by match score for your job.</p>
-                </div>
-              </div>
-              <div className="emp-landing-step">
-                <span className="emp-step-number">03</span>
-                <div>
-                  <h4>Hire the best fit</h4>
-                  <p>Schedule interviews and track candidates through your pipeline.</p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              className="emp-btn-primary"
-              onClick={() => setShowPostForm(true)}
-            >
-              <Plus size={16} />
-              Post a Job
-              <ArrowRight size={16} />
-            </button>
-          </div>
-
-          <div className="emp-landing-image">
-            <img src="/job-seeker.jpg" alt="How it works" />
-            <div className="emp-landing-badge">How It Works</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="emp-cta">
-        <div className="emp-cta-content">
-          <h2>Ready to hire your next team member?</h2>
-          <p>Post a job and reach thousands of qualified candidates on JOBJAB.</p>
-          <button
-            className="emp-btn-primary"
-            onClick={() => setShowPostForm(true)}
-          >
-            <Plus size={16} />
-            Post a New Job
-          </button>
-        </div>
-      </section>
-
       {showPostForm && (
         <PostJobModal
           user={user}
           onClose={() => setShowPostForm(false)}
-          onPosted={loadJobs}
+          onPosted={reload}
         />
       )}
     </div>

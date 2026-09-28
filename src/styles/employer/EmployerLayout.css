@@ -535,17 +535,16 @@
   background:
     linear-gradient(
       145deg,
-      rgba(220, 220, 220, 0.08) 0%,
-      rgba(180, 180, 180, 0.04) 100%
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 100%
     );
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
-    0 12px 32px rgba(0, 0, 0, 0.2),
-    0 2px 6px rgba(0, 0, 0, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.06);
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1127,8 +1126,8 @@ select.emp-field option {
   gap: 20px;
   padding: 24px;
   border-radius: 20px;
-  background: rgba(220, 220, 220, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -1181,8 +1180,8 @@ select.emp-field option {
 .employer-profile-card {
   padding: 24px;
   border-radius: 20px;
-  background: rgba(220, 220, 220, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -2114,15 +2113,6 @@ select.emp-field option {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Section card subtle lift */
-.emp-section {
-  transition: all 0.25s ease;
-}
-
-.emp-section:hover {
-  border-color: rgba(255, 255, 255, 0.9);
-}
-
 /* ============================================ */
 /* SPRINT 12: ACTION BUTTON ENHANCEMENTS         */
 /* ============================================ */
@@ -2326,20 +2316,35 @@ select.emp-field option {
 /* Calendar Dots */
 .employer-calendar-column .calendar-dots {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   justify-content: center;
+  align-items: center;
   position: absolute;
-  bottom: 2px;
+  bottom: 3px;
   left: 0;
   right: 0;
+  pointer-events: none;
 }
 
 .employer-calendar-column .calendar-dot {
-  width: 3px;
-  height: 3px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   display: inline-block;
+  box-shadow:
+    0 0 4px currentColor,
+    0 0 8px currentColor;
   animation: dotPulse 2s ease infinite;
+  flex-shrink: 0;
+}
+
+/* More indicator (ถ้ามี > 3 events) */
+.employer-calendar-column .calendar-dot-more {
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: #f0d154;
+  margin-left: 1px;
+  line-height: 1;
 }
 
 @keyframes dotPulse {
@@ -2460,4 +2465,399 @@ select.emp-field option {
   .employer-dashboard-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* ============================================ */
+/* SPRINT 15: APPLICANT TIMELINE (Progress)     */
+/* ============================================ */
+
+.app-progress-track {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0 4px;
+}
+
+.app-progress-node {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.app-progress-node.done {
+  box-shadow: 0 0 8px currentColor;
+  animation: pulseProgress 2s ease-in-out infinite;
+}
+
+.app-progress-node.done:not(.rejected) {
+  background: linear-gradient(90deg, #34d399, #10b981) !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+}
+
+.app-progress-node.done.rejected {
+  background: linear-gradient(90deg, #94a3b8, #64748b) !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
+}
+
+@keyframes pulseProgress {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.app-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  color: #8c9bae;
+  padding: 0 2px;
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  transition: color 0.25s ease;
+}
+
+.emp-job-card:hover .app-progress-labels {
+  color: #b6b6b6;
+}
+
+/* ============================================ */
+/* SPRINT 15: FILTER BUTTONS                    */
+/* ============================================ */
+
+.emp-filter-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d8d8d8;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.emp-filter-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(240, 209, 84, 0.15) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.emp-filter-btn:hover::before {
+  opacity: 1;
+}
+
+.emp-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.emp-filter-btn.active {
+  background: linear-gradient(
+    135deg,
+    rgba(240, 209, 84, 0.25) 0%,
+    rgba(240, 209, 84, 0.15) 100%
+  );
+  color: #f0d154;
+  border-color: rgba(240, 209, 84, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 4px 16px rgba(240, 209, 84, 0.25);
+}
+
+.emp-filter-btn.active:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 8px 24px rgba(240, 209, 84, 0.35);
+}
+
+/* ============================================ */
+/* SPRINT 15: JOB LOGO GRADIENTS (Employer)      */
+/* ⭐ Match Candidate (RecommendedCard.css)       */
+/* ============================================ */
+
+.emp-job-logo.logo-ai-product-manager {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+.emp-job-logo.logo-ai-researcher {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+.emp-job-logo.logo-computer-vision {
+  background: linear-gradient(135deg, #ec4899, #be185d);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);
+}
+
+.emp-job-logo.logo-data-analyst {
+  background: linear-gradient(135deg, #10b981, #047857);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.emp-job-logo.logo-data-scientist {
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+.emp-job-logo.logo-ml-engineer {
+  background: linear-gradient(135deg, #06b6d4, #0e7490);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+}
+
+.emp-job-logo.logo-nlp-engineer {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.emp-job-logo.logo-quant-researcher {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+/* Fallback */
+.emp-job-logo.bg-blue-500 {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+/* ============================================ */
+/* SPRINT 14: Calendar Section Header           */
+/* ============================================ */
+
+.employer-calendar-column .section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.employer-calendar-column .section-header svg {
+  color: #f0d154;
+}
+
+/* ============================================ */
+/* PHASE 5: ACTION ITEMS                         */
+/* ============================================ */
+
+.emp-action-items {
+  width: 100%;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(240, 209, 84, 0.08) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  border: 1px solid rgba(240, 209, 84, 0.2);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.emp-action-items-empty {
+  background: linear-gradient(
+    145deg,
+    rgba(128, 255, 213, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-color: rgba(128, 255, 213, 0.2);
+}
+
+.emp-action-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.emp-action-emoji {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.emp-action-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.emp-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emp-action-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.emp-action-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(240, 209, 84, 0.3);
+  transform: translateX(4px);
+}
+
+.emp-action-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulseActionDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseActionDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+.emp-action-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.emp-action-content h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 3px 0;
+}
+
+.emp-action-content p {
+  font-size: 0.72rem;
+  color: #8c9bae;
+  margin: 0;
+}
+
+.emp-action-cta {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid rgba(240, 209, 84, 0.4);
+  background: rgba(240, 209, 84, 0.1);
+  color: #f0d154;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.emp-action-cta:hover {
+  background: rgba(240, 209, 84, 0.2);
+  border-color: #f0d154;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(240, 209, 84, 0.25);
+}
+
+.emp-action-empty-text {
+  font-size: 0.82rem;
+  color: #8c9bae;
+  margin: 0;
+  text-align: center;
+  padding: 4px 0;
+}
+
+/* ============================================ */
+/* PHASE 5C: PROFILE INLINE EDIT                 */
+/* ============================================ */
+
+.employer-section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.employer-section-header-row .employer-section-title {
+  margin: 0;
+}
+
+.employer-edit-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.employer-edit-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d8d8d8;
+  white-space: nowrap;
+}
+
+.employer-edit-toggle-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.employer-edit-toggle-btn.primary {
+  background: rgba(240, 209, 84, 0.12);
+  border-color: rgba(240, 209, 84, 0.4);
+  color: #f0d154;
+}
+
+.employer-edit-toggle-btn.primary:hover:not(:disabled) {
+  background: rgba(240, 209, 84, 0.22);
+  border-color: #f0d154;
+  box-shadow: 0 4px 12px rgba(240, 209, 84, 0.2);
+}
+
+.employer-edit-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

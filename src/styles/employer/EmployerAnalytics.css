@@ -112,8 +112,8 @@
   gap: 10px;
   padding: 20px;
   border-radius: 20px;
-  background: rgba(220, 220, 220, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: all 0.25s ease;
@@ -138,8 +138,8 @@
 
 .analytics-stat-card:hover {
   transform: translateY(-3px);
-  background: rgba(220, 220, 220, 0.12);
-  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(240, 209, 84, 0.25);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -199,6 +199,14 @@
   letter-spacing: 0.5px;
 }
 
+/* ⭐ Detail text */
+.analytics-stat-detail {
+  font-size: 0.68rem;
+  color: #8c9bae;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
 .analytics-stat-trend {
   font-size: 0.7rem;
   font-weight: 600;
@@ -228,8 +236,8 @@
   width: 100%;
   padding: 24px;
   border-radius: 20px;
-  background: rgba(220, 220, 220, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-sizing: border-box;

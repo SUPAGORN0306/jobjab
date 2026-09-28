@@ -49,10 +49,16 @@ export default function EmployerCalendar({ applications = [], jobs = [] }) {
             <span
               key={i}
               className="calendar-dot"
-              style={{ background: color }}
+              style={{
+                background: color,
+                color: color,  // ⭐ สำหรับ box-shadow glow
+              }}
             />
           );
         })}
+        {events.length > 3 && (
+          <span className="calendar-dot-more">+{events.length - 3}</span>
+        )}
       </div>
     );
   };
@@ -73,7 +79,6 @@ export default function EmployerCalendar({ applications = [], jobs = [] }) {
       <div className="section-header">
         <CalendarIcon size={14} />
         <span>Calendar</span>
-        <span className="section-count">{applications.length}</span>
       </div>
 
       <div className="calendar-card">

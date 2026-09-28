@@ -8,21 +8,21 @@ import {
 } from '../api';
 import {
   Briefcase,
-  MapPin,
-  Users,
-  Pencil,
-  Trash2,
-  Pause,
-  Play,
   Eye,
-  X,
+  MapPin,
+  Pause,
+  Pencil,
+  Play,
   Plus,
+  Trash2,
+  Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { JobListSkeleton } from '../components/EmployerSkeleton';
+import { EmployerHero } from '../components/employer';
 
 // ============================================
 // CONSTANTS
@@ -272,16 +272,12 @@ export default function EmployerJobs() {
   if (loading) {
     return (
       <div className="employer-container">
-        <section className="emp-hero">
-          <div className="emp-hero-content">
-            <span className="emp-hero-tag">
-              <Briefcase size={14} />
-              MY JOBS
-            </span>
-            <h1>All Job Postings</h1>
-            <p className="emp-hero-subtitle">Loading jobs...</p>
-          </div>
-        </section>
+        <EmployerHero
+          tag="MY JOBS"
+          tagIcon={Briefcase}
+          title="All Job Postings"
+          subtitle="Loading jobs..."
+        />
 
         <section className="emp-section">
           <div className="emp-section-header">
@@ -298,24 +294,18 @@ export default function EmployerJobs() {
 
   return (
     <div className="employer-container">
-      <section className="emp-hero">
-        <div className="emp-hero-content">
-          <span className="emp-hero-tag">
-            <Briefcase size={14} />
-            MY JOBS
-          </span>
-          <h1>All Job Postings</h1>
-          <p className="emp-hero-subtitle">
-            {jobs.length} total {jobs.length === 1 ? 'job' : 'jobs'}
-          </p>
-          <div className="emp-hero-actions">
-            <button className="emp-btn-primary" onClick={() => navigate('/employer/dashboard')}>
-              <Plus size={16} />
-              Post New Job
-            </button>
-          </div>
-        </div>
-      </section>
+      <EmployerHero
+        tag="MY JOBS"
+        tagIcon={Briefcase}
+        title="All Job Postings"
+        subtitle={`${jobs.length} total ${jobs.length === 1 ? 'job' : 'jobs'}`}
+        actions={
+          <button className="emp-btn-primary" onClick={() => navigate('/employer/dashboard')}>
+            <Plus size={16} />
+            Post New Job
+          </button>
+        }
+      />
 
       <section className="emp-section">
         <div className="emp-section-header">
@@ -332,12 +322,7 @@ export default function EmployerJobs() {
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className="emp-btn-glass emp-btn-sm"
-                style={{
-                  background: filter === f.key ? 'rgba(240, 209, 84, 0.25)' : 'rgba(255,255,255,0.05)',
-                  color: filter === f.key ? '#f0d154' : '#d8d8d8',
-                  border: filter === f.key ? '1px solid #f0d154' : '1px solid rgba(255,255,255,0.2)',
-                }}
+                className={`emp-filter-btn ${filter === f.key ? 'active' : ''}`}
               >
                 {f.label}
               </button>
@@ -354,7 +339,7 @@ export default function EmployerJobs() {
             onAction={() => navigate('/employer/dashboard')}
           />
         ) : (
-          <div className="job-list-grid">
+          <div className="emp-job-list">
             {filtered.map((job) => {
               const statusKey = job.status_key || 'active';
               const isPaused = statusKey === 'paused';

@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, useParams } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
 // ============================================
@@ -36,7 +36,6 @@ const EmployerApplicants = lazy(() => import('./pages/EmployerApplicants.jsx'));
 const EmployerAnalytics = lazy(() => import('./pages/EmployerAnalytics.jsx'));
 const EmployerProfile = lazy(() => import('./pages/EmployerProfile.jsx'));
 const EmployerProfileEdit = lazy(() => import('./pages/EmployerProfileEdit.jsx'));
-const ViewApplicants = lazy(() => import('./pages/ViewApplicants.jsx'));
 
 // ============================================
 // CONTEXT + COMPONENTS
@@ -55,6 +54,14 @@ import './styles/components/ErrorBoundary.css';
 import './styles/components/EmptyState.css';
 import './styles/components/FormFields.css';
 import './styles/components/Animations.css';
+
+// ============================================
+// REDIRECT HELPER
+// ============================================
+function JobApplicantsRedirect() {
+  const { jobId } = useParams();
+  return <Navigate to={`/employer/applicants?job=${jobId}`} replace />;
+}
 
 // ============================================
 // PAGE FALLBACK (Suspense)
@@ -129,7 +136,7 @@ const router = createBrowserRouter([
       { path: 'analytics', element: <EmployerAnalytics /> },
       { path: 'profile', element: <EmployerProfile /> },
       { path: 'profile/edit', element: <EmployerProfileEdit /> },
-      { path: 'jobs/:jobId/applicants', element: <ViewApplicants /> },
+      { path: 'jobs/:jobId/applicants', element: <JobApplicantsRedirect /> },
     ],
   },
 ]);

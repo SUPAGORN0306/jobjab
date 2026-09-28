@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Activity,
   BarChart3,
   Briefcase,
-  Users,
-  TrendingUp,
   CheckCircle,
   Download,
-  Trophy,
   PieChart as PieIcon,
-  Activity,
-  ArrowUp,
-  ArrowDown,
-  Minus,
+  TrendingUp,
+  Trophy,
+  Users,
 } from 'lucide-react';
 import {
   LineChart,
@@ -36,6 +33,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
 import EmptyState from '../components/EmptyState';
 import { ChartSkeleton, AnalyticsGridSkeleton } from '../components/EmployerSkeleton';
+import { EmployerHero } from '../components/employer';
 import '../styles/employer/EmployerAnalytics.css';
 
 // ============================================
@@ -76,7 +74,7 @@ function CustomTooltip({ active, payload, label }) {
 // STAT CARD
 // ============================================
 
-function StatCard({ icon: Icon, label, value, trend, color = 'yellow', animate = false }) {
+function StatCard({ icon: Icon, label, value, detail, trend, color = 'yellow', animate = false }) {
   const TrendIcon = trend?.direction === 'up' ? ArrowUp
                   : trend?.direction === 'down' ? ArrowDown
                   : Minus;
@@ -100,6 +98,9 @@ function StatCard({ icon: Icon, label, value, trend, color = 'yellow', animate =
       <div className="analytics-stat-content">
         <span className="analytics-stat-value">{displayValue}</span>
         <span className="analytics-stat-label">{label}</span>
+        {detail && (
+          <span className="analytics-stat-detail">{detail}</span>
+        )}
         {trend && (
           <span className={`analytics-stat-trend ${trendClass}`}>
             <TrendIcon size={12} />
@@ -146,16 +147,13 @@ export default function EmployerAnalytics() {
   if (loading) {
     return (
       <div className="employer-container">
-        <section className="analytics-hero">
-          <div className="analytics-hero-content">
-            <span className="analytics-hero-tag">
-              <BarChart3 size={14} />
-              ANALYTICS
-            </span>
-            <h1>Insights & Performance</h1>
-            <p className="analytics-hero-subtitle">Loading analytics...</p>
-          </div>
-        </section>
+        <EmployerHero
+          variant="analytics"
+          tag="ANALYTICS"
+          tagIcon={BarChart3}
+          title="Insights & Performance"
+          subtitle="Loading analytics..."
+        />
 
         <AnalyticsGridSkeleton count={4} />
 
@@ -175,18 +173,13 @@ export default function EmployerAnalytics() {
   if (error) {
     return (
       <div className="employer-container">
-        <div className="analytics-hero">
-          <div className="analytics-hero-content">
-            <span className="analytics-hero-tag">
-              <BarChart3 size={14} />
-              ANALYTICS
-            </span>
-            <h1>Insights & Performance</h1>
-            <p className="analytics-hero-subtitle" style={{ color: '#fca5a5' }}>
-              Error: {error}
-            </p>
-          </div>
-        </div>
+        <EmployerHero
+          variant="analytics"
+          tag="ANALYTICS"
+          tagIcon={BarChart3}
+          title="Insights & Performance"
+          subtitle={<span style={{ color: '#fca5a5' }}>Error: {error}</span>}
+        />
       </div>
     );
   }
@@ -197,18 +190,13 @@ export default function EmployerAnalytics() {
   if (!data || data.summary.total_jobs === 0) {
     return (
       <div className="employer-container">
-        <div className="analytics-hero">
-          <div className="analytics-hero-content">
-            <span className="analytics-hero-tag">
-              <BarChart3 size={14} />
-              ANALYTICS
-            </span>
-            <h1>Insights & Performance</h1>
-            <p className="analytics-hero-subtitle">
-              Real-time view of your hiring pipeline
-            </p>
-          </div>
-        </div>
+        <EmployerHero
+          variant="analytics"
+          tag="ANALYTICS"
+          tagIcon={BarChart3}
+          title="Insights & Performance"
+          subtitle="Real-time view of your hiring pipeline"
+        />
 
         <EmptyState
           icon={BarChart3}
@@ -281,18 +269,14 @@ export default function EmployerAnalytics() {
   return (
     <div className="employer-container">
       {/* ============ HERO ============ */}
-      <section className="analytics-hero">
-        <div className="analytics-hero-content">
-          <span className="analytics-hero-tag">
-            <BarChart3 size={14} />
-            ANALYTICS
-          </span>
-          <h1>Insights & Performance</h1>
-          <p className="analytics-hero-subtitle">
-            Real-time view of your hiring pipeline
-          </p>
-
-          <div className="analytics-hero-actions">
+      <EmployerHero
+        variant="analytics"
+        tag="ANALYTICS"
+        tagIcon={BarChart3}
+        title="Insights & Performance"
+        subtitle="Real-time view of your hiring pipeline"
+        actions={
+          <>
             <select
               className="analytics-period-select"
               value={period}
@@ -309,9 +293,9 @@ export default function EmployerAnalytics() {
               <Download size={14} />
               Export CSV
             </button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {/* ============ STAT CARDS ============ */}
       <section className="analytics-stats-grid">
@@ -319,6 +303,7 @@ export default function EmployerAnalytics() {
           icon={Briefcase}
           label="Total Jobs"
           value={data.summary.total_jobs}
+          detail={`${data.summary.active_jobs} active`}
           color="yellow"
           animate
         />
@@ -326,6 +311,7 @@ export default function EmployerAnalytics() {
           icon={Users}
           label="Total Applicants"
           value={data.summary.total_applicants}
+          detail={`across ${data.summary.total_jobs} ${data.summary.total_jobs === 1 ? 'job' : 'jobs'}`}
           color="mint"
           animate
         />
@@ -333,6 +319,7 @@ export default function EmployerAnalytics() {
           icon={TrendingUp}
           label="Active Jobs"
           value={data.summary.active_jobs}
+          detail="Currently open"
           color="blue"
           animate
         />
@@ -340,6 +327,7 @@ export default function EmployerAnalytics() {
           icon={CheckCircle}
           label="Response Rate"
           value={`${data.summary.response_rate}%`}
+          detail="Replies sent"
           color="purple"
           animate
         />
@@ -428,8 +416,8 @@ export default function EmployerAnalytics() {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={50}
+                  outerRadius={75}
                   paddingAngle={4}
                   animationDuration={800}
                   stroke="none"
