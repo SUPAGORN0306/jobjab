@@ -36,6 +36,7 @@ const EmployerApplicants = lazy(() => import('./pages/EmployerApplicants.jsx'));
 const EmployerAnalytics = lazy(() => import('./pages/EmployerAnalytics.jsx'));
 const EmployerProfile = lazy(() => import('./pages/EmployerProfile.jsx'));
 const EmployerProfileEdit = lazy(() => import('./pages/EmployerProfileEdit.jsx'));
+const EmployerAbout = lazy(() => import('./pages/EmployerAbout.jsx'));
 
 // ============================================
 // CONTEXT + COMPONENTS
@@ -136,6 +137,7 @@ const router = createBrowserRouter([
       { path: 'analytics', element: <EmployerAnalytics /> },
       { path: 'profile', element: <EmployerProfile /> },
       { path: 'profile/edit', element: <EmployerProfileEdit /> },
+      { path: 'about', element: <EmployerAbout /> },
       { path: 'jobs/:jobId/applicants', element: <JobApplicantsRedirect /> },
     ],
   },

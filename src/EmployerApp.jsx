@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, Users, User, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Users, User, BarChart3, Info } from 'lucide-react';
 import './styles/employer/EmployerLayout.css';
 
 export default function EmployerApp() {
@@ -12,6 +12,7 @@ export default function EmployerApp() {
     { path: '/employer/applicants', icon: Users, label: 'Applicants' },
     { path: '/employer/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/employer/profile', icon: User, label: 'Profile' },
+    { path: '/employer/about', icon: Info, label: 'About' },
   ];
 
   return (
