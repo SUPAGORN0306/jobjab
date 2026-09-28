@@ -14,6 +14,7 @@ import {
   Phone,
   TrendingUp,
   TrendingDown,
+  Target,
   Users,
   Wrench,
   XCircle,
@@ -122,15 +123,24 @@ export default function EmployerApplicants() {
   const [resumeApplicantName, setResumeApplicantName] = useState('');
 
   const handleViewDetail = async (app) => {
+    console.log('🔍 [1] View clicked, app:', app);
     setSelectedApp(app);
+    console.log('🔍 [2] selectedApp set');
     setSnapshotLoading(true);
     setSnapshot(null);
     try {
+      console.log('🔍 [3] Fetching snapshot for app id:', app.id);
       const data = await fetchApplicationSnapshot(app.id);
+      console.log('🔍 [4] Snapshot received:', data);
+      console.log('🔍 [5] Match object:', data?.match);
       setSnapshot(data);
     } catch (err) {
-      toast.error(err.message);
-      setSelectedApp(null);
+      console.error('🔍 [ERROR]', err);
+      console.error('🔍 [ERROR] message:', err?.message);
+      console.error('🔍 [ERROR] response:', err?.response?.data);
+      toast.error(err.message || 'Failed to load applicant details');
+      // ⭐ Don't close modal — keep it open to show error
+      // setSelectedApp(null);
     } finally {
       setSnapshotLoading(false);
     }
@@ -517,6 +527,11 @@ export default function EmployerApplicants() {
 
             {snapshotLoading ? (
               <p className="modal-loading">Loading snapshot...</p>
+            ) : !snapshot ? (
+              <div className="modal-loading" style={{ padding: 40, textAlign: 'center' }}>
+                <p style={{ color: '#fca5a5', marginBottom: 12 }}>Failed to load applicant details</p>
+                <p style={{ fontSize: 12, color: '#8c9bae' }}>Check browser console (F12) for details</p>
+              </div>
             ) : snapshot ? (
               <div className="modal-body">
                 <section className="modal-section">
@@ -562,6 +577,148 @@ export default function EmployerApplicants() {
                     </div>
                   </div>
                 </section>
+
+                {/* ⭐ MATCH SCORE */}
+                {snapshot.match && (
+                  <section className="modal-section">
+                    <h3><Target size={16} /> Match Score</h3>
+
+                    <div
+                      className="match-score-card"
+                      style={{
+                        '--match-glow-color':
+                          snapshot.match.overall >= 75 ? 'rgba(128, 255, 213, 0.5)' :
+                          snapshot.match.overall >= 50 ? 'rgba(240, 209, 84, 0.5)' :
+                          'rgba(252, 165, 165, 0.5)',
+                      }}
+                    >
+                      {/* Overall */}
+                      <div className="match-score-overall">
+                        <div className="match-score-circle">
+                          <svg viewBox="0 0 100 100" className="match-score-ring">
+                            <circle
+                              cx="50" cy="50" r="42"
+                              fill="none"
+                              stroke="rgba(255,255,255,0.08)"
+                              strokeWidth="8"
+                            />
+                            <circle
+                              cx="50" cy="50" r="42"
+                              fill="none"
+                              stroke={
+                                snapshot.match.overall >= 75 ? '#80ffd5' :
+                                snapshot.match.overall >= 50 ? '#f0d154' :
+                                '#fca5a5'
+                              }
+                              strokeWidth="8"
+                              strokeLinecap="round"
+                              strokeDasharray={`${snapshot.match.overall * 2.64} ${264 - snapshot.match.overall * 2.64}`}
+                              transform="rotate(-90 50 50)"
+                              style={{
+                                filter: `drop-shadow(0 0 6px ${
+                                  snapshot.match.overall >= 75 ? 'rgba(128, 255, 213, 0.5)' :
+                                  snapshot.match.overall >= 50 ? 'rgba(240, 209, 84, 0.5)' :
+                                  'rgba(252, 165, 165, 0.5)'
+                                })`,
+                              }}
+                            />
+                          </svg>
+                          <div className="match-score-circle-text">
+                            <span className="match-score-number">{snapshot.match.overall}%</span>
+                            <span className="match-score-sublabel">Match</span>
+                          </div>
+                        </div>
+
+                        <div className="match-score-summary">
+                          <h4>
+                            {snapshot.match.overall >= 75 ? 'Excellent fit' :
+                             snapshot.match.overall >= 50 ? 'Good fit' :
+                             'Low fit'}
+                          </h4>
+                          <p>
+                            {snapshot.match.matched_skills?.length || 0} of {
+                              (snapshot.match.matched_skills?.length || 0) + (snapshot.match.missing_skills?.length || 0)
+                            } required skills matched
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Breakdown bars */}
+                      <p className="match-breakdown-title">Breakdown</p>
+                      <div className="match-breakdown">
+                        <div className="match-bar-row">
+                          <span className="match-bar-label">Skills</span>
+                          <div className="match-bar-track">
+                            <div
+                              className="match-bar-fill skills"
+                              style={{ width: `${snapshot.match.skills_match}%` }}
+                            />
+                          </div>
+                          <span className="match-bar-value">{snapshot.match.skills_match}%</span>
+                        </div>
+
+                        <div className="match-bar-row">
+                          <span className="match-bar-label">Experience</span>
+                          <div className="match-bar-track">
+                            <div
+                              className="match-bar-fill experience"
+                              style={{ width: `${snapshot.match.experience_match}%` }}
+                            />
+                          </div>
+                          <span className="match-bar-value">{snapshot.match.experience_match}%</span>
+                        </div>
+
+                        <div className="match-bar-row">
+                          <span className="match-bar-label">Industry</span>
+                          <div className="match-bar-track">
+                            <div
+                              className="match-bar-fill industry"
+                              style={{ width: `${snapshot.match.industry_match}%` }}
+                            />
+                          </div>
+                          <span className="match-bar-value">{snapshot.match.industry_match}%</span>
+                        </div>
+                      </div>
+
+                      {/* Matched skills */}
+                      {snapshot.match.matched_skills?.length > 0 && (
+                        <div className="match-skills-section">
+                          <span className="match-skills-label matched">
+                            ✓ Matched Skills ({snapshot.match.matched_skills.length})
+                          </span>
+                          <div className="match-skills-tags">
+                            {snapshot.match.matched_skills.map((s, i) => (
+                              <span key={i} className="match-skill-tag matched">{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Missing skills */}
+                      {snapshot.match.missing_skills?.length > 0 && (
+                        <div className="match-skills-section">
+                          <span className="match-skills-label missing">
+                            ✗ Missing Skills ({snapshot.match.missing_skills.length})
+                          </span>
+                          <div className="match-skills-tags">
+                            {snapshot.match.missing_skills.map((s, i) => (
+                              <span key={i} className="match-skill-tag missing">{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Weights info */}
+                      <div className="match-weights-info">
+                        {snapshot.application.experience_level && (
+                          <span>
+                            Weighted for <strong>{snapshot.application.experience_level}</strong> level
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </section>
+                )}
 
                 {snapshot.application.cover_letter && (
                   <section className="modal-section">

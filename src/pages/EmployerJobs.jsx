@@ -8,14 +8,15 @@ import {
 } from '../api';
 import {
   Briefcase,
-  Eye,
   MapPin,
-  Pause,
-  Pencil,
-  Play,
-  Plus,
-  Trash2,
   Users,
+  Pencil,
+  Trash2,
+  Pause,
+  Play,
+  Eye,
+  X,
+  Plus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from "../components/EmptyState";
