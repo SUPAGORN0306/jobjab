@@ -25,7 +25,7 @@ import EmptyState from "../components/EmptyState";
 import { toast } from 'sonner';
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
-import { ApplicantListSkeleton } from '../components/EmployerSkeleton';
+import PageLoader from '../components/PageLoader';
 import { EmployerHero } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
 import { fetchApplicationSnapshot, updateApplicationStatus } from '../api';
@@ -267,7 +267,7 @@ export default function EmployerApplicants() {
       : null;
 
   return (
-    <div className="employer-container">
+    <div className="employer-container employer-applicants-page">
       <EmployerHero
         tag={activeJob ? 'FILTERED VIEW' : 'APPLICANTS'}
         tagIcon={Users}
@@ -317,7 +317,7 @@ export default function EmployerApplicants() {
           </div>
 
           {loading ? (
-            <ApplicantListSkeleton count={3} />
+            <PageLoader message="Loading applicants..." />
           ) : filtered.length === 0 ? (
             <div className="applicants-empty-card">
               <EmptyState

@@ -14,7 +14,7 @@ import {
   Users,
 } from 'lucide-react';
 import usePageTitle from '../hooks/usePageTitle';
-import { StatsGridSkeleton } from '../components/EmployerSkeleton';
+import PageLoader from '../components/PageLoader';
 import { EmployerHero, EmployerStat } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
 import { formatPhone } from '../utils/phone';
@@ -79,7 +79,7 @@ export default function EmployerProfile() {
           title="Loading profile..."
         />
 
-        <StatsGridSkeleton count={3} />
+        <PageLoader message="Loading profile..." />
       </div>
     );
   }
@@ -95,7 +95,7 @@ export default function EmployerProfile() {
   const hasMultipleRoles = user?.roles?.length > 1;
 
   return (
-    <div className="employer-container">
+    <div className="employer-container employer-profile-page">
       {/* ============ HERO ============ */}
       <EmployerHero
         tag="COMPANY PROFILE"
@@ -151,10 +151,13 @@ export default function EmployerProfile() {
         }
       />
 
-      {/* ============ PROFILE CONTENT ============ */}
-      <div className="employer-profile-grid">
-        {/* LEFT CARD */}
-        <div className="employer-profile-left">
+      {/* ============ PROFILE CONTENT — 2-Column Flex ============ */}
+      <div className="emp-profile-bento">
+        {/* LEFT COLUMN */}
+        <div className="emp-profile-col">
+
+        {/* Card 1: Company Info */}
+        <div className="emp-profile-card emp-profile-card-info">
           <div
             className="employer-avatar-wrapper"
             style={{ overflow: 'hidden', padding: 0 }}
@@ -163,11 +166,7 @@ export default function EmployerProfile() {
               <img
                 src={companyLogo}
                 alt="Company Logo"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             ) : (
               <Building2 size={32} />
@@ -185,95 +184,97 @@ export default function EmployerProfile() {
           </div>
         </div>
 
+        {/* Card 2: Company Details */}
+        <div className="emp-profile-card emp-profile-card-details">
+          <h3 className="employer-section-title">Company details</h3>
+          <div className="employer-contact-grid">
+            <div className="employer-contact-field">
+              <span className="employer-field-label">
+                <Mail size={12} />
+                Email
+              </span>
+              <div className={`employer-field-box ${!profile?.email ? 'empty' : ''}`}>
+                {profile?.email || 'Not provided'}
+              </div>
+            </div>
+
+            <div className="employer-contact-field">
+              <span className="employer-field-label">
+                <Phone size={12} />
+                Phone
+              </span>
+              <div className={`employer-field-box ${!profile?.phone ? 'empty' : ''}`}>
+                {profile?.phone ? formatPhone(profile.phone) : 'Not provided'}
+              </div>
+            </div>
+
+            <div className="employer-contact-field">
+              <span className="employer-field-label">
+                <MapPin size={12} />
+                Location
+              </span>
+              <div className={`employer-field-box ${!profile?.location ? 'empty' : ''}`}>
+                {profile?.location || 'Not provided'}
+              </div>
+            </div>
+
+            <div className="employer-contact-field">
+              <span className="employer-field-label">
+                <UserCheck size={12} />
+                Contact person
+              </span>
+              <div className={`employer-field-box ${!profile?.full_name ? 'empty' : ''}`}>
+                {profile?.full_name || 'Not provided'}
+              </div>
+            </div>
+
+            <div className="employer-contact-field full-width">
+              <span className="employer-field-label">Bio / About</span>
+              <div className={`employer-field-box ${!profile?.bio ? 'empty' : ''}`}>
+                {profile?.bio || 'No bio added yet'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </div>
+
         {/* RIGHT COLUMN */}
-        <div className="employer-profile-right">
-          {/* Company details — view-only */}
-          <div className="employer-profile-card">
-            <h3 className="employer-section-title">Company details</h3>
-            <div className="employer-contact-grid">
-              <div className="employer-contact-field">
-                <span className="employer-field-label">
-                  <Mail size={12} />
-                  Email
-                </span>
-                <div className={`employer-field-box ${!profile?.email ? 'empty' : ''}`}>
-                  {profile?.email || 'Not provided'}
-                </div>
-              </div>
-
-              <div className="employer-contact-field">
-                <span className="employer-field-label">
-                  <Phone size={12} />
-                  Phone
-                </span>
-                <div className={`employer-field-box ${!profile?.phone ? 'empty' : ''}`}>
-                  {profile?.phone ? formatPhone(profile.phone) : 'Not provided'}
-                </div>
-              </div>
-
-              <div className="employer-contact-field">
-                <span className="employer-field-label">
-                  <MapPin size={12} />
-                  Location
-                </span>
-                <div className={`employer-field-box ${!profile?.location ? 'empty' : ''}`}>
-                  {profile?.location || 'Not provided'}
-                </div>
-              </div>
-
-              <div className="employer-contact-field">
-                <span className="employer-field-label">
-                  <UserCheck size={12} />
-                  Contact person
-                </span>
-                <div className={`employer-field-box ${!profile?.full_name ? 'empty' : ''}`}>
-                  {profile?.full_name || 'Not provided'}
-                </div>
-              </div>
-
-              <div className="employer-contact-field full-width">
-                <span className="employer-field-label">Bio / About</span>
-                <div className={`employer-field-box ${!profile?.bio ? 'empty' : ''}`}>
-                  {profile?.bio || 'No bio added yet'}
-                </div>
-              </div>
-            </div>
+        <div className="emp-profile-col">
+        {/* Card 3: Overview Stats */}
+        <div className="emp-profile-card emp-profile-card-stats">
+          <h3 className="employer-section-title">Overview</h3>
+          <div className="employer-stats-row">
+            <EmployerStat variant="mini" icon={Briefcase} value={jobs.length} label="Posted jobs" />
+            <EmployerStat variant="mini" icon={Users} value={totalApplicants} label="Total applicants" />
+            <EmployerStat variant="mini" icon={UserCheck} value={activeJobs} label="Active jobs" />
           </div>
+        </div>
 
-          {/* Stats */}
-          <div className="employer-profile-card">
-            <h3 className="employer-section-title">Overview</h3>
-            <div className="employer-stats-row">
-              <EmployerStat variant="mini" icon={Briefcase} value={jobs.length} label="Posted jobs" />
-              <EmployerStat variant="mini" icon={Users} value={totalApplicants} label="Total applicants" />
-              <EmployerStat variant="mini" icon={UserCheck} value={activeJobs} label="Active jobs" />
-            </div>
-          </div>
-
-          {/* Recent Jobs */}
-          <div className="employer-profile-card">
-            <h3 className="employer-section-title">Recent job postings</h3>
-            <div className="employer-jobs-list">
-              {jobs.length > 0 ? (
-                jobs.slice(0, 5).map((job) => (
-                  <div className="employer-job-item" key={job.id}>
-                    <span className="employer-job-dot"></span>
-                    <div className="employer-job-details">
-                      <h4>{job.job_title}</h4>
-                      <p className="employer-job-meta">
-                        {job.location || 'N/A'} · {job.applicant_count} applicant
-                        {job.applicant_count !== 1 ? 's' : ''}
-                      </p>
-                    </div>
+        {/* Card 4: Recent Jobs */}
+        <div className="emp-profile-card emp-profile-card-jobs">
+          <h3 className="employer-section-title">Recent job postings</h3>
+          <div className="employer-jobs-list">
+            {jobs.length > 0 ? (
+              jobs.slice(0, 5).map((job) => (
+                <div className="employer-job-item" key={job.id}>
+                  <span className="employer-job-dot"></span>
+                  <div className="employer-job-details">
+                    <h4>{job.job_title}</h4>
+                    <p className="employer-job-meta">
+                      {job.location || 'N/A'} · {job.applicant_count} applicant
+                      {job.applicant_count !== 1 ? 's' : ''}
+                    </p>
                   </div>
-                ))
-              ) : (
-                <p style={{ color: '#8c9bae', fontSize: '0.8rem' }}>
-                  No jobs posted yet
-                </p>
-              )}
-            </div>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: '#8c9bae', fontSize: '0.8rem' }}>
+                No jobs posted yet
+              </p>
+            )}
           </div>
+        </div>
         </div>
       </div>
     </div>

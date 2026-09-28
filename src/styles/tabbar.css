@@ -59,7 +59,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  color: #5a6f88;
+  color: #d0dbe8;
   transition: all 0.2s ease;
   text-decoration: none;
   position: relative;
@@ -68,7 +68,7 @@
 
 .tabbar a:hover,
 .employer-tab:hover {
-  background: rgba(225, 225, 225, 0.55);
+  background: rgba(255, 255, 255, 0.9);
   color: #0b2118;
 }
 

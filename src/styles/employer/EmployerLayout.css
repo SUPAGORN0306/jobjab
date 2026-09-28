@@ -87,9 +87,12 @@
 }
 
 .employer-tab.active {
-  background: linear-gradient(135deg, #80ffd5 0%, #38bdf8 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f5ff 100%);
   color: #0b2118;
-  box-shadow: 0 4px 12px rgba(128, 255, 213, 0.4);
+  box-shadow:
+    0 4px 16px rgba(255, 255, 255, 0.5),
+    0 0 24px rgba(255, 255, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .employer-tab-label {
@@ -1114,9 +1117,42 @@ select.emp-field option {
 
 .employer-profile-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1.4fr;
   gap: 16px;
   width: 100%;
+  align-items: start;
+}
+
+/* Left column — company info */
+.employer-profile-left {
+  position: sticky;
+  top: 20px;
+}
+
+/* Right column — stack cards */
+.employer-profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Full-width sections (stats + recent jobs) */
+.employer-profile-right > .employer-profile-card:first-child {
+  /* company details card */
+}
+
+.employer-profile-right > .employer-profile-card:nth-child(2),
+.employer-profile-right > .employer-profile-card:nth-child(3) {
+  /* stats + recent jobs */
+}
+
+@media (max-width: 900px) {
+  .employer-profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .employer-profile-left {
+    position: static;
+  }
 }
 
 .employer-profile-left {
@@ -4164,4 +4200,100 @@ select.emp-field option {
   .modal-status-row {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* ════════════════════════════════════════════════════════════
+   EMPLOYER PROFILE — 2-Column Flex (compact)
+   ════════════════════════════════════════════════════════════ */
+
+.emp-profile-bento {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 14px;
+  width: 100%;
+  margin-top: 4px;
+  align-items: start;
+}
+
+.emp-profile-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.emp-profile-card {
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: border-color 0.2s ease;
+}
+
+.emp-profile-card:hover {
+  border-color: rgba(240, 209, 84, 0.2);
+}
+
+/* Info card — flex row */
+.emp-profile-card-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .emp-profile-bento {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   EMPLOYER PROFILE — ลด gap Hero → Bento
+   ════════════════════════════════════════════════════════════ */
+
+/* ลด gap ใน container ที่มี emp-profile-bento */
+.employer-container:has(.emp-profile-bento) {
+  gap: 16px;
+}
+
+/* ลด padding ล่างของ Hero */
+.employer-container:has(.emp-profile-bento) .emp-hero {
+  padding-bottom: 4px;
+}
+
+/* ลด margin-top ของ bento (ให้ชิด hero) */
+.employer-container:has(.emp-profile-bento) .emp-profile-bento {
+  margin-top: 0;
+}
+
+/* fallback ถ้า :has() ไม่ทำงาน */
+.employer-profile-page {
+  gap: 16px;
+}
+.employer-profile-page .emp-hero {
+  padding-bottom: 4px;
+}
+.employer-profile-page .emp-profile-bento {
+  margin-top: 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   EMPLOYER APPLICANTS — ลด gap Hero → Layout
+   ════════════════════════════════════════════════════════════ */
+
+.employer-applicants-page {
+  gap: 16px;
+}
+
+.employer-applicants-page .emp-hero {
+  padding-bottom: 4px;
+}
+
+/* .applicants-layout margin-top ลด */
+.employer-applicants-page .applicants-layout {
+  margin-top: 0;
 }
