@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchFullProfile, updateProfile } from '../api';
+import { fetchFullProfile } from '../api';
 import apiClient from '../apiClient';
 import '../styles/candidate/Profile.css';
 import {
@@ -12,12 +12,8 @@ import {
   Phone,
   UserCheck,
   Users,
-  Pencil,
-  Save,
-  X,
 } from 'lucide-react';
 import usePageTitle from '../hooks/usePageTitle';
-import { toast } from 'sonner';
 import { StatsGridSkeleton } from '../components/EmployerSkeleton';
 import { EmployerHero, EmployerStat } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
@@ -33,17 +29,6 @@ export default function EmployerProfile() {
   const [error, setError] = useState(null);
   const [profile, setProfile] = useState(null);
   const [companyLogo, setCompanyLogo] = useState(null);
-
-  // ⭐ EDIT MODE
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
-    full_name: '',
-    phone: '',
-    location: '',
-    industry: '',
-    bio: '',
-  });
 
   useEffect(() => {
     const load = async () => {
@@ -69,44 +54,6 @@ export default function EmployerProfile() {
     };
     load();
   }, []);
-
-  // ⭐ Start editing — copy profile → form
-  const handleStartEdit = () => {
-    setForm({
-      full_name: profile?.full_name || '',
-      phone: profile?.phone || '',
-      location: profile?.location || '',
-      industry: profile?.industry || '',
-      bio: profile?.bio || '',
-    });
-    setIsEditing(true);
-  };
-
-  // ⭐ Cancel — reset form
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setForm({ full_name: '', phone: '', location: '', industry: '', bio: '' });
-  };
-
-  // ⭐ Field change
-  const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  // ⭐ Save — update profile
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await updateProfile(form);
-      setProfile((prev) => ({ ...prev, ...form }));
-      setIsEditing(false);
-      toast.success('Profile updated successfully');
-    } catch (err) {
-      toast.error(err.message || 'Failed to update profile');
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -239,165 +186,57 @@ export default function EmployerProfile() {
 
         {/* RIGHT COLUMN */}
         <div className="employer-profile-right">
-          {/* Company details — View/Edit toggle */}
+          {/* Company details — view-only */}
           <div className="employer-profile-card">
-            <div className="employer-section-header-row">
-              <h3 className="employer-section-title">Company details</h3>
-
-              {!isEditing ? (
-                <button
-                  className="employer-edit-toggle-btn"
-                  onClick={handleStartEdit}
-                >
-                  <Pencil size={12} />
-                  Edit
-                </button>
-              ) : (
-                <div className="employer-edit-actions">
-                  <button
-                    className="employer-edit-toggle-btn"
-                    onClick={handleCancelEdit}
-                    disabled={saving}
-                  >
-                    <X size={12} />
-                    Cancel
-                  </button>
-                  <button
-                    className="employer-edit-toggle-btn primary"
-                    onClick={handleSave}
-                    disabled={saving}
-                  >
-                    <Save size={12} />
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
+            <h3 className="employer-section-title">Company details</h3>
+            <div className="employer-contact-grid">
+              <div className="employer-contact-field">
+                <span className="employer-field-label">
+                  <Mail size={12} />
+                  Email
+                </span>
+                <div className={`employer-field-box ${!profile?.email ? 'empty' : ''}`}>
+                  {profile?.email || 'Not provided'}
                 </div>
-              )}
+              </div>
+
+              <div className="employer-contact-field">
+                <span className="employer-field-label">
+                  <Phone size={12} />
+                  Phone
+                </span>
+                <div className={`employer-field-box ${!profile?.phone ? 'empty' : ''}`}>
+                  {profile?.phone || 'Not provided'}
+                </div>
+              </div>
+
+              <div className="employer-contact-field">
+                <span className="employer-field-label">
+                  <MapPin size={12} />
+                  Location
+                </span>
+                <div className={`employer-field-box ${!profile?.location ? 'empty' : ''}`}>
+                  {profile?.location || 'Not provided'}
+                </div>
+              </div>
+
+              <div className="employer-contact-field">
+                <span className="employer-field-label">
+                  <UserCheck size={12} />
+                  Contact person
+                </span>
+                <div className={`employer-field-box ${!profile?.full_name ? 'empty' : ''}`}>
+                  {profile?.full_name || 'Not provided'}
+                </div>
+              </div>
+
+              <div className="employer-contact-field full-width">
+                <span className="employer-field-label">Bio / About</span>
+                <div className={`employer-field-box ${!profile?.bio ? 'empty' : ''}`}>
+                  {profile?.bio || 'No bio added yet'}
+                </div>
+              </div>
             </div>
-
-            {!isEditing ? (
-              /* ═══════ VIEW MODE ═══════ */
-              <div className="employer-contact-grid">
-                <div className="employer-contact-field">
-                  <span className="employer-field-label">
-                    <Mail size={12} />
-                    Email
-                  </span>
-                  <div className={`employer-field-box ${!profile?.email ? 'empty' : ''}`}>
-                    {profile?.email || 'Not provided'}
-                  </div>
-                </div>
-
-                <div className="employer-contact-field">
-                  <span className="employer-field-label">
-                    <Phone size={12} />
-                    Phone
-                  </span>
-                  <div className={`employer-field-box ${!profile?.phone ? 'empty' : ''}`}>
-                    {profile?.phone || 'Not provided'}
-                  </div>
-                </div>
-
-                <div className="employer-contact-field">
-                  <span className="employer-field-label">
-                    <MapPin size={12} />
-                    Location
-                  </span>
-                  <div className={`employer-field-box ${!profile?.location ? 'empty' : ''}`}>
-                    {profile?.location || 'Not provided'}
-                  </div>
-                </div>
-
-                <div className="employer-contact-field">
-                  <span className="employer-field-label">
-                    <UserCheck size={12} />
-                    Contact person
-                  </span>
-                  <div className={`employer-field-box ${!profile?.full_name ? 'empty' : ''}`}>
-                    {profile?.full_name || 'Not provided'}
-                  </div>
-                </div>
-
-                <div className="employer-contact-field full-width">
-                  <span className="employer-field-label">Bio / About</span>
-                  <div className={`employer-field-box ${!profile?.bio ? 'empty' : ''}`}>
-                    {profile?.bio || 'No bio added yet'}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* ═══════ EDIT MODE ═══════ */
-              <div className="form-grid">
-                <div className="form-field form-field-full">
-                  <label className="form-field-label">
-                    <UserCheck size={12} />
-                    Contact Person
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. John Smith"
-                    value={form.full_name}
-                    onChange={(e) => handleChange('full_name', e.target.value)}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label className="form-field-label">
-                    <Phone size={12} />
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="e.g. +66 91 234 5678"
-                    value={form.phone}
-                    onChange={(e) => handleChange('phone', e.target.value)}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label className="form-field-label">
-                    <MapPin size={12} />
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Bangkok, Thailand"
-                    value={form.location}
-                    onChange={(e) => handleChange('location', e.target.value)}
-                  />
-                </div>
-
-                <div className="form-field form-field-full">
-                  <label className="form-field-label">
-                    <Building2 size={12} />
-                    Industry
-                  </label>
-                  <select
-                    value={form.industry}
-                    onChange={(e) => handleChange('industry', e.target.value)}
-                  >
-                    <option value="">-- Select Industry --</option>
-                    <option value="Tech">Tech</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Education">Education</option>
-                    <option value="Retail">Retail</option>
-                    <option value="E-commerce">E-commerce</option>
-                    <option value="Automotive">Automotive</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div className="form-field form-field-full">
-                  <label className="form-field-label">Bio / About</label>
-                  <textarea
-                    rows={4}
-                    placeholder="Tell candidates about your company culture, mission, and what makes you a great place to work..."
-                    value={form.bio}
-                    onChange={(e) => handleChange('bio', e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Stats */}

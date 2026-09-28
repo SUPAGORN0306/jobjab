@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity,
+  ArrowDown,
+  ArrowUp,
   BarChart3,
   Briefcase,
   CheckCircle,
   Download,
+  Minus,
   PieChart as PieIcon,
   TrendingUp,
   Trophy,
