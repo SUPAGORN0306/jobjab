@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity, BarChart3, Briefcase, Download, Inbox, Target, Zap,
@@ -9,9 +9,11 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Area, AreaChart, PieChart, Pie, Cell, BarChart, Bar,
 } from 'recharts';
+import { exportEmployerAnalytics } from '../utils/api';
 import {
-  fetchEmployerAnalytics, exportEmployerAnalytics, fetchAnalyticsWidgets,
-} from '../utils/api';
+  useEmployerAnalytics,
+  useAnalyticsWidgets,
+} from '../hooks/queries/useEmployerApplications';
 import { getJobLogoClass, getJobLogoColor } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
@@ -107,41 +109,19 @@ export default function EmployerAnalytics() {
   usePageTitle('Analytics', { description: 'Insights and performance metrics' });
   const navigate = useNavigate();
 
-  const [data, setData]           = useState(null);
-  const [widgets, setWidgets]     = useState(null);
-  const [loading, setLoading]     = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError]         = useState(null);
-  const [period, setPeriod]       = useState('30');
+  const [period, setPeriod] = useState('30');
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        if (!data) setLoading(true);
-        else setRefreshing(true);
+  // ─── React Query (cached) ───
+  const {
+    data,
+    isLoading: loading,
+    isFetching: refreshing,
+    error: queryError,
+  } = useEmployerAnalytics(period);
 
-        const [analyticsData, widgetsData] = await Promise.all([
-          fetchEmployerAnalytics({ period }),
-          fetchAnalyticsWidgets({ period }),
-        ]);
+  const { data: widgets } = useAnalyticsWidgets(period);
 
-        if (!cancelled) {
-          setData(analyticsData);
-          setWidgets(widgetsData);
-          setError(null);
-        }
-      } catch (err) {
-        console.error('Analytics fetch error:', err);
-        if (!cancelled) setError(err.message || 'Failed to load analytics');
-      } finally {
-        if (!cancelled) { setLoading(false); setRefreshing(false); }
-      }
-    };
-    load();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period]);
+  const error = queryError?.message || null;
 
   const derived = useMemo(() => {
     if (!data) return null;
