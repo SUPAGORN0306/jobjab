@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchFullProfile, updateProfile } from '../api';
-import apiClient from '../apiClient';
+import { fetchFullProfile, updateProfile } from '../utils/api';
+import apiClient from '../lib/apiClient';
 import CompanyLogoUploader from '../components/CompanyLogoUploader';
 import {
   Building2,

@@ -1,7 +1,7 @@
 import { resolveFileUrl } from '../utils/apiUrl';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchFullProfile } from '../api';
+import { fetchFullProfile } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import '../styles/candidate/Profile.css';
 import PageLoader from '../components/PageLoader';

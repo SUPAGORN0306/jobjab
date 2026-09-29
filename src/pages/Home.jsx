@@ -6,7 +6,7 @@ import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
-import { fetchJobsWithMatch } from '../api';
+import { fetchJobsWithMatch } from '../utils/api';
 import MatchModal from '../components/MatchModal';
 import FilterSheet from '../components/FilterSheet';
 

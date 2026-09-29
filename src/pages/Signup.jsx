@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getErrorMessage } from '../apiClient';
+import { getErrorMessage } from '../lib/apiClient';
 import '../styles/candidate/Signup.css';
 import usePageTitle from '../hooks/usePageTitle';
 

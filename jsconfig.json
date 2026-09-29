@@ -1,7 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*":           ["./src/*"],
+      "@api":          ["./src/utils/api.js"],
+      "@client":       ["./src/lib/apiClient.js"],
+      "@utils/*":      ["./src/utils/*"],
+      "@lib/*":        ["./src/lib/*"],
+      "@hooks/*":      ["./src/hooks/*"],
+      "@components/*": ["./src/components/*"],
+      "@context/*":    ["./src/context/*"],
+      "@pages/*":      ["./src/pages/*"]
     }
   },
   "include": ["src"]

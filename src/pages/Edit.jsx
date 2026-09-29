@@ -1,7 +1,7 @@
 import { resolveFileUrl } from '../utils/apiUrl';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchFullProfile, updateProfile, fetchSkills } from '../api';
+import { fetchFullProfile, updateProfile, fetchSkills } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import AvatarUploader from '../components/AvatarUploader';
 import ResumeUploader from '../components/ResumeUploader';

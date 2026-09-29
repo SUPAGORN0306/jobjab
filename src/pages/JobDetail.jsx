@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../styles/candidate/JobDetail.css";
 import { useAuth } from '../context/AuthContext';
-import { fetchJobDetailWithMatch } from '../api';
+import { fetchJobDetailWithMatch } from '../utils/api';
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 

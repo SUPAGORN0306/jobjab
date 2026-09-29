@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "./AuthContext";
-import { fetchFavorites, toggleFavorite as apiToggleFavorite } from "../api";
+import { fetchFavorites, toggleFavorite as apiToggleFavorite } from "../utils/api";
 import { toast } from 'sonner';
 
 const FavoritesContext = createContext(null);

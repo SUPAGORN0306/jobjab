@@ -1,9 +1,9 @@
 import { resolveFileUrl } from '../utils/apiUrl';
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { fetchJobDetail, fetchFullProfile, submitApplication, fetchSkills } from '../api';
+import { fetchJobDetail, fetchFullProfile, submitApplication, fetchSkills } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import apiClient from '../apiClient';
+import apiClient from '../lib/apiClient';
 
 import {
   Briefcase,

@@ -8,7 +8,7 @@
  */
 import axios from 'axios';
 
-import { API_ORIGIN } from './utils/apiUrl';
+import { API_ORIGIN } from '../utils/apiUrl';
 
 // ============================================================
 // AXIOS INSTANCE

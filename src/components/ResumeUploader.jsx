@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { FileText, Upload, Trash2, Eye, X, CheckCircle, AlertCircle } from 'lucide-react';
-import apiClient from '../apiClient';
+import apiClient from '../lib/apiClient';
 
 export default function ResumeUploader({
   currentResume,

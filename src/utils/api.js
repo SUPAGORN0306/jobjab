@@ -9,7 +9,7 @@
  * - auto-refresh เมื่อ 401
  * - error format มาตรฐาน
  */
-import apiClient from './apiClient';
+import apiClient from '../lib/apiClient';
 
 // ============================================================
 // MODULE-LEVEL USER STATE
@@ -257,5 +257,11 @@ export const exportEmployerAnalytics = async ({ period = '30' } = {}) => {
 // ─── Analytics widgets (Top Matches / Funnel / Activity) ───
 export const fetchAnalyticsWidgets = async ({ period = '30' } = {}) => {
   const { data } = await apiClient.get(`/api/employer/analytics/widgets?period=${period}`);
+  return data;
+};
+
+// ─── BFF: All applications in 1 call ───
+export const fetchAllEmployerApplications = async () => {
+  const { data } = await apiClient.get('/api/employer/applications/all');
   return data;
 };

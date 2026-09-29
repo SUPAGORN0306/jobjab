@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchUserApplications, fetchApplicationDetail } from '../api';
+import { fetchUserApplications, fetchApplicationDetail } from '../utils/api';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import {

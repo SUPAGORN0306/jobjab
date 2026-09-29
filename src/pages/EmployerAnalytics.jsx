@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import {
   fetchEmployerAnalytics, exportEmployerAnalytics, fetchAnalyticsWidgets,
-} from '../api';
+} from '../utils/api';
 import { getJobLogoClass, getJobLogoColor } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';

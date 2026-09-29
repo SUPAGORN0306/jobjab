@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchEmployerJobs, createEmployerJob, fetchJobApplications } from '../api';
+import { fetchEmployerJobs, createEmployerJob, fetchJobApplications } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import {
   Briefcase,

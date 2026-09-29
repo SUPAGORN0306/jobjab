@@ -28,7 +28,7 @@ import { getJobLogoClass } from '../utils/jobLogo';
 import PageLoader from '../components/PageLoader';
 import { EmployerHero } from '../components/employer';
 import useEmployerData from '../hooks/useEmployerData';
-import { fetchApplicationSnapshot, updateApplicationStatus } from '../api';
+import { fetchApplicationSnapshot, updateApplicationStatus } from '../utils/api';
 import { formatPhone } from '../utils/phone';
 
 // ============================================

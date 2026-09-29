@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getErrorMessage } from '../apiClient';
+import { getErrorMessage } from '../lib/apiClient';
 import '../styles/candidate/Login.css';
 import usePageTitle from '../hooks/usePageTitle';
 

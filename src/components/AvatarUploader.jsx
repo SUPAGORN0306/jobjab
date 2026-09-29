@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import apiClient from '../apiClient';
+import apiClient from '../lib/apiClient';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
 import '../styles/components/AvatarUploader.css';

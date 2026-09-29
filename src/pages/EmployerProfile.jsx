@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchFullProfile } from '../api';
-import apiClient from '../apiClient';
+import { fetchFullProfile } from '../utils/api';
+import apiClient from '../lib/apiClient';
 import '../styles/candidate/Profile.css';
 import {
   Briefcase,

@@ -1,10 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchEmployerJobs, fetchJobApplications } from '../api';
+import { fetchAllEmployerApplications } from '../utils/api';
 
 /**
  * useEmployerData — fetch employer jobs + all applications
  *
  * ใช้ใน: EmployerDashboard, EmployerApplicants, EmployerProfile
+ *
+ * ⚡ Performance (Session 5):
+ * - เปลี่ยนจาก N+1 (loop fetchJobApplications) → 1 BFF call
+ * - เดิม: 10 requests × 1-3s = 10-30s
+ * - ใหม่: 1 request ~500ms (cold) / ~5ms (cache)
  *
  * @returns {{
  *   jobs, applications, loading, error, reload,
@@ -22,26 +27,10 @@ export default function useEmployerData() {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchEmployerJobs();
-      const jobsList = data.jobs || [];
-      setJobs(jobsList);
-
-      // Fetch applications ของทุก job
-      const appPromises = jobsList.map(async (job) => {
-        try {
-          const appData = await fetchJobApplications(job.id);
-          return (appData.applications || []).map((a) => ({
-            ...a,
-            job_title: job.job_title,
-            job_id: job.id,
-          }));
-        } catch {
-          return [];
-        }
-      });
-
-      const appResults = await Promise.all(appPromises);
-      setApplications(appResults.flat());
+      // ⚡ 1 call แทน N calls
+      const data = await fetchAllEmployerApplications();
+      setJobs(data.jobs || []);
+      setApplications(data.applications || []);
     } catch (err) {
       console.error('[useEmployerData]', err);
       setError(err.message);

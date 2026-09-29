@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Building2 } from 'lucide-react';
-import apiClient from '../apiClient';
+import apiClient from '../lib/apiClient';
 import '../styles/components/AvatarUploader.css';
 
 export default function CompanyLogoUploader({

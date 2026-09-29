@@ -5,7 +5,7 @@ import {
   deleteEmployerJob,
   updateJobStatus,
   updateEmployerJob,
-} from '../api';
+} from '../utils/api';
 import {
   Briefcase,
   MapPin,

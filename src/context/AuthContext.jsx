@@ -15,7 +15,7 @@ import {
   logout as apiLogout,
   register as apiRegister,
   setCurrentUser,
-} from '../api';
+} from '../utils/api';
 
 const AuthContext = createContext(null);
 
