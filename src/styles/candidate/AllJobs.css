@@ -128,9 +128,14 @@
 .all-jobs-filter-card .search-input::placeholder { color: #616d7d; }
 
 .all-jobs-filter-card .search-input:focus {
-  background-color: #ffffff;
-  border-color: #80ffd5;
-  box-shadow: 0 0 0 3px rgba(128, 255, 213, 0.2);
+  font-size: 1.1rem;   
+  color: #ffffff;
+  border-color: #f4f3f0;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.all-jobs-filter-card .search-input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* Filter row — 6 items: 4 dropdowns + salary + sort */
