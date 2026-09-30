@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    FullReload(['src/**/*']),
+    // FullReload(['src/**/*']),
   ],
 
   resolve: {
@@ -28,14 +28,14 @@ export default defineConfig({
   server: {
     watch: {
       usePolling: true,
-      interval: 100,
+      interval: 1000,
     },
   },
 
   build: {
     chunkSizeWarningLimit: 600,
 
-    // ⭐ Rolldown syntax — ใช้ advancedChunks
+    // Rolldown syntax — ใช้ advancedChunks
     rollupOptions: {
       output: {
         advancedChunks: {
