@@ -245,25 +245,17 @@ function Home() {
           </div>
         </div>
 
-        {/* ⭐ SEARCH (Desktop only — minimal) */}
-        <div className="search-filter-section">
-          <div className="search-box">
-            <div className="search-input-container">
-              <input
-                type="text"
-                placeholder="Search jobs, companies, or keywords..."
-                className="search-input"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-              />
-              <button
-                className="search-btn"
-                onClick={() => updateUrl({ q: searchInput.trim() })}
-              >
-                Search
-              </button>
-            </div>
+        {/* SEARCH (Desktop only — minimal) */}
+        <div className="search-box">
+          <div className="search-input-container">
+            <input
+              type="text"
+              placeholder="Search jobs, companies, or keywords..."
+              className="search-input"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
           </div>
         </div>
 
