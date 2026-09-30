@@ -56,18 +56,26 @@ export default function EmployerProfile() {
     load();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      logout();
+      await logout();
       navigate('/');
     }
   };
 
-  const handleSwitchRole = () => {
+  const handleSwitchRole = async () => {
     const confirmed = window.confirm('Switch to "Job Seeker" mode?');
     if (!confirmed) return;
-    switchRole('candidate');
-    window.location.href = '/home';
+
+    // รอ API switch-role เสร็จก่อน → cookie ใหม่ถูก set
+    const ok = await switchRole('candidate');
+    if (!ok) {
+      alert('Failed to switch role. Please try again.');
+      return;
+    }
+
+    // client-side navigate (SPA) — ไม่ reload หน้า
+    navigate('/home');
   };
 
   if (loading) {

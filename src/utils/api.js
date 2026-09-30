@@ -125,6 +125,12 @@ export const refreshToken = async () => {
   return data;
 };
 
+//เปลี่ยน active role (multi-role user)
+export const switchRoleApi = async ({ role }) => {
+  const { data } = await apiClient.post('/api/auth/switch-role', { role });
+  return data;
+};
+
 // ============================================================
 // EMPLOYER
 // ============================================================

@@ -46,21 +46,27 @@ export default function Profile() {
     load();
   }, [user, authLoading, navigate]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      logout();
+      await logout();
       navigate('/');
     }
   };
 
-  const handleSwitchRole = (role) => {
+  const handleSwitchRole = async (role) => {
     if (role === activeRole) return;
     const confirmed = window.confirm(
       `Switch to "${role === 'employer' ? 'Employer' : 'Job Seeker'}" mode?`
     );
     if (!confirmed) return;
-    switchRole(role);
-    window.location.href = role === 'employer' ? '/employer/dashboard' : '/home';
+
+    // รอ API switch-role เสร็จก่อน → cookie ใหม่ถูก set
+    const ok = await switchRole(role);
+    if (!ok) {
+      alert('Failed to switch role. Please try again.');
+      return;
+    }
+    navigate(role === 'employer' ? '/employer/dashboard' : '/home');
   };
 
   if (loading) {

@@ -15,6 +15,7 @@ import {
   logout as apiLogout,
   register as apiRegister,
   setCurrentUser,
+  switchRoleApi,
 } from '../utils/api';
 
 const AuthContext = createContext(null);
@@ -104,8 +105,17 @@ export function AuthProvider({ children }) {
   // SWITCH ROLE
   // ============================================================
   const switchRole = useCallback(
-    (role) => {
+    async (role) => {
       if (!user?.roles?.includes(role)) return false;
+
+      // ขอ JWT ใหม่ที่มี role นี้ → me() จะ return role ถูกหลัง refresh
+      try {
+        await switchRoleApi({ role });
+      } catch (err) {
+        console.warn('switchRole: API failed', err);
+        return false;   // อย่า setActiveRole ถ้า API fail → กัน state ไม่ตรง JWT
+      }
+
       setActiveRole(role);
       return true;
     },
