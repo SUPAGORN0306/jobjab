@@ -24,6 +24,21 @@ export const queryClient = new QueryClient({
 // ─── Query Keys (centralized) ───
 // ใช้ pattern นี้เพื่อ invalidate ได้ตรง
 export const queryKeys = {
+  // filtered jobs
+  jobsFiltered: (params) => [
+    'jobs',
+    'filtered',
+    params.q,
+    params.level,
+    params.type,
+    params.industry,
+    params.salary_min,
+    params.salary_max,
+    params.sort,
+    params.page,
+    params.limit,
+    params.userId,
+  ],
   employerApplications: () => ['employer', 'applications', 'all'],
   employerJobs:         () => ['employer', 'jobs'],
   employerAnalytics:    (period) => ['employer', 'analytics', period],
@@ -34,3 +49,4 @@ export const queryKeys = {
   applicationSnapshot:  (appId) => ['application', 'snapshot', appId],
   skills:               () => ['skills'],
 };
+

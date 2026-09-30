@@ -189,6 +189,37 @@ export const fetchJobsWithMatch = async (userId) => {
   return data;
 };
 
+export const fetchJobsFiltered = async ({
+  q,
+  position,
+  level,
+  type,
+  industry,
+  salary_min,
+  salary_max,
+  sort = "newest",
+  page = 1,
+  limit = 24,
+  userId,
+} = {}) => {
+  const params = new URLSearchParams();
+
+  if (q) params.set("q", q);
+  if (position && position !== "all") params.set("position", position);
+  if (level && level !== "all") params.set("level", level);
+  if (type && type !== "all") params.set("type", type);
+  if (industry && industry !== "all") params.set("industry", industry);
+  if (salary_min && salary_min > 0) params.set("salary_min", salary_min);
+  if (salary_max && salary_max < 250000) params.set("salary_max", salary_max);
+  if (sort) params.set("sort", sort);
+  params.set("page", page);
+  params.set("limit", limit);
+  if (userId) params.set("user_id", userId);
+
+  const { data } = await apiClient.get(`/api/jobs?${params.toString()}`);
+  return data;
+};
+
 export const fetchJobDetailWithMatch = async (jobId, userId) => {
   const uid = userId ?? getCurrentUserId();
   const { data } = await apiClient.get(`/api/jobs/${jobId}${uid ? `?user_id=${uid}` : ''}`);

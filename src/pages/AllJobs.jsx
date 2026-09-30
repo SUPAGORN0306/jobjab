@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
-import { fetchJobsWithMatch } from '../utils/api';
+import useJobsQuery from '../hooks/useJobsQuery';
+import useDebounce from '../hooks/useDebounce';
 import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
 import PageLoader from '../components/PageLoader';
@@ -14,199 +15,133 @@ import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 
-// ============================================
-// SEARCH HELPERS
-// ============================================
-
-const normalize = (str) =>
-  (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-
-const tokenize = (str) =>
-  (str || "")
-    .toLowerCase()
-    .split(/[\s\-_]+/)
-    .filter(Boolean);
-
-const matchesQuery = (text, query) => {
-  if (!query) return true;
-  if (!text) return false;
-
-  const normText = normalize(text);
-  const normQuery = normalize(query);
-
-  if (normText.includes(normQuery)) return true;
-
-  const tokens = tokenize(query);
-  if (tokens.length > 1) {
-    return tokens.every((token) => normText.includes(token));
-  }
-
-  return false;
-};
-
-// ============================================
-// JOB LOGO CLASS
-// ============================================
-
-
-// ============================================
-// COMPONENT
-// ============================================
+const MAX_SALARY = 250000;
 
 function AllJobs() {
   usePageTitle("All Jobs", { description: "Browse all available positions" });
 
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isFavorited, toggleFavorite } = useFavorites();
   const { user } = useAuth();
 
-  const MAX_SALARY = 250000;
-  const [salaryRange, setSalaryRange] = useState([0, MAX_SALARY]);
-  const minVal = salaryRange[0];
-  const maxVal = salaryRange[1];
+  // ─── Read filters from URL ───
+  const urlQ = searchParams.get("q") || "";
+  const urlPosition = searchParams.get("position") || "all";
+  const urlLevel = searchParams.get("level") || "all";
+  const urlType = searchParams.get("type") || "all";
+  const urlIndustry = searchParams.get("industry") || "all";
+  const urlSalaryMin = parseInt(searchParams.get("salary_min") || "0", 10);
+  const urlSalaryMax = parseInt(searchParams.get("salary_max") || String(MAX_SALARY), 10);
+  const urlSort = searchParams.get("sort") || "match";
 
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // ─── Local input state ───
+  const [searchInput, setSearchInput] = useState(urlQ);
+  const [salaryRange, setSalaryRange] = useState([urlSalaryMin, urlSalaryMax]);
+  const debouncedSearch = useDebounce(searchInput, 400);
+  const debouncedSalary = useDebounce(salaryRange, 500);
 
-  const [visibleCount, setVisibleCount] = useState(24);
-  const [sortBy, setSortBy] = useState("match");
+  // ─── Helper: update URL ───
+  function updateUrl(patch = {}) {
+    const next = new URLSearchParams(searchParams);
+    Object.entries(patch).forEach(([key, value]) => {
+      if (value === null || value === "" || value === "all" || value === undefined) {
+        next.delete(key);
+      } else {
+        next.set(key, String(value));
+      }
+    });
+    setSearchParams(next, { replace: true });
+  }
 
+  // ─── Sync search → URL ───
   useEffect(() => {
-    const userId = user?.id;
+    if (debouncedSearch !== urlQ) {
+      updateUrl({ q: debouncedSearch });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
-    fetchJobsWithMatch(userId)
-      .then((data) => {
-        setJobs(data.jobs || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching jobs:", err);
-        setLoading(false);
+  // ─── Sync salary → URL ───
+  useEffect(() => {
+    const [minV, maxV] = debouncedSalary;
+    if (minV !== urlSalaryMin || maxV !== urlSalaryMax) {
+      updateUrl({
+        salary_min: minV > 0 ? String(minV) : null,
+        salary_max: maxV < MAX_SALARY ? String(maxV) : null,
       });
-  }, [user]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSalary]);
 
-  const TOTAL_JOBS_AVAILABLE = jobs.length;
+  // ─── useInfiniteQuery ───
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useJobsQuery({
+    q: urlQ,
+    position: urlPosition,
+    level: urlLevel,
+    type: urlType,
+    industry: urlIndustry,
+    salary_min: urlSalaryMin,
+    salary_max: urlSalaryMax,
+    sort: urlSort,
+    userId: user?.id,
+  });
 
-  const [searchInput, setSearchInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [position, setPosition] = useState("all");
-  const [level, setLevel] = useState("all");
-  const [type, setType] = useState("all");
-  const [industry, setIndustry] = useState("all");
+  const visibleJobs = useMemo(() => {
+    if (!data?.pages) return [];
+    return data.pages.flatMap((page) => page?.jobs || []);
+  }, [data]);
 
-  const runSearch = () => setSearchQuery(searchInput.trim());
+  const firstPage = data?.pages?.[0] || {};
+  const pagination = firstPage.pagination || {};
+  const total = pagination.total || 0;
+
+  // ─── Handlers ───
   const handleSearchKeyDown = (e) => {
-    if (e.key === "Enter") runSearch();
+    if (e.key === "Enter") {
+      updateUrl({ q: searchInput.trim() });
+    }
+  };
+
+  const handleFilterChange = (key, value) => {
+    updateUrl({ [key]: value });
+  };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
   };
 
   const clearFilters = () => {
     setSearchInput("");
-    setSearchQuery("");
-    setPosition("all");
-    setLevel("all");
-    setType("all");
-    setIndustry("all");
     setSalaryRange([0, MAX_SALARY]);
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
-
-  // ============================================
-  // FILTERED + SORTED
-  // ============================================
-
-  const filteredJobs = useMemo(() => {
-    const filtered = jobs.filter((job) => {
-      if (searchQuery) {
-        const searchFields = [
-          job.title, job.company, job.location, job.industry,
-          job.type, job.level, job.about_role, job.aboutRole,
-          job.skills_required, job.tools_preferred,
-        ];
-        const matchesSearch = searchFields.some((field) =>
-          matchesQuery(field, searchQuery)
-        );
-        if (!matchesSearch) return false;
-      }
-
-      if (position && position !== "all" && job.title !== position) return false;
-
-      if (level && level !== "all") {
-        const jobLevel = job.level?.toLowerCase() || "";
-        const matchesLevel =
-          jobLevel === level.toLowerCase() ||
-          jobLevel.includes(level.toLowerCase()) ||
-          (level === "mid" && jobLevel.includes("middle"));
-        if (!matchesLevel) return false;
-      }
-
-      if (type && type !== "all" && job.type !== type) return false;
-      if (industry && industry !== "all" && job.industry !== industry) return false;
-
-      const jobMinSalary = job.salary_min || 0;
-      const jobMaxSalary = job.salary_max || jobMinSalary;
-
-      if (jobMinSalary > 0 || jobMaxSalary > 0) {
-        const overlaps = jobMaxSalary >= minVal && jobMinSalary <= maxVal;
-        if (!overlaps) return false;
-      }
-
-      return true;
-    });
-
-    const sorted = [...filtered];
-    switch (sortBy) {
-      case "match":
-        sorted.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
-        break;
-      case "newest":
-        sorted.sort((a, b) => {
-          const da = a.posted_date ? new Date(a.posted_date) : 0;
-          const db = b.posted_date ? new Date(b.posted_date) : 0;
-          return db - da;
-        });
-        break;
-      case "salary_high":
-        sorted.sort((a, b) => (b.salary_max || 0) - (a.salary_max || 0));
-        break;
-      case "salary_low":
-        sorted.sort((a, b) => (a.salary_min || 0) - (b.salary_min || 0));
-        break;
-      default:
-        break;
-    }
-
-    return sorted;
-  }, [jobs, searchQuery, position, level, type, industry, minVal, maxVal, sortBy]);
-
-  const visibleJobs = useMemo(() => {
-    return filteredJobs.slice(0, visibleCount);
-  }, [filteredJobs, visibleCount]);
-
-  const hasMore = visibleCount < filteredJobs.length;
 
   const hasActiveFilters = () => {
     return (
-      searchInput.trim() !== "" ||
-      searchQuery !== "" ||
-      position !== "all" ||
-      level !== "all" ||
-      type !== "all" ||
-      industry !== "all" ||
-      salaryRange[0] > 0 ||
-      salaryRange[1] < MAX_SALARY
+      urlQ !== "" ||
+      urlPosition !== "all" ||
+      urlLevel !== "all" ||
+      urlType !== "all" ||
+      urlIndustry !== "all" ||
+      urlSalaryMin > 0 ||
+      urlSalaryMax < MAX_SALARY
     );
   };
 
-  useEffect(() => {
-    setVisibleCount(24);
-  }, [searchQuery, position, level, type, industry, minVal, maxVal, sortBy]);
-
-  // ============================================
-  // RENDER
-  // ============================================
+  const remaining = total - visibleJobs.length;
 
   return (
     <div className="all-jobs-container">
-      {/* ⭐ HEADER ⭐ */}
+      {/* HEADER */}
       <div className="all-jobs-header">
         <button className="all-jobs-back" onClick={() => navigate('/home')}>
           ‹ Back to Home
@@ -215,13 +150,13 @@ function AllJobs() {
           <div>
             <h1>All Jobs</h1>
             <p className="all-jobs-subtitle">
-              {loading ? 'Loading...' : `${filteredJobs.length.toLocaleString()} positions available`}
+              {isLoading ? 'Loading...' : `${total.toLocaleString()} positions available`}
             </p>
           </div>
         </div>
       </div>
 
-      {/* ⭐ FILTER BAR ⭐ */}
+      {/* FILTER BAR */}
       <div className="all-jobs-filter-card">
         <div className="search-input-container">
           <input
@@ -232,12 +167,12 @@ function AllJobs() {
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={handleSearchKeyDown}
           />
-          <button className="search-btn" onClick={runSearch}>Search</button>
         </div>
 
         <div className="filter-navbar">
+          {/* ⭐ Position */}
           <div className="filter-item">
-            <Select value={position} onValueChange={setPosition}>
+            <Select value={urlPosition} onValueChange={(v) => handleFilterChange('position', v)}>
               <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                 <SelectValue placeholder="Position" />
               </SelectTrigger>
@@ -255,36 +190,42 @@ function AllJobs() {
             </Select>
           </div>
 
+          {/* Level */}
           <div className="filter-item">
-            <Select value={level} onValueChange={setLevel}>
+            <Select value={urlLevel} onValueChange={(v) => handleFilterChange('level', v)}>
               <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                 <SelectValue placeholder="Level" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="entry">Entry Level</SelectItem>
-                <SelectItem value="mid">Mid Level</SelectItem>
-                <SelectItem value="senior">Senior Level</SelectItem>
+                <SelectItem value="Entry">Entry Level</SelectItem>
+                <SelectItem value="Mid">Mid Level</SelectItem>
+                <SelectItem value="Senior">Senior Level</SelectItem>
+                <SelectItem value="Lead">Lead</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {/* Type */}
           <div className="filter-item">
-            <Select value={type} onValueChange={setType}>
+            <Select value={urlType} onValueChange={(v) => handleFilterChange('type', v)}>
               <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="Contract">Contract</SelectItem>
                 <SelectItem value="Full-time">Full-time</SelectItem>
+                <SelectItem value="Contract">Contract</SelectItem>
                 <SelectItem value="Internship">Internship</SelectItem>
+                <SelectItem value="Remote">Remote</SelectItem>
+                <SelectItem value="Part-time">Part-time</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {/* Industry */}
           <div className="filter-item">
-            <Select value={industry} onValueChange={setIndustry}>
+            <Select value={urlIndustry} onValueChange={(v) => handleFilterChange('industry', v)}>
               <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                 <SelectValue placeholder="Industry" />
               </SelectTrigger>
@@ -307,13 +248,13 @@ function AllJobs() {
           <div className="salary-header">
             <span className="salary-title">Salary Range:</span>
             <span className="salary-display-value">
-              ${minVal.toLocaleString()} — ${maxVal.toLocaleString()}
+              ${salaryRange[0].toLocaleString()} — ${salaryRange[1].toLocaleString()}
             </span>
           </div>
           <div className="slider-wrapper">
             <Slider
               value={salaryRange}
-              onValueChange={(val) => setSalaryRange(val)}
+              onValueChange={setSalaryRange}
               max={MAX_SALARY}
               step={1000}
               className="salary-slider"
@@ -322,11 +263,11 @@ function AllJobs() {
         </div>
       </div>
 
-      {/* ⭐ RESULT BAR ⭐ */}
+      {/* RESULT BAR */}
       <div className="all-jobs-result-bar">
         <div className="all-jobs-result-left">
           <span className="all-jobs-result-count">
-            {loading ? 'Loading...' : `${filteredJobs.length.toLocaleString()} jobs found`}
+            {isLoading ? 'Loading...' : `${total.toLocaleString()} jobs found`}
           </span>
           {hasActiveFilters() && (
             <button className="clear-filters-text" onClick={clearFilters}>
@@ -337,7 +278,7 @@ function AllJobs() {
 
         <div className="all-jobs-sort">
           <span className="sort-label">Sort by:</span>
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select value={urlSort} onValueChange={(v) => handleFilterChange('sort', v)}>
             <SelectTrigger className="sort-trigger">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -351,10 +292,11 @@ function AllJobs() {
         </div>
       </div>
 
-      {/* ⭐ JOB GRID ⭐ */}
-      <PageLoader message="Loading jobs..." />
+      {/* LOADING */}
+      {isLoading && <PageLoader message="Loading jobs..." />}
 
-      {!loading && filteredJobs.length === 0 && (
+      {/* EMPTY */}
+      {!isLoading && visibleJobs.length === 0 && (
         <EmptyState
           icon={Search}
           title="No jobs match your filters"
@@ -364,7 +306,8 @@ function AllJobs() {
         />
       )}
 
-      {!loading && visibleJobs.length > 0 && (
+      {/* JOB GRID */}
+      {!isLoading && visibleJobs.length > 0 && (
         <div className="all-jobs-grid">
           {visibleJobs.map((job) => (
             <Link
@@ -418,25 +361,26 @@ function AllJobs() {
         </div>
       )}
 
-      {/* ⭐ LOAD MORE ⭐ */}
-      {!loading && hasMore && (
+      {/* LOAD MORE */}
+      {!isLoading && hasNextPage && (
         <div className="all-jobs-load-more-wrapper">
           <button
             className="all-jobs-load-more-btn"
-            onClick={() => setVisibleCount((c) => c + 24)}
+            onClick={handleLoadMore}
+            disabled={isFetchingNextPage}
           >
-            Load More
+            {isFetchingNextPage ? 'Loading...' : 'Load More'}
             <span className="all-jobs-load-more-count">
-              {filteredJobs.length - visibleCount} remaining
+              {remaining > 0 ? `${remaining.toLocaleString()} remaining` : ''}
             </span>
           </button>
         </div>
       )}
 
       {/* END MESSAGE */}
-      {!loading && !hasMore && filteredJobs.length > 0 && (
+      {!isLoading && !hasNextPage && visibleJobs.length > 0 && (
         <p className="all-jobs-end-message">
-          You've seen all {filteredJobs.length} jobs
+          You've seen all {total.toLocaleString()} jobs
         </p>
       )}
     </div>

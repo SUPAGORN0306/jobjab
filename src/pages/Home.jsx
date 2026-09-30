@@ -89,6 +89,9 @@ function Home() {
   const maxVal = salaryRange[1];
 
   const [jobs, setJobs] = useState([]);
+  const [totalJobsCount, setTotalJobsCount] = useState(0); 
+  const [totalCompanies, setTotalCompanies] = useState(0);      // ⭐ ใหม่
+  const [totalApplicants, setTotalApplicants] = useState(0); 
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("match");
 
@@ -96,13 +99,18 @@ function Home() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // ⭐ Fetch jobs — ใช้ cookies + user.id
+  // Fetch jobs — ใช้ cookies + user.id
   useEffect(() => {
     const userId = user?.id;
 
     fetchJobsWithMatch(userId)
       .then((data) => {
         setJobs(data.jobs || []);
+        // ⭐ อ่าน stats จาก data.pagination (backend nested structure)
+        const pag = data.pagination || {};
+        setTotalJobsCount(pag.total || 0);
+        setTotalCompanies(pag.total_companies || 0);
+        setTotalApplicants(pag.total_applicants || 0);
         setLoading(false);
       })
       .catch((err) => {
@@ -111,13 +119,6 @@ function Home() {
       });
   }, [user]);
 
-  const TOTAL_JOBS_AVAILABLE = jobs.length;
-  const totalCompanies = useMemo(() => {
-    return new Set(jobs.map((j) => j.company).filter(Boolean)).size;
-  }, [jobs]);
-  const totalApplicants = useMemo(() => {
-    return jobs.reduce((sum, j) => sum + (j.applicant_count || 0), 0);
-  }, [jobs]);
 
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -303,7 +304,7 @@ function Home() {
         {!loading && (
           <div className="home-stats">
             <div className="home-stat">
-              <span className="home-stat-value">{TOTAL_JOBS_AVAILABLE.toLocaleString()}</span>
+              <span className="home-stat-value">{totalJobsCount.toLocaleString()}</span>
               <span className="home-stat-label">Open Positions</span>
             </div>
             <div className="home-stat-divider"></div>
@@ -443,7 +444,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ⭐ RECOMMENDED */}
+        {/* RECOMMENDED */}
         <div className="recommend-list w-full max-w-187.5 mx-auto mt-6 px-1">
           <div className="recommend-header-row">
             <div className="recommend-title-group">
@@ -479,7 +480,7 @@ function Home() {
               <span className="recommend-count">
                 {loading
                   ? "Loading..."
-                  : `Showing ${displayJobs.length} of ${filteredJobs.length}`}
+                  : `Showing ${displayJobs.length} of ${totalJobsCount.toLocaleString()}`}
               </span>
             </div>
           </div>
@@ -648,7 +649,7 @@ function Home() {
           {!loading && displayJobs.length > 0 && (
             <div className="see-all-wrapper">
               <Link to="/all-jobs" className="see-all-btn">
-                See all {filteredJobs.length.toLocaleString()} jobs
+                See all {totalJobsCount.toLocaleString()} jobs
               </Link>
             </div>
           )}
