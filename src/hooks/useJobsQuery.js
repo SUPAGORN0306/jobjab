@@ -2,8 +2,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchJobsFiltered } from '../utils/api';
 
-const PAGE_SIZE = 24;
-
 export default function useJobsQuery({
   q = "",
   position = "all",
@@ -14,19 +12,20 @@ export default function useJobsQuery({
   salary_max = 250000,
   sort = "newest",
   userId = null,
+  limit = 24,        // ⭐ ใหม่ — override ได้ (Home ใช้ 20, AllJobs ใช้ 24)
 } = {}) {
   return useInfiniteQuery({
     queryKey: [
       'jobs', 'infinite',
       q, position, level, type, industry,
-      salary_min, salary_max, sort, userId,
+      salary_min, salary_max, sort, userId, limit,
     ],
     queryFn: ({ pageParam = 1 }) =>
       fetchJobsFiltered({
         q, position, level, type, industry,
         salary_min, salary_max, sort,
         page: pageParam,
-        limit: PAGE_SIZE,
+        limit,
         userId,
       }),
     initialPageParam: 1,

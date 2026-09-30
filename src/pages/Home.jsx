@@ -1,14 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
-import { fetchJobsWithMatch } from '../utils/api';
 import MatchModal from '../components/MatchModal';
 import FilterSheet from '../components/FilterSheet';
+import useJobsQuery from '../hooks/useJobsQuery';
+import useDebounce from '../hooks/useDebounce';
 
 // ⭐ Lucide Icons
 import {
@@ -29,37 +30,6 @@ import { getJobLogoClass } from '../utils/jobLogo';
 import PageLoader from '../components/PageLoader';
 
 // ============================================
-// SEARCH HELPERS
-// ============================================
-
-const normalize = (str) =>
-  (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-
-const tokenize = (str) =>
-  (str || "")
-    .toLowerCase()
-    .split(/[\s\-_]+/)
-    .filter(Boolean);
-
-const matchesQuery = (text, query) => {
-  if (!query) return true;
-  if (!text) return false;
-  const normText = normalize(text);
-  const normQuery = normalize(query);
-  if (normText.includes(normQuery)) return true;
-  const tokens = tokenize(query);
-  if (tokens.length > 1) {
-    return tokens.every((token) => normText.includes(token));
-  }
-  return false;
-};
-
-// ============================================
-// JOB LOGO CLASS
-// ============================================
-
-
-// ============================================
 // TRENDING
 // ============================================
 
@@ -70,6 +40,9 @@ const TRENDING_CATEGORIES = [
   { label: "NLP Engineer", Icon: MessageSquare },
   { label: "Data Scientist", Icon: TrendingUp },
 ];
+
+const MAX_SALARY = 250000;
+const PREVIEW_LIMIT = 20;
 
 // ============================================
 // COMPONENT
@@ -83,151 +56,147 @@ function Home() {
   const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
 
-  const MAX_SALARY = 250000;
-  const [salaryRange, setSalaryRange] = useState([0, MAX_SALARY]);
-  const minVal = salaryRange[0];
-  const maxVal = salaryRange[1];
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [jobs, setJobs] = useState([]);
-  const [totalJobsCount, setTotalJobsCount] = useState(0); 
-  const [totalCompanies, setTotalCompanies] = useState(0);      // ⭐ ใหม่
-  const [totalApplicants, setTotalApplicants] = useState(0); 
-  const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState("match");
+  // ─── Read filters from URL ───
+  const urlQ = searchParams.get("q") || "";
+  const urlPosition = searchParams.get("position") || "all";
+  const urlLevel = searchParams.get("level") || "all";
+  const urlType = searchParams.get("type") || "all";
+  const urlIndustry = searchParams.get("industry") || "all";
+  const urlSalaryMin = parseInt(searchParams.get("salary_min") || "0", 10);
+  const urlSalaryMax = parseInt(searchParams.get("salary_max") || String(MAX_SALARY), 10);
+  const urlSort = searchParams.get("sort") || "match";
+
+  // ─── Local input state (สำหรับ debounce) ───
+  const [searchInput, setSearchInput] = useState(urlQ);
+  const [salaryRange, setSalaryRange] = useState([urlSalaryMin, urlSalaryMax]);
+  const debouncedSearch = useDebounce(searchInput, 400);
+  const debouncedSalary = useDebounce(salaryRange, 500);
 
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Fetch jobs — ใช้ cookies + user.id
+  // ─── Helper: update URL ───
+  function updateUrl(patch = {}) {
+    const next = new URLSearchParams(searchParams);
+    Object.entries(patch).forEach(([key, value]) => {
+      if (value === null || value === "" || value === "all" || value === undefined) {
+        next.delete(key);
+      } else {
+        next.set(key, String(value));
+      }
+    });
+    setSearchParams(next, { replace: true });
+  }
+
+  // ─── Sync search → URL (debounced) ───
   useEffect(() => {
-    const userId = user?.id;
+    if (debouncedSearch !== urlQ) {
+      updateUrl({ q: debouncedSearch });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
-    fetchJobsWithMatch(userId)
-      .then((data) => {
-        setJobs(data.jobs || []);
-        // ⭐ อ่าน stats จาก data.pagination (backend nested structure)
-        const pag = data.pagination || {};
-        setTotalJobsCount(pag.total || 0);
-        setTotalCompanies(pag.total_companies || 0);
-        setTotalApplicants(pag.total_applicants || 0);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching jobs:", err);
-        setLoading(false);
+  // ─── Sync salary → URL (debounced) ───
+  useEffect(() => {
+    const [minV, maxV] = debouncedSalary;
+    if (minV !== urlSalaryMin || maxV !== urlSalaryMax) {
+      updateUrl({
+        salary_min: minV > 0 ? String(minV) : null,
+        salary_max: maxV < MAX_SALARY ? String(maxV) : null,
       });
-  }, [user]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSalary]);
 
+  // ─── useJobsQuery (preview 20) ───
+  const {
+    data,
+    isLoading,
+  } = useJobsQuery({
+    q: urlQ,
+    position: urlPosition,
+    level: urlLevel,
+    type: urlType,
+    industry: urlIndustry,
+    salary_min: urlSalaryMin,
+    salary_max: urlSalaryMax,
+    sort: urlSort,
+    userId: user?.id,
+    limit: PREVIEW_LIMIT,
+  });
 
-  const [searchInput, setSearchInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [position, setPosition] = useState("all");
-  const [level, setLevel] = useState("all");
-  const [type, setType] = useState("all");
-  const [industry, setIndustry] = useState("all");
+  // ─── Derived data ───
+  const jobs = useMemo(() => {
+    if (!data?.pages) return [];
+    return data.pages.flatMap((page) => page?.jobs || []);
+  }, [data]);
 
-  const runSearch = () => setSearchQuery(searchInput.trim());
+  const pagination = data?.pages?.[0]?.pagination || {};
+  const totalJobsCount = pagination.total || 0;
+  const totalCompanies = pagination.total_companies || 0;
+  const totalApplicants = pagination.total_applicants || 0;
+
+  const featuredJob = jobs[0];
+  const gridJobs = jobs.slice(1);
+
+  // ─── Handlers ───
   const handleSearchKeyDown = (e) => {
-    if (e.key === "Enter") runSearch();
+    if (e.key === "Enter") {
+      updateUrl({ q: searchInput.trim() });
+    }
+  };
+
+  const handleFilterChange = (key, value) => {
+    updateUrl({ [key]: value });
   };
 
   const clearFilters = () => {
     setSearchInput("");
-    setSearchQuery("");
-    setPosition("all");
-    setLevel("all");
-    setType("all");
-    setIndustry("all");
     setSalaryRange([0, MAX_SALARY]);
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (position !== 'all') count++;
-    if (level !== 'all') count++;
-    if (type !== 'all') count++;
-    if (industry !== 'all') count++;
-    if (salaryRange[0] > 0 || salaryRange[1] < MAX_SALARY) count++;
+    if (urlPosition !== 'all') count++;
+    if (urlLevel !== 'all') count++;
+    if (urlType !== 'all') count++;
+    if (urlIndustry !== 'all') count++;
+    if (urlSalaryMin > 0 || urlSalaryMax < MAX_SALARY) count++;
     return count;
-  }, [position, level, type, industry, salaryRange, MAX_SALARY]);
-
-  const filteredJobs = useMemo(() => {
-    const filtered = jobs.filter((job) => {
-      if (searchQuery) {
-        const searchFields = [
-          job.title, job.company, job.location, job.industry,
-          job.type, job.level, job.about_role, job.aboutRole,
-          job.skills_required, job.tools_preferred,
-        ];
-        const matchesSearch = searchFields.some((field) =>
-          matchesQuery(field, searchQuery)
-        );
-        if (!matchesSearch) return false;
-      }
-      if (position && position !== "all" && job.title !== position) return false;
-      if (level && level !== "all") {
-        const jobLevel = job.level?.toLowerCase() || "";
-        const matchesLevel =
-          jobLevel === level.toLowerCase() ||
-          jobLevel.includes(level.toLowerCase()) ||
-          (level === "mid" && jobLevel.includes("middle"));
-        if (!matchesLevel) return false;
-      }
-      if (type && type !== "all" && job.type !== type) return false;
-      if (industry && industry !== "all" && job.industry !== industry) return false;
-      const jobMinSalary = job.salary_min || 0;
-      const jobMaxSalary = job.salary_max || jobMinSalary;
-      if (jobMinSalary > 0 || jobMaxSalary > 0) {
-        const overlaps = jobMaxSalary >= minVal && jobMinSalary <= maxVal;
-        if (!overlaps) return false;
-      }
-      return true;
-    });
-
-    const sorted = [...filtered];
-    switch (sortBy) {
-      case "match":
-        sorted.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
-        break;
-      case "newest":
-        sorted.sort((a, b) => {
-          const da = a.posted_date ? new Date(a.posted_date) : 0;
-          const db = b.posted_date ? new Date(b.posted_date) : 0;
-          return db - da;
-        });
-        break;
-      case "salary_high":
-        sorted.sort((a, b) => (b.salary_max || 0) - (a.salary_max || 0));
-        break;
-      case "salary_low":
-        sorted.sort((a, b) => (a.salary_min || 0) - (b.salary_min || 0));
-        break;
-      default: break;
-    }
-    return sorted;
-  }, [jobs, searchQuery, position, level, type, industry, minVal, maxVal, sortBy]);
-
-  const displayJobs = useMemo(() => {
-    return filteredJobs.slice(0, 20);
-  }, [filteredJobs]);
-
-  const featuredJob = displayJobs[0];
-  const gridJobs = displayJobs.slice(1);
+  }, [urlPosition, urlLevel, urlType, urlIndustry, urlSalaryMin, urlSalaryMax]);
 
   const hasActiveFilters = () => {
     return (
-      searchInput.trim() !== "" ||
-      searchQuery !== "" ||
-      position !== "all" ||
-      level !== "all" ||
-      type !== "all" ||
-      industry !== "all" ||
-      salaryRange[0] > 0 ||
-      salaryRange[1] < MAX_SALARY
+      urlQ !== "" ||
+      urlPosition !== "all" ||
+      urlLevel !== "all" ||
+      urlType !== "all" ||
+      urlIndustry !== "all" ||
+      urlSalaryMin > 0 ||
+      urlSalaryMax < MAX_SALARY
     );
   };
 
+  // ─── "See all" URL (preserve filters) ───
+  const seeAllUrl = useMemo(() => {
+    const params = new URLSearchParams();
+    if (urlQ) params.set("q", urlQ);
+    if (urlPosition !== "all") params.set("position", urlPosition);
+    if (urlLevel !== "all") params.set("level", urlLevel);
+    if (urlType !== "all") params.set("type", urlType);
+    if (urlIndustry !== "all") params.set("industry", urlIndustry);
+    if (urlSalaryMin > 0) params.set("salary_min", urlSalaryMin);
+    if (urlSalaryMax < MAX_SALARY) params.set("salary_max", urlSalaryMax);
+    if (urlSort !== "match") params.set("sort", urlSort);
+    const qs = params.toString();
+    return qs ? `/all-jobs?${qs}` : "/all-jobs";
+  }, [urlQ, urlPosition, urlLevel, urlType, urlIndustry, urlSalaryMin, urlSalaryMax, urlSort]);
+
+  // ─── Carousel scroll ───
   const updateScrollButtons = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -256,7 +225,11 @@ function Home() {
       clearTimeout(timer);
       window.removeEventListener("resize", updateScrollButtons);
     };
-  }, [displayJobs]);
+  }, [jobs]);
+
+  // ─── Shorthand for current salary display ───
+  const minVal = salaryRange[0];
+  const maxVal = salaryRange[1];
 
   return (
     <>
@@ -301,7 +274,7 @@ function Home() {
         </div>
 
         {/* ⭐ QUICK STATS (Desktop) */}
-        {!loading && (
+        {!isLoading && (
           <div className="home-stats">
             <div className="home-stat">
               <span className="home-stat-value">{totalJobsCount.toLocaleString()}</span>
@@ -320,7 +293,7 @@ function Home() {
           </div>
         )}
 
-        {/* ⭐ TRENDING */}
+        {/* ⭐ TRENDING (sync URL) */}
         <div className="trending-section">
           <span className="trending-label">
             <Flame size={16} />
@@ -330,9 +303,12 @@ function Home() {
             {TRENDING_CATEGORIES.map((cat) => (
               <button
                 key={cat.label}
-                className={`trending-chip ${position === cat.label ? "active" : ""}`}
+                className={`trending-chip ${urlPosition === cat.label ? "active" : ""}`}
                 onClick={() => {
-                  setPosition(position === cat.label ? "all" : cat.label);
+                  handleFilterChange(
+                    "position",
+                    urlPosition === cat.label ? "all" : cat.label
+                  );
                 }}
               >
                 <cat.Icon size={14} />
@@ -354,13 +330,18 @@ function Home() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
               />
-              <button className="search-btn" onClick={runSearch}>Search</button>
+              <button
+                className="search-btn"
+                onClick={() => updateUrl({ q: searchInput.trim() })}
+              >
+                Search
+              </button>
             </div>
           </div>
 
           <div className="filter-navbar">
             <div className="filter-item">
-              <Select value={position} onValueChange={setPosition}>
+              <Select value={urlPosition} onValueChange={(v) => handleFilterChange('position', v)}>
                 <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Position" />
                 </SelectTrigger>
@@ -379,21 +360,21 @@ function Home() {
             </div>
 
             <div className="filter-item">
-              <Select value={level} onValueChange={setLevel}>
+              <Select value={urlLevel} onValueChange={(v) => handleFilterChange('level', v)}>
                 <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Level" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="entry">Entry Level</SelectItem>
-                  <SelectItem value="mid">Mid Level</SelectItem>
-                  <SelectItem value="senior">Senior Level</SelectItem>
+                  <SelectItem value="Entry">Entry Level</SelectItem>
+                  <SelectItem value="Mid">Mid Level</SelectItem>
+                  <SelectItem value="Senior">Senior Level</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="filter-item">
-              <Select value={type} onValueChange={setType}>
+              <Select value={urlType} onValueChange={(v) => handleFilterChange('type', v)}>
                 <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
@@ -407,7 +388,7 @@ function Home() {
             </div>
 
             <div className="filter-item">
-              <Select value={industry} onValueChange={setIndustry}>
+              <Select value={urlIndustry} onValueChange={(v) => handleFilterChange('industry', v)}>
                 <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
                   <SelectValue placeholder="Industry" />
                 </SelectTrigger>
@@ -453,7 +434,7 @@ function Home() {
               </h4>
 
               <div className="sort-wrapper">
-                <Select value={sortBy} onValueChange={setSortBy}>
+                <Select value={urlSort} onValueChange={(v) => handleFilterChange('sort', v)}>
                   <SelectTrigger className="sort-trigger">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -478,16 +459,16 @@ function Home() {
               )}
 
               <span className="recommend-count">
-                {loading
+                {isLoading
                   ? "Loading..."
-                  : `Showing ${displayJobs.length} of ${totalJobsCount.toLocaleString()}`}
+                  : `Showing ${jobs.length} of ${totalJobsCount.toLocaleString()}`}
               </span>
             </div>
           </div>
 
-          {loading && <PageLoader message="Loading jobs..." />}
+          {isLoading && <PageLoader message="Loading jobs..." />}
 
-          {!loading && filteredJobs.length === 0 && (
+          {!isLoading && jobs.length === 0 && (
             <div className="horizontal-scroll-empty">
               <p className="text-white text-base font-medium m-0">
                 No jobs match your filters.
@@ -495,7 +476,7 @@ function Home() {
             </div>
           )}
 
-          {!loading && displayJobs.length > 0 && (
+          {!isLoading && jobs.length > 0 && (
             <>
               {/* ⭐ FEATURED CARD */}
               {featuredJob && (
@@ -646,9 +627,9 @@ function Home() {
             </>
           )}
 
-          {!loading && displayJobs.length > 0 && (
+          {!isLoading && jobs.length > 0 && (
             <div className="see-all-wrapper">
-              <Link to="/all-jobs" className="see-all-btn">
+              <Link to={seeAllUrl} className="see-all-btn">
                 See all {totalJobsCount.toLocaleString()} jobs
               </Link>
             </div>
@@ -677,10 +658,10 @@ function Home() {
       <FilterSheet
         isOpen={showFilterSheet}
         onClose={() => setShowFilterSheet(false)}
-        position={position} setPosition={setPosition}
-        level={level} setLevel={setLevel}
-        type={type} setType={setType}
-        industry={industry} setIndustry={setIndustry}
+        position={urlPosition} setPosition={(v) => handleFilterChange('position', v)}
+        level={urlLevel} setLevel={(v) => handleFilterChange('level', v)}
+        type={urlType} setType={(v) => handleFilterChange('type', v)}
+        industry={urlIndustry} setIndustry={(v) => handleFilterChange('industry', v)}
         salaryRange={salaryRange} setSalaryRange={setSalaryRange}
         MAX_SALARY={MAX_SALARY}
         clearFilters={clearFilters}

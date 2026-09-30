@@ -81,9 +81,9 @@ export default function FilterSheet({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="entry">Entry Level</SelectItem>
-                <SelectItem value="mid">Mid Level</SelectItem>
-                <SelectItem value="senior">Senior Level</SelectItem>
+                <SelectItem value="Entry">Entry Level</SelectItem>
+                <SelectItem value="Mid">Mid Level</SelectItem>
+                <SelectItem value="Senior">Senior Level</SelectItem>
               </SelectContent>
             </Select>
           </div>
