@@ -26,12 +26,19 @@ export default defineConfig({
   },
 
   server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
     watch: {
       usePolling: true,
       interval: 1000,
     },
   },
-
+  
   build: {
     chunkSizeWarningLimit: 600,
 
