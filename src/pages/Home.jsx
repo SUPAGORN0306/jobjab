@@ -79,6 +79,17 @@ function Home() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+    // Detect viewport — Desktop แสดง grid, Mobile แสดง featured + grid
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== 'undefined' && window.innerWidth > 768
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // ─── Helper: update URL ───
   function updateUrl(patch = {}) {
     const next = new URLSearchParams(searchParams);
@@ -140,8 +151,10 @@ function Home() {
   const totalCompanies = pagination.total_companies || 0;
   const totalApplicants = pagination.total_applicants || 0;
 
-  const featuredJob = jobs[0];
-  const gridJobs = jobs.slice(1);
+  // ⭐ Desktop: ไม่มี featured → grid = jobs ทั้งหมด (20 ตัว, Top match อันแรก)
+  // ⭐ Mobile: featured = jobs[0] → grid = jobs[1..]
+  const featuredJob = isDesktop ? null : jobs[0];
+  const gridJobs = isDesktop ? jobs : jobs.slice(1);
 
   // ─── Handlers ───
   const handleSearchKeyDown = (e) => {
