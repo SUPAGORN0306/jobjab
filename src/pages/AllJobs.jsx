@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
@@ -11,6 +10,8 @@ import '../styles/candidate/AllJobs.css';
 import '../styles/home/RecommendedCard.css';
 import PageLoader from '../components/PageLoader';
 import EmptyState from "../components/EmptyState";
+import FilterChips from '../components/FilterChips';
+import SalaryPopover from '../components/SalaryPopover';
 import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
@@ -38,9 +39,7 @@ function AllJobs() {
 
   // ─── Local input state ───
   const [searchInput, setSearchInput] = useState(urlQ);
-  const [salaryRange, setSalaryRange] = useState([urlSalaryMin, urlSalaryMax]);
   const debouncedSearch = useDebounce(searchInput, 400);
-  const debouncedSalary = useDebounce(salaryRange, 500);
 
   // ─── Helper: update URL ───
   function updateUrl(patch = {}) {
@@ -62,18 +61,6 @@ function AllJobs() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
-
-  // ─── Sync salary → URL ───
-  useEffect(() => {
-    const [minV, maxV] = debouncedSalary;
-    if (minV !== urlSalaryMin || maxV !== urlSalaryMax) {
-      updateUrl({
-        salary_min: minV > 0 ? String(minV) : null,
-        salary_max: maxV < MAX_SALARY ? String(maxV) : null,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSalary]);
 
   // ─── useInfiniteQuery ───
   const {
@@ -114,6 +101,27 @@ function AllJobs() {
     updateUrl({ [key]: value });
   };
 
+  // ⭐ FilterChips: remove single filter
+  const handleRemoveFilter = (key) => {
+    if (key === 'salary') {
+      updateUrl({ salary_min: null, salary_max: null });
+    } else {
+      updateUrl({ [key]: null });
+    }
+  };
+
+  // ⭐ SalaryPopover: apply
+  const handleApplySalary = (min, max) => {
+    updateUrl({
+      salary_min: min > 0 ? String(min) : null,
+      salary_max: max < MAX_SALARY ? String(max) : null,
+    });
+  };
+
+  const handleClearSalary = () => {
+    updateUrl({ salary_min: null, salary_max: null });
+  };
+
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -122,9 +130,19 @@ function AllJobs() {
 
   const clearFilters = () => {
     setSearchInput("");
-    setSalaryRange([0, MAX_SALARY]);
     setSearchParams(new URLSearchParams(), { replace: true });
   };
+
+  // ⭐ Filter data สำหรับ FilterChips
+  const filterData = useMemo(() => ({
+    q: urlQ,
+    position: urlPosition,
+    level: urlLevel,
+    type: urlType,
+    industry: urlIndustry,
+    salary_min: urlSalaryMin,
+    salary_max: urlSalaryMax,
+  }), [urlQ, urlPosition, urlLevel, urlType, urlIndustry, urlSalaryMin, urlSalaryMax]);
 
   const hasActiveFilters = () => {
     return (
@@ -157,8 +175,9 @@ function AllJobs() {
         </div>
       </div>
 
-      {/* FILTER BAR */}
+      {/* FILTER BAR — Compact */}
       <div className="all-jobs-filter-card">
+        {/* Row 1: Search */}
         <div className="search-input-container">
           <input
             type="text"
@@ -170,11 +189,11 @@ function AllJobs() {
           />
         </div>
 
+        {/* Row 2: Dropdowns + Salary Popover + Sort */}
         <div className="filter-navbar">
-          {/* ⭐ Position */}
           <div className="filter-item">
             <Select value={urlPosition} onValueChange={(v) => handleFilterChange('position', v)}>
-              <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+              <SelectTrigger className="filter-trigger">
                 <SelectValue placeholder="Position" />
               </SelectTrigger>
               <SelectContent>
@@ -191,26 +210,24 @@ function AllJobs() {
             </Select>
           </div>
 
-          {/* Level */}
           <div className="filter-item">
             <Select value={urlLevel} onValueChange={(v) => handleFilterChange('level', v)}>
-              <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+              <SelectTrigger className="filter-trigger">
                 <SelectValue placeholder="Level" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="Entry">Entry Level</SelectItem>
-                <SelectItem value="Mid">Mid Level</SelectItem>
-                <SelectItem value="Senior">Senior Level</SelectItem>
+                <SelectItem value="Entry">Entry</SelectItem>
+                <SelectItem value="Mid">Mid</SelectItem>
+                <SelectItem value="Senior">Senior</SelectItem>
                 <SelectItem value="Lead">Lead</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Type */}
           <div className="filter-item">
             <Select value={urlType} onValueChange={(v) => handleFilterChange('type', v)}>
-              <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+              <SelectTrigger className="filter-trigger">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -224,10 +241,9 @@ function AllJobs() {
             </Select>
           </div>
 
-          {/* Industry */}
           <div className="filter-item">
             <Select value={urlIndustry} onValueChange={(v) => handleFilterChange('industry', v)}>
-              <SelectTrigger className="bg-white border border-slate-200 rounded-3xl px-4 py-2.5 text-[#616d7d] [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
+              <SelectTrigger className="filter-trigger">
                 <SelectValue placeholder="Industry" />
               </SelectTrigger>
               <SelectContent>
@@ -242,27 +258,42 @@ function AllJobs() {
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        {/* Salary */}
-        <div className="salary-filter-container">
-          <div className="salary-header">
-            <span className="salary-title">Salary Range:</span>
-            <span className="salary-display-value">
-              ${salaryRange[0].toLocaleString()} — ${salaryRange[1].toLocaleString()}
-            </span>
-          </div>
-          <div className="slider-wrapper">
-            <Slider
-              value={salaryRange}
-              onValueChange={setSalaryRange}
-              max={MAX_SALARY}
-              step={1000}
-              className="salary-slider"
+          {/* Salary Popover */}
+          <div className="filter-item">
+            <SalaryPopover
+              salaryMin={urlSalaryMin}
+              salaryMax={urlSalaryMax}
+              onApply={handleApplySalary}
+              onClear={handleClearSalary}
             />
+          </div>
+
+          {/* Sort */}
+          <div className="filter-item">
+            <Select value={urlSort} onValueChange={(v) => handleFilterChange('sort', v)}>
+              <SelectTrigger className="filter-trigger">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="match"><Target size={14} style={{ display: "inline", marginRight: 6 }} />Match Score</SelectItem>
+                <SelectItem value="newest"><Sparkles size={14} style={{ display: "inline", marginRight: 6 }} />Newest</SelectItem>
+                <SelectItem value="salary_high"><TrendingDown size={14} style={{ display: "inline", marginRight: 6 }} />Salary: High to Low</SelectItem>
+                <SelectItem value="salary_low"><TrendingUp size={14} style={{ display: "inline", marginRight: 6 }} />Salary: Low to High</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
+
+      {/* ACTIVE FILTER CHIPS */}
+      {hasActiveFilters() && (
+        <FilterChips
+          filters={filterData}
+          onRemove={handleRemoveFilter}
+          onClearAll={clearFilters}
+        />
+      )}
 
       {/* RESULT BAR */}
       <div className="all-jobs-result-bar">
@@ -270,26 +301,6 @@ function AllJobs() {
           <span className="all-jobs-result-count">
             {isLoading ? 'Loading...' : `${total.toLocaleString()} jobs found`}
           </span>
-          {hasActiveFilters() && (
-            <button className="clear-filters-text" onClick={clearFilters}>
-              Clear filters
-            </button>
-          )}
-        </div>
-
-        <div className="all-jobs-sort">
-          <span className="sort-label">Sort by:</span>
-          <Select value={urlSort} onValueChange={(v) => handleFilterChange('sort', v)}>
-            <SelectTrigger className="sort-trigger">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="match"><Target size={14} style={{ display: "inline", marginRight: 6 }} />Match Score</SelectItem>
-              <SelectItem value="newest"><Sparkles size={14} style={{ display: "inline", marginRight: 6 }} />Newest</SelectItem>
-              <SelectItem value="salary_high"><TrendingDown size={14} style={{ display: "inline", marginRight: 6 }} />Salary: High to Low</SelectItem>
-              <SelectItem value="salary_low"><TrendingUp size={14} style={{ display: "inline", marginRight: 6 }} />Salary: Low to High</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 

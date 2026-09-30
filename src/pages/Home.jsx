@@ -1,18 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
 import MatchModal from '../components/MatchModal';
-import FilterSheet from '../components/FilterSheet';
 import useJobsQuery from '../hooks/useJobsQuery';
 import useDebounce from '../hooks/useDebounce';
 import { timeAgo } from '../utils/timeAgo';
 
-// Lucide Icons
 import {
   Flame,
   Info,
@@ -30,10 +27,6 @@ import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import PageLoader from '../components/PageLoader';
 
-// ============================================
-// TRENDING
-// ============================================
-
 const TRENDING_CATEGORIES = [
   { label: "ML Engineer", Icon: Cpu },
   { label: "Data Analyst", Icon: BarChart3 },
@@ -42,44 +35,31 @@ const TRENDING_CATEGORIES = [
   { label: "Data Scientist", Icon: TrendingUp },
 ];
 
-const MAX_SALARY = 250000;
 const PREVIEW_LIMIT = 20;
-
-// ============================================
-// COMPONENT
-// ============================================
 
 function Home() {
   usePageTitle("Home", { description: "Find your dream job with AI matching" });
 
+  const navigate = useNavigate();
   const { isFavorited, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // ─── Read filters from URL ───
+  // ─── Read filters from URL (minimal) ───
   const urlQ = searchParams.get("q") || "";
-  const urlPosition = searchParams.get("position") || "all";
-  const urlLevel = searchParams.get("level") || "all";
-  const urlType = searchParams.get("type") || "all";
-  const urlIndustry = searchParams.get("industry") || "all";
-  const urlSalaryMin = parseInt(searchParams.get("salary_min") || "0", 10);
-  const urlSalaryMax = parseInt(searchParams.get("salary_max") || String(MAX_SALARY), 10);
   const urlSort = searchParams.get("sort") || "match";
 
-  // ─── Local input state (สำหรับ debounce) ───
+  // ─── Local input state ───
   const [searchInput, setSearchInput] = useState(urlQ);
-  const [salaryRange, setSalaryRange] = useState([urlSalaryMin, urlSalaryMax]);
   const debouncedSearch = useDebounce(searchInput, 400);
-  const debouncedSalary = useDebounce(salaryRange, 500);
 
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-    // Detect viewport — Desktop แสดง grid, Mobile แสดง featured + grid
+  // Detect viewport
   const [isDesktop, setIsDesktop] = useState(
     typeof window !== 'undefined' && window.innerWidth > 768
   );
@@ -111,30 +91,9 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  // ─── Sync salary → URL (debounced) ───
-  useEffect(() => {
-    const [minV, maxV] = debouncedSalary;
-    if (minV !== urlSalaryMin || maxV !== urlSalaryMax) {
-      updateUrl({
-        salary_min: minV > 0 ? String(minV) : null,
-        salary_max: maxV < MAX_SALARY ? String(maxV) : null,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSalary]);
-
   // ─── useJobsQuery (preview 20) ───
-  const {
-    data,
-    isLoading,
-  } = useJobsQuery({
+  const { data, isLoading } = useJobsQuery({
     q: urlQ,
-    position: urlPosition,
-    level: urlLevel,
-    type: urlType,
-    industry: urlIndustry,
-    salary_min: urlSalaryMin,
-    salary_max: urlSalaryMax,
     sort: urlSort,
     userId: user?.id,
     limit: PREVIEW_LIMIT,
@@ -151,8 +110,8 @@ function Home() {
   const totalCompanies = pagination.total_companies || 0;
   const totalApplicants = pagination.total_applicants || 0;
 
-  // ⭐ Desktop: ไม่มี featured → grid = jobs ทั้งหมด (20 ตัว, Top match อันแรก)
-  // ⭐ Mobile: featured = jobs[0] → grid = jobs[1..]
+  // Desktop: ไม่มี featured, grid = jobs ทั้งหมด
+  // Mobile: featured = jobs[0], grid = jobs[1..]
   const featuredJob = isDesktop ? null : jobs[0];
   const gridJobs = isDesktop ? jobs : jobs.slice(1);
 
@@ -163,52 +122,24 @@ function Home() {
     }
   };
 
-  const handleFilterChange = (key, value) => {
-    updateUrl({ [key]: value });
+  // ⭐ Trending chip → navigate ไป AllJobs (preserve q)
+  const handleTrendingClick = (position) => {
+    const params = new URLSearchParams();
+    if (urlQ) params.set("q", urlQ);
+    params.set("position", position);
+    navigate(`/all-jobs?${params.toString()}`);
   };
 
-  const clearFilters = () => {
-    setSearchInput("");
-    setSalaryRange([0, MAX_SALARY]);
-    setSearchParams(new URLSearchParams(), { replace: true });
-  };
+  const hasActiveFilters = () => urlQ !== "";
 
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (urlPosition !== 'all') count++;
-    if (urlLevel !== 'all') count++;
-    if (urlType !== 'all') count++;
-    if (urlIndustry !== 'all') count++;
-    if (urlSalaryMin > 0 || urlSalaryMax < MAX_SALARY) count++;
-    return count;
-  }, [urlPosition, urlLevel, urlType, urlIndustry, urlSalaryMin, urlSalaryMax]);
-
-  const hasActiveFilters = () => {
-    return (
-      urlQ !== "" ||
-      urlPosition !== "all" ||
-      urlLevel !== "all" ||
-      urlType !== "all" ||
-      urlIndustry !== "all" ||
-      urlSalaryMin > 0 ||
-      urlSalaryMax < MAX_SALARY
-    );
-  };
-
-  // ─── "See all" URL (preserve filters) ───
+  // ─── "See all" URL (preserve q + sort) ───
   const seeAllUrl = useMemo(() => {
     const params = new URLSearchParams();
     if (urlQ) params.set("q", urlQ);
-    if (urlPosition !== "all") params.set("position", urlPosition);
-    if (urlLevel !== "all") params.set("level", urlLevel);
-    if (urlType !== "all") params.set("type", urlType);
-    if (urlIndustry !== "all") params.set("industry", urlIndustry);
-    if (urlSalaryMin > 0) params.set("salary_min", urlSalaryMin);
-    if (urlSalaryMax < MAX_SALARY) params.set("salary_max", urlSalaryMax);
     if (urlSort !== "match") params.set("sort", urlSort);
     const qs = params.toString();
     return qs ? `/all-jobs?${qs}` : "/all-jobs";
-  }, [urlQ, urlPosition, urlLevel, urlType, urlIndustry, urlSalaryMin, urlSalaryMax, urlSort]);
+  }, [urlQ, urlSort]);
 
   // ─── Carousel scroll ───
   const updateScrollButtons = () => {
@@ -241,10 +172,6 @@ function Home() {
     };
   }, [jobs]);
 
-  // ─── Shorthand for current salary display ───
-  const minVal = salaryRange[0];
-  const maxVal = salaryRange[1];
-
   return (
     <>
       <div className="container">
@@ -263,7 +190,7 @@ function Home() {
           <h1>Find The Right <span>Job For You</span></h1>
         </div>
 
-        {/* ⭐ MOBILE SEARCH + FILTER */}
+        {/* ⭐ MOBILE SEARCH */}
         <div className="mobile-search-row">
           <div className="mobile-search-input-wrapper">
             <Search size={18} className="mobile-search-icon" />
@@ -276,15 +203,6 @@ function Home() {
               onKeyDown={handleSearchKeyDown}
             />
           </div>
-          <button
-            className="mobile-filter-btn"
-            onClick={() => setShowFilterSheet(true)}
-          >
-            <SlidersHorizontal size={20} />
-            {activeFilterCount > 0 && (
-              <span className="mobile-filter-badge">{activeFilterCount}</span>
-            )}
-          </button>
         </div>
 
         {/* ⭐ QUICK STATS (Desktop) */}
@@ -307,7 +225,7 @@ function Home() {
           </div>
         )}
 
-        {/* ⭐ TRENDING (sync URL) */}
+        {/* ⭐ TRENDING (navigate ไป AllJobs) */}
         <div className="trending-section">
           <span className="trending-label">
             <Flame size={16} />
@@ -317,13 +235,8 @@ function Home() {
             {TRENDING_CATEGORIES.map((cat) => (
               <button
                 key={cat.label}
-                className={`trending-chip ${urlPosition === cat.label ? "active" : ""}`}
-                onClick={() => {
-                  handleFilterChange(
-                    "position",
-                    urlPosition === cat.label ? "all" : cat.label
-                  );
-                }}
+                className="trending-chip"
+                onClick={() => handleTrendingClick(cat.label)}
               >
                 <cat.Icon size={14} />
                 <span>{cat.label}</span>
@@ -332,7 +245,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ⭐ SEARCH + FILTER (Desktop) */}
+        {/* ⭐ SEARCH (Desktop only — minimal) */}
         <div className="search-filter-section">
           <div className="search-box">
             <div className="search-input-container">
@@ -352,91 +265,6 @@ function Home() {
               </button>
             </div>
           </div>
-
-          <div className="filter-navbar">
-            <div className="filter-item">
-              <Select value={urlPosition} onValueChange={(v) => handleFilterChange('position', v)}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
-                  <SelectValue placeholder="Position" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Positions</SelectItem>
-                  <SelectItem value="AI Product Manager">AI Product Manager</SelectItem>
-                  <SelectItem value="AI Researcher">AI Researcher</SelectItem>
-                  <SelectItem value="Computer Vision Engineer">Computer Vision Engineer</SelectItem>
-                  <SelectItem value="Data Analyst">Data Analyst</SelectItem>
-                  <SelectItem value="Data Scientist">Data Scientist</SelectItem>
-                  <SelectItem value="ML Engineer">ML Engineer</SelectItem>
-                  <SelectItem value="NLP Engineer">NLP Engineer</SelectItem>
-                  <SelectItem value="Quant Researcher">Quant Researcher</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <Select value={urlLevel} onValueChange={(v) => handleFilterChange('level', v)}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
-                  <SelectValue placeholder="Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="Entry">Entry Level</SelectItem>
-                  <SelectItem value="Mid">Mid Level</SelectItem>
-                  <SelectItem value="Senior">Senior Level</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <Select value={urlType} onValueChange={(v) => handleFilterChange('type', v)}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Contract">Contract</SelectItem>
-                  <SelectItem value="Full-time">Full-time</SelectItem>
-                  <SelectItem value="Internship">Internship</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="filter-item">
-              <Select value={urlIndustry} onValueChange={(v) => handleFilterChange('industry', v)}>
-                <SelectTrigger className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-[#616d7d] [&>span]:text-xs [&>span]:text-[#616d7d] hover:bg-white/10 transition-all h-auto">
-                  <SelectValue placeholder="Industry" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Industries</SelectItem>
-                  <SelectItem value="Automotive">Automotive</SelectItem>
-                  <SelectItem value="E-commerce">E-commerce</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                  <SelectItem value="Finance">Finance</SelectItem>
-                  <SelectItem value="Healthcare">Healthcare</SelectItem>
-                  <SelectItem value="Retail">Retail</SelectItem>
-                  <SelectItem value="Tech">Tech</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="salary-filter-container">
-            <div className="salary-header">
-              <span className="salary-title">Salary Range:</span>
-              <span className="salary-display-value">
-                ${minVal.toLocaleString()} — ${maxVal.toLocaleString()}
-              </span>
-            </div>
-            <div className="slider-wrapper">
-              <Slider
-                value={salaryRange}
-                onValueChange={(val) => setSalaryRange(val)}
-                max={MAX_SALARY}
-                step={1000}
-                className="salary-slider"
-              />
-            </div>
-          </div>
         </div>
 
         {/* RECOMMENDED */}
@@ -448,7 +276,7 @@ function Home() {
               </h4>
 
               <div className="sort-wrapper">
-                <Select value={urlSort} onValueChange={(v) => handleFilterChange('sort', v)}>
+                <Select value={urlSort} onValueChange={(v) => updateUrl({ sort: v })}>
                   <SelectTrigger className="sort-trigger">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -466,7 +294,10 @@ function Home() {
               {hasActiveFilters() && (
                 <button
                   className="clear-filters-text whitespace-nowrap"
-                  onClick={clearFilters}
+                  onClick={() => {
+                    setSearchInput("");
+                    setSearchParams(new URLSearchParams(), { replace: true });
+                  }}
                 >
                   Clear
                 </button>
@@ -485,14 +316,14 @@ function Home() {
           {!isLoading && jobs.length === 0 && (
             <div className="horizontal-scroll-empty">
               <p className="text-white text-base font-medium m-0">
-                No jobs match your filters.
+                No jobs match your search.
               </p>
             </div>
           )}
 
           {!isLoading && jobs.length > 0 && (
             <>
-              {/* ⭐ FEATURED CARD */}
+              {/* FEATURED (Mobile only) */}
               {featuredJob && (
                 <div className="featured-card-wrapper">
                   <Link
@@ -561,7 +392,7 @@ function Home() {
                 </div>
               )}
 
-              {/* ⭐ 2x2 GRID */}
+              {/* GRID */}
               <div className="horizontal-scroll-wrapper">
                 {canScrollLeft && (
                   <button
@@ -656,7 +487,7 @@ function Home() {
           )}
         </div>
 
-        {/* ⭐ About link */}
+        {/* About link */}
         <div className="about-link-wrapper">
           <Link to="/about" className="about-link-btn">
             <Info size={16} />
@@ -665,7 +496,7 @@ function Home() {
           </Link>
         </div>
 
-        {/* ⭐ MATCH MODAL */}
+        {/* MATCH MODAL */}
         {selectedJobForMatch && (
           <MatchModal
             job={selectedJobForMatch}
@@ -673,19 +504,6 @@ function Home() {
           />
         )}
       </div>
-
-      {/* ⭐ FILTER SHEET */}
-      <FilterSheet
-        isOpen={showFilterSheet}
-        onClose={() => setShowFilterSheet(false)}
-        position={urlPosition} setPosition={(v) => handleFilterChange('position', v)}
-        level={urlLevel} setLevel={(v) => handleFilterChange('level', v)}
-        type={urlType} setType={(v) => handleFilterChange('type', v)}
-        industry={urlIndustry} setIndustry={(v) => handleFilterChange('industry', v)}
-        salaryRange={salaryRange} setSalaryRange={setSalaryRange}
-        MAX_SALARY={MAX_SALARY}
-        clearFilters={clearFilters}
-      />
     </>
   );
 }

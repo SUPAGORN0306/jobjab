@@ -1,0 +1,122 @@
+/* src/styles/components/FilterChips.css */
+
+.filter-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.filter-chips-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #8c9bae;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-chips-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(240, 209, 84, 0.15);
+  border: 1px solid rgba(240, 209, 84, 0.4);
+  color: #f0d154;
+  padding: 5px 8px 5px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.filter-chip:hover {
+  background: rgba(240, 209, 84, 0.22);
+  border-color: rgba(240, 209, 84, 0.6);
+}
+
+.filter-chip-text {
+  line-height: 1;
+}
+
+.filter-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(240, 209, 84, 0.2);
+  border: none;
+  color: #f0d154;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.filter-chip-remove:hover {
+  background: rgba(240, 209, 84, 0.5);
+  color: #1C274C;
+  transform: scale(1.1);
+}
+
+.filter-chips-clear {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-chips-clear:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.7);
+}
+
+@media (max-width: 768px) {
+  .filter-chips-row {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .filter-chips-label {
+    font-size: 0.65rem;
+  }
+
+  .filter-chip {
+    font-size: 0.68rem;
+    padding: 4px 7px 4px 10px;
+  }
+
+  .filter-chips-clear {
+    font-size: 0.68rem;
+    padding: 4px 10px;
+  }
+}
