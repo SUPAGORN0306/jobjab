@@ -239,7 +239,6 @@ html, body {
 .search-input {
   width: 100%;
   padding: 16px 20px;
-  padding-right: 140px;
   font-size: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
@@ -259,28 +258,6 @@ html, body {
   color: #ffffff;
   border-color: #f4f3f0;
   background-color: rgba(255, 255, 255, 0.1);
-}
-
-.search-btn {
-  position: absolute;
-  transform: translateY(-50%);
-  right: 7px;
-  top: 50%;
-  background: #f0d154;
-  color: #1C274C;
-  padding: 12px 30px;
-  border-radius: 16px;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  border: none;
-  font-family: inherit;
-}
-
-.search-btn:hover {
-  padding: 12px 29px;
-  opacity: 0.9;
 }
 
 /* ============================================ */
