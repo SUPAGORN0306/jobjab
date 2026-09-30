@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // FullReload(['src/**/*']),  // commented for cache test
+    FullReload(['src/**/*']),
   ],
 
   resolve: {

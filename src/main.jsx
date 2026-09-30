@@ -153,7 +153,7 @@ const router = createBrowserRouter([
 // RENDER
 // ============================================
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.Fragment>
+  <React.StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
@@ -175,5 +175,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
-  </React.Fragment>
+  </React.StrictMode>,
 );
