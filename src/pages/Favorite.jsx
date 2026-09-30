@@ -10,7 +10,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import MatchModal from '../components/MatchModal';
 import PageLoader from '../components/PageLoader';
-
+import { timeAgo } from '../utils/timeAgo';
 
 export default function Favorite() {
   usePageTitle("Favorites", { description: "Your saved jobs" });
@@ -107,6 +107,7 @@ export default function Favorite() {
                       </div>
                       <div className="Recommended-applicants">
                         {job.applicants || ''}
+                        {job.posted_date && ` · ${timeAgo(job.posted_date)}`}
                       </div>
                     </div>
                     <div

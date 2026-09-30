@@ -10,8 +10,9 @@ import MatchModal from '../components/MatchModal';
 import FilterSheet from '../components/FilterSheet';
 import useJobsQuery from '../hooks/useJobsQuery';
 import useDebounce from '../hooks/useDebounce';
+import { timeAgo } from '../utils/timeAgo';
 
-// ⭐ Lucide Icons
+// Lucide Icons
 import {
   Flame,
   Info,
@@ -524,7 +525,10 @@ function Home() {
                         <div className="Recommended-card-bottom">
                           <div>
                             <div className="Recommended-salary">{featuredJob.salary || 'N/A'}</div>
-                            <div className="Recommended-applicants">{featuredJob.applicants || ''}</div>
+                            <div className="Recommended-applicants">
+                              {featuredJob.applicants || ''}
+                              {featuredJob.posted_date && ` · ${timeAgo(featuredJob.posted_date)}`}
+                            </div>
                           </div>
                           <div
                             className={`Recommended-match-badge ${getMatchBadgeClass(featuredJob.match_score || featuredJob.match || 0)}`}
@@ -596,7 +600,10 @@ function Home() {
                         <div className="Recommended-card-bottom">
                           <div>
                             <div className="Recommended-salary">{job.salary || 'N/A'}</div>
-                            <div className="Recommended-applicants">{job.applicants || ''}</div>
+                            <div className="Recommended-applicants">
+                              {job.applicants || ''}
+                              {job.posted_date && ` · ${timeAgo(job.posted_date)}`}
+                            </div>
                           </div>
                           <div
                             className={`Recommended-match-badge ${getMatchBadgeClass(job.match_score || job.match || 0)}`}

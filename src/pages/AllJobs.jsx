@@ -14,6 +14,7 @@ import EmptyState from "../components/EmptyState";
 import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
+import { timeAgo } from '../utils/timeAgo';
 
 const MAX_SALARY = 250000;
 
@@ -348,7 +349,8 @@ function AllJobs() {
                   <div>
                     <div className="Recommended-salary">{job.salary || 'N/A'}</div>
                     <div className="Recommended-applicants">
-                      {job.applicants ? `${job.applicants}` : ''}
+                      {job.applicants || ''}
+                      {job.posted_date && ` · ${timeAgo(job.posted_date)}`}
                     </div>
                   </div>
                   <div className={`Recommended-match-badge ${getMatchBadgeClass(job.match_score || job.match || 0)}`}>
