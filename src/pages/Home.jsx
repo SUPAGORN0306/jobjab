@@ -175,22 +175,22 @@ function Home() {
   return (
     <>
       <div className="container">
-        <div className="logo">
+        {/* <div className="logo">
           <img src="/Logo_in_app.svg" alt="JobLab" />
-        </div>
+        </div> */}
 
-        {/* ⭐ HERO (Desktop) */}
+        {/* HERO (Desktop) */}
         <div className="top-page-1">
           <h2>Find your next <span>opportunity.</span><br />Build your <span>future.</span></h2>
           <p>Discover the right jobs and internships, compare salaries, and see the skills you need to succeed.</p>
         </div>
 
-        {/* ⭐ MOBILE HERO */}
+        {/* MOBILE HERO */}
         <div className="mobile-hero">
           <h1>Find The Right <span>Job For You</span></h1>
         </div>
 
-        {/* ⭐ MOBILE SEARCH */}
+        {/* MOBILE SEARCH */}
         <div className="mobile-search-row">
           <div className="mobile-search-input-wrapper">
             <Search size={18} className="mobile-search-icon" />
@@ -205,7 +205,7 @@ function Home() {
           </div>
         </div>
 
-        {/* ⭐ QUICK STATS (Desktop) */}
+        {/* QUICK STATS (Desktop) */}
         {!isLoading && (
           <div className="home-stats">
             <div className="home-stat">
@@ -225,7 +225,7 @@ function Home() {
           </div>
         )}
 
-        {/* ⭐ TRENDING (navigate ไป AllJobs) */}
+        {/* TRENDING (navigate ไป AllJobs) */}
         <div className="trending-section">
           <span className="trending-label">
             <Flame size={16} />
@@ -246,16 +246,18 @@ function Home() {
         </div>
 
         {/* SEARCH (Desktop only — minimal) */}
-        <div className="search-box">
-          <div className="search-input-container">
-            <input
-              type="text"
-              placeholder="Search jobs, companies, or keywords..."
-              className="search-input"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-            />
+        <div className="search-filter-section">
+          <div className="search-box">
+            <div className="search-input-container">
+              <input
+                type="text"
+                placeholder="Search jobs, companies, or keywords..."
+                className="search-input"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+              />
+            </div>
           </div>
         </div>
 
