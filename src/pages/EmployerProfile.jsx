@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { fetchFullProfile } from '../utils/api';
 import apiClient from '../lib/apiClient';
@@ -23,6 +23,7 @@ export default function EmployerProfile() {
   usePageTitle("Company Profile", { description: "Your company profile" });
 
   const navigate = useNavigate();
+  const location = useLocation();   // ⭐ ใหม่
   const { user, logout, switchRole } = useAuth();
 
   const { jobs, loading: jobsLoading, totalApplicants, activeJobs } = useEmployerData();
@@ -30,6 +31,7 @@ export default function EmployerProfile() {
   const [error, setError] = useState(null);
   const [profile, setProfile] = useState(null);
   const [companyLogo, setCompanyLogo] = useState(null);
+  const [companyName, setCompanyName] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -46,6 +48,7 @@ export default function EmployerProfile() {
 
         if (empRes) {
           setCompanyLogo(empRes.profile?.company_logo || null);
+          setCompanyName(empRes.profile?.company_name || null);
         }
       } catch (err) {
         setError(err.message);
@@ -54,7 +57,7 @@ export default function EmployerProfile() {
       }
     };
     load();
-  }, []);
+  }, [location.key]);   // ⭐ refetch ทุกครั้งที่ navigate เข้าหน้านี้
 
   const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -67,14 +70,12 @@ export default function EmployerProfile() {
     const confirmed = window.confirm('Switch to "Job Seeker" mode?');
     if (!confirmed) return;
 
-    // รอ API switch-role เสร็จก่อน → cookie ใหม่ถูก set
     const ok = await switchRole('candidate');
     if (!ok) {
       alert('Failed to switch role. Please try again.');
       return;
     }
 
-    // client-side navigate (SPA) — ไม่ reload หน้า
     navigate('/home');
   };
 
@@ -108,7 +109,7 @@ export default function EmployerProfile() {
       <EmployerHero
         tag="COMPANY PROFILE"
         tagIcon={Building2}
-        title={user?.company || 'Your Company'}
+        title={companyName || 'Your Company'}
         subtitle={
           <>
             {profile?.industry || 'Industry N/A'}
@@ -182,7 +183,7 @@ export default function EmployerProfile() {
           </div>
 
           <div className="employer-profile-info">
-            <h2>{user?.company || 'Your Company'}</h2>
+            <h2>{companyName || 'Your Company'}</h2>
             <p>{profile?.industry || 'Industry N/A'}</p>
             {profile?.location && (
               <p style={{ fontSize: '0.7rem', color: '#8c9bae', marginTop: 4 }}>

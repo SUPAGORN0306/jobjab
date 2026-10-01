@@ -31,8 +31,13 @@ export default function EmployerProfileEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [companyLogo, setCompanyLogo] = useState(null);
+
+  // ⭐ logo state
+  const [pendingLogoUrl, setPendingLogoUrl] = useState(null);
+  const [logoChanged, setLogoChanged] = useState(false);
+
   const [form, setForm] = useState({
+    company_name: '',    // ⭐ ใหม่
     full_name: '',
     phone: '',
     location: '',
@@ -44,22 +49,21 @@ export default function EmployerProfileEdit() {
     const load = async () => {
       try {
         const userData = await fetchFullProfile();
-        setForm({
-          full_name: userData.profile?.full_name || '',
-          phone: userData.profile?.phone || '',
-          location: userData.profile?.location || '',
-          bio: userData.profile?.bio || '',
-          industry: userData.profile?.industry || '',
-        });
-
         const empRes = await apiClient
           .get('/api/employer/profile')
           .then((r) => r.data)
           .catch(() => null);
 
-        if (empRes) {
-          setCompanyLogo(empRes.profile?.company_logo || null);
-        }
+        setForm({
+          company_name: empRes?.profile?.company_name || '',
+          full_name: userData.profile?.full_name || '',
+          phone: userData.profile?.phone || '',
+          location: userData.profile?.location || '',
+          bio: userData.profile?.bio || '',
+          industry: empRes?.profile?.industry || userData.profile?.industry || '',
+        });
+
+        setPendingLogoUrl(empRes?.profile?.company_logo || null);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -74,17 +78,41 @@ export default function EmployerProfileEdit() {
   };
 
   const handleLogoUploaded = (newLogoUrl) => {
-    setCompanyLogo(newLogoUrl);
+    setPendingLogoUrl(newLogoUrl);
+    setLogoChanged(true);
   };
 
   const handleSave = async () => {
+    if (!form.company_name?.trim()) {
+      toast.error('Company name is required');
+      return;
+    }
+
     setSaving(true);
     try {
-      await updateProfile(form);
+      // 1. users table
+      await updateProfile({
+        full_name: form.full_name,
+        phone: form.phone,
+        location: form.location,
+        bio: form.bio,
+      });
+
+      // 2. employer_profiles table
+      const payload = {
+        company_name: form.company_name.trim(),
+        industry: form.industry,
+      };
+      if (logoChanged) {
+        payload.company_logo = pendingLogoUrl;   // URL ใหม่ หรือ null
+      }
+
+      await apiClient.put('/api/employer/profile', payload);
+
       toast.success('Profile updated successfully');
       navigate('/employer/profile');
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -137,17 +165,17 @@ export default function EmployerProfileEdit() {
       <div className="employer-edit-grid">
         <div className="employer-edit-logo-card">
           <CompanyLogoUploader
-            currentImage={companyLogo}
+            currentImage={pendingLogoUrl}
             userId={user?.id}
             onUploadSuccess={handleLogoUploaded}
           />
 
           <div style={{ textAlign: 'center' }}>
             <h3 className="employer-edit-company-name">
-              {user?.company || 'Your Company'}
+              {form.company_name || 'Your Company'}
             </h3>
             <p className="employer-edit-company-meta">
-              {user?.industry || 'Industry N/A'}
+              {form.industry || 'Industry N/A'}
             </p>
           </div>
         </div>
@@ -159,6 +187,21 @@ export default function EmployerProfileEdit() {
           </h2>
 
           <div className="form-grid">
+            {/* ⭐ NEW — Company Name */}
+            <div className="form-field form-field-full">
+              <label className="form-field-label">
+                <Building2 size={12} />
+                Company Name
+                <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Acme Inc"
+                value={form.company_name}
+                onChange={(e) => handleChange('company_name', e.target.value)}
+              />
+            </div>
+
             <div className="form-field form-field-full">
               <label className="form-field-label">
                 <User size={12} />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import apiClient from '../lib/apiClient';  
 import { useNavigate } from 'react-router-dom';
 import { fetchEmployerJobs, createEmployerJob, fetchJobApplications } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -157,7 +158,6 @@ function ActionItems({ applications, jobs, onNavigate }) {
 function PostJobModal({ user, onClose, onPosted }) {
   const [form, setForm] = useState({
     job_title: '',
-    company_name: user?.company || '',
     location: '',
     employment_type: 'Full-time',
     experience_level: 'Mid',
@@ -165,13 +165,21 @@ function PostJobModal({ user, onClose, onPosted }) {
     salary_max: '',
     skills_required: '',
     tools_preferred: '',
-    industry: user?.industry || '',
     company_size: '',
     about_role: '',
     responsibilities: '',
     requirements: '',
+    // ⭐ ไม่มี company_name / industry — backend ดึงจาก profile
   });
   const [submitting, setSubmitting] = useState(false);
+  const [companyProfile, setCompanyProfile] = useState(null);
+
+  // ⭐ โหลด company profile มาแสดง readonly
+  useEffect(() => {
+    apiClient.get('/api/employer/profile')
+      .then((r) => setCompanyProfile(r.data?.profile || null))
+      .catch(() => setCompanyProfile(null));
+  }, []);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -223,16 +231,29 @@ function PostJobModal({ user, onClose, onPosted }) {
                 </select>
               </div>
 
+              {/* ⭐ Company — readonly จาก profile */}
               <div className="form-field">
                 <label className="form-field-label">
                   Company <span className="required">*</span>
                 </label>
                 <input
                   type="text"
-                  value={form.company_name}
-                  onChange={(e) => handleChange('company_name', e.target.value)}
-                  placeholder="Acme Inc."
-                  required
+                  value={companyProfile?.company_name || '(loading...)'}
+                  readOnly
+                  disabled
+                  style={{ opacity: 0.7, cursor: 'not-allowed' }}
+                />
+              </div>
+
+              {/* ⭐ Industry — readonly จาก profile */}
+              <div className="form-field">
+                <label className="form-field-label">Industry</label>
+                <input
+                  type="text"
+                  value={companyProfile?.industry || '—'}
+                  readOnly
+                  disabled
+                  style={{ opacity: 0.7, cursor: 'not-allowed' }}
                 />
               </div>
 
@@ -284,17 +305,6 @@ function PostJobModal({ user, onClose, onPosted }) {
                   onChange={(e) => handleChange('salary_max', e.target.value)}
                   placeholder="100000"
                 />
-              </div>
-
-              <div className="form-field">
-                <label className="form-field-label">Industry</label>
-                <select
-                  value={form.industry}
-                  onChange={(e) => handleChange('industry', e.target.value)}
-                >
-                  <option value="">Select</option>
-                  {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
-                </select>
               </div>
 
               <div className="form-field">

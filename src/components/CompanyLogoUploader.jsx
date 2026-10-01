@@ -1,6 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { Building2 } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Building2, AlertCircle } from 'lucide-react';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '../utils/cropImage';
 import apiClient from '../lib/apiClient';
+import { toast } from 'sonner';
 import '../styles/components/AvatarUploader.css';
 
 export default function CompanyLogoUploader({
@@ -8,43 +11,87 @@ export default function CompanyLogoUploader({
   userId,
   onUploadSuccess,
 }) {
-  const [uploading, setUploading] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [isCropping, setIsCropping] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState(currentImage);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = async (e) => {
+  const MAX_SIZE = 5 * 1024 * 1024;
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0];
+    setError(null);
     if (!file) return;
 
-    setError(null);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError('Invalid file type. Allowed: JPG, PNG, GIF, WEBP');
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      setError(`File too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Max: 5 MB`);
+      return;
+    }
 
-    // Preview
     const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target.result);
+    reader.onload = () => {
+      setImageSrc(reader.result);
+      setIsCropping(true);
+    };
     reader.readAsDataURL(file);
+  };
 
-    setUploading(true);
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleCropConfirm = async () => {
     try {
-      const formData = new FormData();
-      formData.append('logo', file);
-      // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
+      setIsUploading(true);
+      setError(null);
 
+      // ⭐ crop 512x512
+      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+
+      if (!croppedBlob) {
+        throw new Error('Failed to crop image');
+      }
+
+      const formData = new FormData();
+      formData.append('logo', croppedBlob, 'logo.jpg');
+
+      // ⭐ upload ไปที่ storage — backend return URL เท่านั้น (ไม่ UPDATE DB)
       const { data } = await apiClient.post(
         '/api/upload/company-logo',
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
 
+      setIsCropping(false);
+      setImageSrc(null);
+
+      // ⭐ เก็บ URL ไว้ preview — รอ Save Changes
       setPreview(data.image_url);
       onUploadSuccess?.(data.image_url);
+
+      toast.success('Logo uploaded — click "Save Changes" to apply');
     } catch (err) {
       setError(err.message);
-      setPreview(currentImage);
     } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setIsUploading(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setIsCropping(false);
+    setImageSrc(null);
+    setError(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleRemove = () => {
@@ -55,63 +102,120 @@ export default function CompanyLogoUploader({
 
   return (
     <div className="avatar-uploader">
-      {/* Preview */}
-      <div className="avatar-preview-wrapper" style={{ borderRadius: '16px' }}>
-        {preview ? (
-          <img
-            src={preview}
-            alt="Company Logo"
-            className="avatar-preview"
-          />
-        ) : (
-          <div className="avatar-placeholder">
-            <Building2 size={40} style={{ color: '#f0d154' }} />
+      {!isCropping && (
+        <>
+          <div className="avatar-preview-wrapper" style={{ borderRadius: '16px' }}>
+            {preview ? (
+              <img src={preview} alt="Company Logo" className="avatar-preview" />
+            ) : (
+              <div className="avatar-placeholder">
+                <Building2 size={40} style={{ color: '#f0d154' }} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Hidden input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/gif,image/webp"
-        onChange={handleFileSelect}
-        style={{ display: 'none' }}
-      />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
 
-      {/* Upload button */}
-      <button
-        type="button"
-        className="avatar-upload-btn"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={uploading}
-      >
-        {uploading ? 'Uploading...' : preview ? 'Change Logo' : 'Upload Logo'}
-      </button>
+          <button
+            type="button"
+            className="avatar-upload-btn"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+          >
+            {isUploading ? 'Uploading...' : preview ? 'Change Logo' : 'Upload Logo'}
+          </button>
 
-      {/* Remove button (ใช้ avatar-upload-btn style) */}
-      {preview && (
-        <button
-          type="button"
-          className="avatar-upload-btn"
-          onClick={handleRemove}
-          disabled={uploading}
-          style={{
-            background: 'rgba(239, 68, 68, 0.12)',
-            borderColor: 'rgba(239, 68, 68, 0.3)',
-            color: '#fca5a5',
-          }}
-        >
-          Remove Logo
-        </button>
+          {preview && (
+            <button
+              type="button"
+              className="avatar-upload-btn"
+              onClick={handleRemove}
+              disabled={isUploading}
+              style={{
+                background: 'rgba(239, 68, 68, 0.12)',
+                borderColor: 'rgba(239, 68, 68, 0.3)',
+                color: '#fca5a5',
+              }}
+            >
+              Remove Logo
+            </button>
+          )}
+
+          <p className="avatar-hint">JPG, PNG, GIF, WEBP — Max 5 MB</p>
+
+          {error && (
+            <p className="avatar-error" style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+              <AlertCircle size={14} />
+              {error}
+            </p>
+          )}
+        </>
       )}
 
-      {/* Hint */}
-      <p className="avatar-hint">
-        JPG, PNG, GIF, WEBP — Max 5 MB
-      </p>
+      {/* Crop Modal — ⭐ cropShape="rect" (ไม่ใช่ round) */}
+      {isCropping && (
+        <div className="crop-modal-overlay">
+          <div className="crop-modal">
+            <div className="crop-header">
+              <h3>Crop Company Logo</h3>
+              <button className="crop-close" onClick={handleCropCancel} disabled={isUploading}>
+                ×
+              </button>
+            </div>
 
-      {error && <p className="avatar-error">{error}</p>}
+            <div className="crop-container">
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="rect"
+                showGrid={false}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="crop-controls">
+              <label className="crop-zoom-label">
+                <span>Zoom</span>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(e) => setZoom(parseFloat(e.target.value))}
+                  disabled={isUploading}
+                />
+              </label>
+            </div>
+
+            <div className="crop-actions">
+              <button className="crop-cancel-btn" onClick={handleCropCancel} disabled={isUploading}>
+                Cancel
+              </button>
+              <button className="crop-confirm-btn" onClick={handleCropConfirm} disabled={isUploading}>
+                {isUploading ? 'Uploading...' : 'Confirm Crop'}
+              </button>
+            </div>
+
+            {error && (
+              <p className="crop-error" style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                <AlertCircle size={14} />
+                {error}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

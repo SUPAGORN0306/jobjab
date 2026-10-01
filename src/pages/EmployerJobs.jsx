@@ -50,7 +50,6 @@ const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior', 'Lead'];
 function EditJobModal({ job, onClose, onSaved }) {
   const [form, setForm] = useState({
     job_title: job.job_title || '',
-    company_name: job.company_name || '',
     location: job.location || '',
     employment_type: job.employment_type || 'Full-time',
     experience_level: job.experience_level || 'Mid',
@@ -58,11 +57,11 @@ function EditJobModal({ job, onClose, onSaved }) {
     salary_max: job.salary_max || '',
     skills_required: job.skills_required || '',
     tools_preferred: job.tools_preferred || '',
-    industry: job.industry || '',
     company_size: job.company_size || '',
     about_role: job.about_role || '',
     responsibilities: job.responsibilities || '',
     requirements: job.requirements || '',
+    // ⭐ ไม่มี company_name / industry — backend ดึงจาก profile
   });
   const [saving, setSaving] = useState(false);
 
@@ -107,9 +106,28 @@ function EditJobModal({ job, onClose, onSaved }) {
               </select>
             </div>
 
+            {/* Company Name — readonly */}
             <div className="form-field">
-              <label className="form-field-label">Company Name *</label>
-              <input type="text" value={form.company_name} onChange={(e) => handleChange('company_name', e.target.value)} placeholder="Acme Inc." />
+              <label className="form-field-label">Company Name</label>
+              <input
+                type="text"
+                value={job.company_name || '—'}
+                readOnly
+                disabled
+                style={{ opacity: 0.7, cursor: 'not-allowed' }}
+              />
+            </div>
+
+            {/* ⭐ Industry — readonly */}
+            <div className="form-field">
+              <label className="form-field-label">Industry</label>
+              <input
+                type="text"
+                value={job.industry || '—'}
+                readOnly
+                disabled
+                style={{ opacity: 0.7, cursor: 'not-allowed' }}
+              />
             </div>
 
             <div className="form-field">
@@ -139,14 +157,6 @@ function EditJobModal({ job, onClose, onSaved }) {
             <div className="form-field">
               <label className="form-field-label">Salary Max (USD)</label>
               <input type="number" value={form.salary_max} onChange={(e) => handleChange('salary_max', e.target.value)} placeholder="100000" />
-            </div>
-
-            <div className="form-field">
-              <label className="form-field-label">Industry</label>
-              <select value={form.industry} onChange={(e) => handleChange('industry', e.target.value)}>
-                <option value="">-- Select --</option>
-                {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
-              </select>
             </div>
 
             <div className="form-field">
