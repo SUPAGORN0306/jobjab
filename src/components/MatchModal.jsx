@@ -10,27 +10,52 @@ import {
 } from 'lucide-react';
 import '../styles/components/MatchModal.css';
 
+// ⭐ helper — กัน object ถูก render เป็น JSX (Error: Cannot convert object to primitive value)
+const safeStr = (v) => {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return String(v);
+  if (typeof v === 'boolean') return String(v);
+  if (Array.isArray(v)) return v.map(safeStr).filter(Boolean).join(', ');
+  if (typeof v === 'object') {
+    return v.name || v.skill_name || v.label || v.title || '';
+  }
+  return String(v);
+};
+
+// ⭐ helper — กัน array ที่อาจารย์ไม่ใช่ array
+const safeArr = (v) => (Array.isArray(v) ? v : []);
+
 export default function MatchModal({ job, onClose }) {
   const navigate = useNavigate();
 
   if (!job) return null;
 
-  const breakdown = job.match_breakdown || {
-    skills: 0,
-    experience: 0,
-    industry: 0,
-  };
+  // ⭐ ปลอดภัย — แปลงเป็น number
+  const score = Number(job.match_score) || Number(job.match) || 0;
 
-  const matchedSkills = job.matched_skills || [];
-  const missingSkills = job.missing_skills || [];
+  const breakdown = job.match_breakdown && typeof job.match_breakdown === 'object'
+    ? {
+        skills: Number(job.match_breakdown.skills) || 0,
+        experience: Number(job.match_breakdown.experience) || 0,
+        industry: Number(job.match_breakdown.industry) || 0,
+      }
+    : { skills: 0, experience: 0, industry: 0 };
 
-  // Suggestions
+  const matchedSkills = safeArr(job.matched_skills);
+  const missingSkills = safeArr(job.missing_skills);
+
+  // ⭐ แปลงเป็น string ล่วงหน้า
+  const matchedSkillStrings = matchedSkills.map(safeStr).filter(Boolean);
+  const missingSkillStrings = missingSkills.map(safeStr).filter(Boolean);
+
+  // ─── Suggestions ───
   const suggestions = [];
-  if (breakdown.skills < 100 && missingSkills.length > 0) {
+  if (breakdown.skills < 100 && missingSkillStrings.length > 0) {
     suggestions.push({
       icon: Wrench,
       title: 'Add missing skills',
-      detail: `Add ${missingSkills.slice(0, 3).join(', ')}`,
+      detail: `Add ${missingSkillStrings.slice(0, 3).join(', ')}`,
       impact: '+15%',
     });
   }
@@ -51,20 +76,20 @@ export default function MatchModal({ job, onClose }) {
     });
   }
 
-  const getScoreColor = (score) => {
-    if (score >= 70) return '#80ffd5';
-    if (score >= 40) return '#f0d154';
+  const getScoreColor = (s) => {
+    if (s >= 70) return '#80ffd5';
+    if (s >= 40) return '#f0d154';
     return '#f472b6';
   };
 
-  const getScoreMessage = (score) => {
-    if (score >= 70) return { title: 'Great Match!', desc: "You're a strong candidate for this role" };
-    if (score >= 40) return { title: 'Good Match', desc: 'You match several requirements' };
+  const getScoreMessage = (s) => {
+    if (s >= 70) return { title: 'Great Match!', desc: "You're a strong candidate for this role" };
+    if (s >= 40) return { title: 'Good Match', desc: 'You match several requirements' };
     return { title: "Let's Improve", desc: 'Add more info to boost your match' };
   };
 
-  const message = getScoreMessage(job.match_score || 0);
-  const scoreColor = getScoreColor(job.match_score || 0);
+  const message = getScoreMessage(score);
+  const scoreColor = getScoreColor(score);
 
   return (
     <div className="match-modal-overlay" onClick={onClose}>
@@ -74,7 +99,7 @@ export default function MatchModal({ job, onClose }) {
           <div>
             <h2>Match Score Breakdown</h2>
             <p>
-              {job.title} · <span>{job.company}</span>
+              {safeStr(job.title || job.job_title)} · <span>{safeStr(job.company || job.company_name)}</span>
             </p>
           </div>
           <button className="match-modal-close" onClick={onClose}>
@@ -87,12 +112,12 @@ export default function MatchModal({ job, onClose }) {
           <div
             className="score-circle"
             style={{
-              background: `conic-gradient(${scoreColor} ${job.match_score}%, rgba(255,255,255,0.1) 0%)`,
+              background: `conic-gradient(${scoreColor} ${score}%, rgba(255,255,255,0.1) 0%)`,
             }}
           >
             <div className="score-circle-inner">
               <Target size={18} style={{ color: scoreColor }} />
-              <span className="score-value">{job.match_score || 0}%</span>
+              <span className="score-value">{score}%</span>
             </div>
           </div>
           <div className="score-message">
@@ -125,21 +150,21 @@ export default function MatchModal({ job, onClose }) {
                 }}
               ></div>
             </div>
-            {matchedSkills.length > 0 && (
+            {matchedSkillStrings.length > 0 && (
               <div className="breakdown-details">
                 <span className="detail-label">Matched:</span>
                 <div className="skill-chips">
-                  {matchedSkills.slice(0, 4).map((s, i) => (
+                  {matchedSkillStrings.slice(0, 4).map((s, i) => (
                     <span className="skill-chip green" key={i}>{s}</span>
                   ))}
                 </div>
               </div>
             )}
-            {missingSkills.length > 0 && (
+            {missingSkillStrings.length > 0 && (
               <div className="breakdown-details">
                 <span className="detail-label">Missing:</span>
                 <div className="skill-chips">
-                  {missingSkills.slice(0, 4).map((s, i) => (
+                  {missingSkillStrings.slice(0, 4).map((s, i) => (
                     <span className="skill-chip red" key={i}>{s}</span>
                   ))}
                 </div>

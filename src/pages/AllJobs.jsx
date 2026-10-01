@@ -12,12 +12,24 @@ import PageLoader from '../components/PageLoader';
 import EmptyState from "../components/EmptyState";
 import FilterChips from '../components/FilterChips';
 import SalaryPopover from '../components/SalaryPopover';
+import MatchModal from '../components/MatchModal';
 import { Search, Target, Sparkles, TrendingDown, TrendingUp, Heart } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { timeAgo } from '../utils/timeAgo';
 
 const MAX_SALARY = 250000;
+
+// ⭐ helper — กัน object ถูก render
+const safeStr = (v) => {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return String(v);
+  if (typeof v === 'boolean') return String(v);
+  if (Array.isArray(v)) return v.map(safeStr).filter(Boolean).join(', ');
+  if (typeof v === 'object') return v.name || v.title || v.label || '';
+  return String(v);
+};
 
 function AllJobs() {
   usePageTitle("All Jobs", { description: "Browse all available positions" });
@@ -26,6 +38,7 @@ function AllJobs() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isFavorited, toggleFavorite } = useFavorites();
   const { user } = useAuth();
+  const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
 
   // ─── Read filters from URL ───
   const urlQ = searchParams.get("q") || "";
@@ -101,7 +114,6 @@ function AllJobs() {
     updateUrl({ [key]: value });
   };
 
-  // ⭐ FilterChips: remove single filter
   const handleRemoveFilter = (key) => {
     if (key === 'salary') {
       updateUrl({ salary_min: null, salary_max: null });
@@ -110,7 +122,6 @@ function AllJobs() {
     }
   };
 
-  // ⭐ SalaryPopover: apply
   const handleApplySalary = (min, max) => {
     updateUrl({
       salary_min: min > 0 ? String(min) : null,
@@ -133,7 +144,6 @@ function AllJobs() {
     setSearchParams(new URLSearchParams(), { replace: true });
   };
 
-  // ⭐ Filter data สำหรับ FilterChips
   const filterData = useMemo(() => ({
     q: urlQ,
     position: urlPosition,
@@ -175,9 +185,8 @@ function AllJobs() {
         </div>
       </div>
 
-      {/* FILTER BAR — Compact */}
+      {/* FILTER BAR */}
       <div className="all-jobs-filter-card">
-        {/* Row 1: Search */}
         <div className="search-input-container">
           <input
             type="text"
@@ -189,7 +198,6 @@ function AllJobs() {
           />
         </div>
 
-        {/* Row 2: Dropdowns + Salary Popover + Sort */}
         <div className="filter-navbar">
           <div className="filter-item">
             <Select value={urlPosition} onValueChange={(v) => handleFilterChange('position', v)}>
@@ -259,7 +267,6 @@ function AllJobs() {
             </Select>
           </div>
 
-          {/* Salary Popover */}
           <div className="filter-item">
             <SalaryPopover
               salaryMin={urlSalaryMin}
@@ -269,7 +276,6 @@ function AllJobs() {
             />
           </div>
 
-          {/* Sort */}
           <div className="filter-item">
             <Select value={urlSort} onValueChange={(v) => handleFilterChange('sort', v)}>
               <SelectTrigger className="filter-trigger">
@@ -330,12 +336,12 @@ function AllJobs() {
               <div className="Recommended-card">
                 <div className="Recommended-card-top">
                   <div className="Recommended-company-info">
-                    <div className={`Recommended-logo ${getJobLogoClass(job.title)}`}>
-                      {job.logoLetter || job.title?.charAt(0) || 'J'}
+                    <div className={`Recommended-logo ${getJobLogoClass(safeStr(job.title || job.job_title))}`}>
+                      {safeStr(job.logo_letter || job.logoLetter || (job.title || job.job_title)?.charAt?.(0) || 'J')}
                     </div>
                     <div>
-                      <h4>{job.title}</h4>
-                      <span>{job.company}</span>
+                      <h4>{safeStr(job.title || job.job_title)}</h4>
+                      <span>{safeStr(job.company || job.company_name)}</span>
                     </div>
                   </div>
                   <span
@@ -359,19 +365,27 @@ function AllJobs() {
                   {[job.type, job.level, job.work_mode || job.workMode]
                     .filter(Boolean)
                     .map((tag, idx) => (
-                      <span key={idx}>{tag}</span>
+                      <span key={idx}>{safeStr(tag)}</span>
                     ))}
                 </div>
                 <div className="Recommended-card-bottom">
                   <div>
-                    <div className="Recommended-salary">{job.salary || 'N/A'}</div>
+                    <div className="Recommended-salary">{safeStr(job.salary) || 'N/A'}</div>
                     <div className="Recommended-applicants">
-                      {job.applicants || ''}
+                      {safeStr(job.applicants) || ''}
                       {job.posted_date && ` · ${timeAgo(job.posted_date)}`}
                     </div>
                   </div>
-                  <div className={`Recommended-match-badge ${getMatchBadgeClass(job.match_score || job.match || 0)}`}>
-                    {job.match_score || job.match || 0}%
+                  <div
+                    className={`Recommended-match-badge ${getMatchBadgeClass(Number(job.match_score || job.match || 0))}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedJobForMatch(job);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {Number(job.match_score || job.match || 0)}%
                   </div>
                 </div>
               </div>
@@ -401,6 +415,14 @@ function AllJobs() {
         <p className="all-jobs-end-message">
           You've seen all {total.toLocaleString()} jobs
         </p>
+      )}
+
+      {/* ⭐ MATCH MODAL */}
+      {selectedJobForMatch && (
+        <MatchModal
+          job={selectedJobForMatch}
+          onClose={() => setSelectedJobForMatch(null)}
+        />
       )}
     </div>
   );
