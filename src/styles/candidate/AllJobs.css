@@ -5,11 +5,11 @@
 .all-jobs-container {
   display: flex;
   flex-direction: column;
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 90px 80px 100px 180px;
+  padding: 90px 90px 100px 90px;
   box-sizing: border-box;
   overflow-x: hidden;
   position: relative;

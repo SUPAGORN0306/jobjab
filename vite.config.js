@@ -8,7 +8,6 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // FullReload(['src/**/*']),
   ],
 
   resolve: {
@@ -33,10 +32,10 @@ export default defineConfig({
         secure: false,
       },
     },
-    watch: {
-      usePolling: true,
-      interval: 1000,
-    },
+    // watch: {
+    //   usePolling: true,
+    //   interval: 1000,
+    // },
   },
   
   build: {

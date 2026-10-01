@@ -1,5 +1,11 @@
 /* src/styles/candidate/About.css */
 
+.about-page {
+  width: 100%;
+  background: #0f172a;
+  min-height: 100vh;
+}
+
 .about-container {
   width: 100%;
   max-width: 1080px;

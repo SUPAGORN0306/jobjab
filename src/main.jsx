@@ -14,13 +14,13 @@ import EmployerApp from './EmployerApp.jsx';
 // ============================================
 
 // Public
-const Splash = lazy(() => import('./pages/Splash.jsx'));
+const Landing = lazy(() => import('./pages/Landing.jsx'));
 const Login = lazy(() => import('./pages/Login.jsx'));
 const Signup = lazy(() => import('./pages/Signup.jsx'));
+const About = lazy(() => import('./pages/About.jsx'));
 
 // Candidate
 const Home = lazy(() => import('./pages/Home.jsx'));
-const About = lazy(() => import('./pages/About.jsx'));
 const Favorite = lazy(() => import('./pages/Favorite.jsx'));
 const Apply = lazy(() => import('./pages/Apply.jsx'));
 const AppStatus = lazy(() => import('./pages/AppStatus.jsx'));
@@ -107,9 +107,13 @@ function PageLoader() {
 // ROUTER
 // ============================================
 const router = createBrowserRouter([
-  { path: '/', element: <Splash /> },
+  // ─── Public ───
+  { path: '/', element: <Landing /> },
   { path: '/login', element: <Login /> },
   { path: '/signup', element: <Signup /> },
+  { path: '/about', element: <About /> },
+
+  // ─── Candidate (protected) ───
   {
     path: '/',
     element: (
@@ -126,9 +130,10 @@ const router = createBrowserRouter([
       { path: 'profile/edit', element: <Edit /> },
       { path: 'job/:id', element: <JobDetail /> },
       { path: 'job/:id/apply', element: <Apply /> },
-      { path: 'about', element: <About /> },
     ],
   },
+
+  // ─── Employer (protected) ───
   {
     path: '/employer',
     element: (

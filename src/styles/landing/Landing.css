@@ -1,0 +1,253 @@
+/* ===== Landing Page - Minimal Hero ===== */
+
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial glow - decorative only */
+.landing::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(
+    circle,
+    rgba(240, 209, 84, 0.08) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== Navbar ===== */
+.landing-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-logo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.landing-logo-full {
+  height: 150px;
+  width: auto;
+  display: block;
+  margin-top: -40px;
+  margin-bottom: -50px;
+}
+
+.landing-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.landing-nav-link {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.landing-nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ===== Hero ===== */
+.landing-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
+  animation: landing-fade-in 0.6s ease-out;
+}
+
+@keyframes landing-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-title {
+  font-size: clamp(32px, 6vw, 64px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+  max-width: 900px;
+  color: #ffffff;
+}
+
+.landing-title-accent {
+  color: #f0d154;
+}
+
+.landing-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: #94a3b8;
+  margin: 0 0 40px;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+/* ===== CTA (renamed: landing-cta → landing-hero-cta) ===== */
+.landing-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: #f0d154;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 17px;
+  border-radius: 12px;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  box-shadow: 0 4px 20px rgba(240, 209, 84, 0.2);
+}
+
+.landing-hero-cta:hover {
+  background: #f3d86b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(240, 209, 84, 0.35);
+}
+
+.landing-hero-cta:active {
+  transform: translateY(0);
+}
+
+.landing-hero-cta-arrow {
+  transition: transform 0.2s;
+}
+
+.landing-hero-cta:hover .landing-hero-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ===== Stats ===== */
+.landing-stats {
+  margin-top: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #8c9bae;
+  min-height: 24px;
+}
+
+.landing-stat-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.landing-dot {
+  color: #8c9bae;
+  opacity: 0.5;
+}
+
+/* Loading skeleton */
+.landing-skeleton {
+  display: inline-block;
+  width: 48px;
+  height: 16px;
+  vertical-align: middle;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: landing-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes landing-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Footer ===== */
+.landing-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding-top: 0;
+  padding-bottom: 12px;
+  font-size: 13px;
+  color: #8c9bae;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-footer a {
+  color: #8c9bae;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.landing-footer a:hover {
+  color: #ffffff;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  .landing-nav {
+    padding: 20px 20px;
+  }
+
+  .landing-nav-link {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .landing-hero {
+    padding: 60px 20px;
+  }
+
+  .landing-hero-cta {
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+
+  .landing-stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .landing-stats .landing-dot {
+    display: none;
+  }
+}

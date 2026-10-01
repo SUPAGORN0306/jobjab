@@ -22,7 +22,7 @@
   pointer-events: none;
 }
 
-/* ⭐ Background image */
+/* Background image */
 .splash-bg {
   position: absolute;
   top: 0;
@@ -61,7 +61,7 @@
   );
 }
 
-/* ⭐ Content */
+/* Content */
 .splash-content {
   position: relative;
   z-index: 2;
@@ -144,7 +144,7 @@
   }
 }
 
-/* ⭐ Loading dots */
+/* Loading dots */
 .splash-loader {
   display: flex;
   gap: 8px;
