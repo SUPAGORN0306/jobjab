@@ -2,30 +2,27 @@
 
 /**
  * Dev  → relative path → Vite proxy (same-origin → cookie ทำงาน)
- * Prod → absolute URL จาก VITE_API_URL
+ * Prod → relative path → Vercel rewrite (same-origin → cookie ทำงาน)
+ *
+ * ⭐ API_ORIGIN = '' + API_BASE = '' → ทุก call ใช้ relative path
+ * → same-origin → cookie ทำงานบน iOS Safari
  */
-export const API_ORIGIN = import.meta.env.DEV
-  ? ''
-  : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
+
+export const API_ORIGIN = '';
 
 /**
- * Origin สำหรับ resolve static files (uploads, avatars)
- * ต้องเป็น absolute เสมอ → ไม่งั้น path /uploads/* จะ 404
+ * ⭐ API_BASE = '' (ไม่ใช่ '/api')
+ * เพราะ call ทุกที่ใช้ '/api/...' อยู่แล้ว
+ * ถ้า API_BASE = '/api' → จะซ้ำเป็น '/api/api/...'
  */
-const STATIC_ORIGIN = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-/**
- * API base URL (มี /api)
- */
-export const API_BASE = `${API_ORIGIN}/api`;
+export const API_BASE = '';
 
 /**
  * แปลง path → full URL
- * - http/https/data → คืนเดิม (Supabase URL)
- * - relative (/uploads/...) → prepend STATIC_ORIGIN (absolute)
  */
 export function resolveFileUrl(pathOrUrl) {
   if (!pathOrUrl) return null;
+
   if (
     pathOrUrl.startsWith('http://') ||
     pathOrUrl.startsWith('https://') ||
@@ -33,5 +30,6 @@ export function resolveFileUrl(pathOrUrl) {
   ) {
     return pathOrUrl;
   }
-  return `${STATIC_ORIGIN}${pathOrUrl}`;
+
+  return `${API_ORIGIN}${pathOrUrl}`;
 }

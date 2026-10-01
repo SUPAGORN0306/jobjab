@@ -5,22 +5,24 @@
  * - withCredentials: true → ส่ง cookies อัตโนมัติ
  * - Response interceptor → auto-refresh เมื่อ 401
  * - Helper: getErrorMessage()
+ *
+ * ⭐ baseURL = '' → call ใช้ '/api/...' (relative) → same-origin → cookie ทำงานบน iOS
  */
 import axios from 'axios';
 
-import { API_ORIGIN } from '../utils/apiUrl';
+import { API_BASE } from '../utils/apiUrl';   // = ''
 
 // ============================================================
 // AXIOS INSTANCE
 // ============================================================
 
 const apiClient = axios.create({
-  baseURL: API_ORIGIN,
-  withCredentials: true, // ← ส่ง cookies: access_token, refresh_token, csrf_token
+  baseURL: API_BASE,   // ⭐ = '' → call '/api/auth/me' → '/api/auth/me' ✅
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 วิ
+  timeout: 30000,
 });
 
 // ============================================================
@@ -28,14 +30,11 @@ const apiClient = axios.create({
 // ============================================================
 
 apiClient.interceptors.response.use(
-  // Success — pass through
   (response) => response,
 
-  // Error handler
   async (error) => {
     const originalRequest = error.config || {};
 
-    // ⭐ Handle 429 Rate Limit — แสดงข้อความชัดเจน
     if (error.response?.status === 429) {
       const retryAfter = error.response.headers['retry-after'] || '60';
       const customError = new Error(
@@ -47,10 +46,6 @@ apiClient.interceptors.response.use(
       return Promise.reject(customError);
     }
 
-    // ไม่ refresh ถ้า:
-    // 1. ไม่ใช่ 401
-    // 2. เคย retry แล้ว
-    // 3. เป็น auth endpoint
     const isAuthEndpoint =
       originalRequest.url?.includes('/api/auth/refresh') ||
       originalRequest.url?.includes('/api/auth/login') ||
@@ -85,7 +80,6 @@ apiClient.interceptors.response.use(
 // ============================================================
 
 export function getErrorMessage(error) {
-  // ⭐ Rate limit (429) — แสดงข้อความจาก custom error
   if (error?.isRateLimit) {
     return error.message || 'Too many attempts. Please wait.';
   }
@@ -93,7 +87,6 @@ export function getErrorMessage(error) {
   const data = error?.response?.data;
 
   if (!data) {
-    // Network error (no response)
     if (error?.code === 'ERR_NETWORK') {
       return 'Cannot reach the server. Please check your connection.';
     }
