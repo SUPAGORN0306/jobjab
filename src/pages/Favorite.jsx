@@ -83,8 +83,14 @@ export default function Favorite() {
                         e.stopPropagation();
                         toggleFavorite(job);
                       }}
+                      role="button"
+                      aria-label="Remove from favorites"
                     >
-                      ♥
+                      <Heart
+                        size={20}
+                        fill="currentColor"
+                        stroke="currentColor"
+                      />
                     </span>
                   </div>
 

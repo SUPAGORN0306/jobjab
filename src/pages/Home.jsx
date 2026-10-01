@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Sparkles } from "lucide-react";
 import { useFavorites } from "../context/FavoritesContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getMatchBadgeClass } from "../utils/matchBadge.js";
@@ -19,6 +18,9 @@ import {
   Brain,
   MessageSquare,
   TrendingUp,
+  Heart, 
+  Search,
+  Sparkles
 } from 'lucide-react';
 
 import '../styles/home/Home.css';
@@ -349,8 +351,14 @@ function Home() {
                               e.stopPropagation();
                               toggleFavorite(featuredJob);
                             }}
+                            role="button"
+                            aria-label={isFavorited(featuredJob.id) ? "Remove from favorites" : "Add to favorites"}
                           >
-                            ♥
+                            <Heart
+                              size={20}
+                              fill={isFavorited(featuredJob.id) ? 'currentColor' : 'none'}
+                              stroke="currentColor"
+                            />
                           </span>
                         </div>
 
@@ -426,8 +434,14 @@ function Home() {
                               e.stopPropagation();
                               toggleFavorite(job);
                             }}
+                            role="button"
+                            aria-label={isFavorited(job.id) ? "Remove from favorites" : "Add to favorites"}
                           >
-                            ♥
+                            <Heart
+                              size={20}
+                              fill={isFavorited(job.id) ? 'currentColor' : 'none'}
+                              stroke="currentColor"
+                            />
                           </span>
                         </div>
                         <div className="Recommended-tags">

@@ -12,7 +12,7 @@ import PageLoader from '../components/PageLoader';
 import EmptyState from "../components/EmptyState";
 import FilterChips from '../components/FilterChips';
 import SalaryPopover from '../components/SalaryPopover';
-import { Search, Target, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
+import { Search, Target, Sparkles, TrendingDown, TrendingUp, Heart } from "lucide-react";
 import usePageTitle from '../hooks/usePageTitle';
 import { getJobLogoClass } from '../utils/jobLogo';
 import { timeAgo } from '../utils/timeAgo';
@@ -345,8 +345,14 @@ function AllJobs() {
                       e.stopPropagation();
                       toggleFavorite(job);
                     }}
+                    role="button"
+                    aria-label={isFavorited(job.id) ? "Remove from favorites" : "Add to favorites"}
                   >
-                    ♥
+                    <Heart
+                      size={20}
+                      fill={isFavorited(job.id) ? 'currentColor' : 'none'}
+                      stroke="currentColor"
+                    />
                   </span>
                 </div>
                 <div className="Recommended-tags">
