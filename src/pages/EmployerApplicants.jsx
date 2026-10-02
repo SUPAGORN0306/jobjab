@@ -114,7 +114,7 @@ export default function EmployerApplicants() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const jobFilter = searchParams.get('job');
-  const statusFilterFromUrl = searchParams.get('status');   // ⭐ NEW
+  const statusFilterFromUrl = searchParams.get('status');
 
   const [filter, setFilter] = useState(
     statusFilterFromUrl && STATUS_CONFIG[statusFilterFromUrl]
@@ -163,38 +163,34 @@ export default function EmployerApplicants() {
     setSearchParams(params);
   };
 
+  // ── View detail ──
   const handleViewDetail = async (app) => {
-    console.log('🔍 [1] View clicked, app:', app);
     setSelectedApp(app);
-    console.log('🔍 [2] selectedApp set');
     setSnapshotLoading(true);
     setSnapshot(null);
     try {
-      console.log('🔍 [3] Fetching snapshot for app id:', app.id);
       const data = await fetchApplicationSnapshot(app.id);
-      console.log('🔍 [4] Snapshot received:', data);
-      console.log('🔍 [5] Match object:', data?.match);
       setSnapshot(data);
     } catch (err) {
-      console.error('🔍 [ERROR]', err);
-      console.error('🔍 [ERROR] message:', err?.message);
-      console.error('🔍 [ERROR] response:', err?.response?.data);
+      console.error('Failed to fetch application snapshot:', err);
       toast.error(err.message || 'Failed to load applicant details');
-      // ⭐ Don't close modal — keep it open to show error
-      // setSelectedApp(null);
     } finally {
       setSnapshotLoading(false);
     }
   };
 
+  // ── Update status ──
   const handleStatusChange = async (applicationId, newStatus, interviewDate = null) => {
     setUpdating(true);
     try {
       await updateApplicationStatus(applicationId, newStatus, interviewDate);
 
+      // Update local selectedApp
       if (selectedApp?.id === applicationId) {
         setSelectedApp((prev) => ({ ...prev, status: newStatus }));
       }
+
+      // Update snapshot — sync interview_date ให้ตรงกับ backend
       if (snapshot?.application?.id === applicationId) {
         setSnapshot((prev) => ({
           ...prev,
@@ -202,11 +198,13 @@ export default function EmployerApplicants() {
             ...prev.application,
             status: newStatus,
             interview_date:
-              interviewDate ||
-              (newStatus === 'interview' ? prev.application.interview_date : null),
+              newStatus === 'interview'
+                ? (interviewDate || prev.application.interview_date)
+                : null,
           },
         }));
       }
+
       toast.success(`Status updated to ${newStatus}`);
     } catch (err) {
       toast.error(err.message);
@@ -215,7 +213,7 @@ export default function EmployerApplicants() {
     }
   };
 
-  // Save interview date
+  // ── Save interview date ──
   const handleSaveInterview = async () => {
     if (!snapshot?.application?.id) return;
     if (!interviewDraft) {
@@ -225,6 +223,7 @@ export default function EmployerApplicants() {
     await handleStatusChange(snapshot.application.id, 'interview', interviewDraft);
   };
 
+  // ── View resume ──
   const handleViewResume = (url, applicantName = '') => {
     if (!url) {
       toast.error('No resume available for this applicant');
@@ -308,7 +307,6 @@ export default function EmployerApplicants() {
   ).length;
   const responseRate = baseSet.length > 0 ? Math.round((responded / baseSet.length) * 100) : 0;
 
-  // Avg response time (days between applied and updated for responded)
   const respondedApps = baseSet.filter(
     (a) => a.applied_date && a.updated_at && a.status !== 'applied'
   );
@@ -600,7 +598,7 @@ export default function EmployerApplicants() {
             ) : !snapshot ? (
               <div className="modal-loading" style={{ padding: 40, textAlign: 'center' }}>
                 <p style={{ color: '#fca5a5', marginBottom: 12 }}>Failed to load applicant details</p>
-                <p style={{ fontSize: 12, color: '#8c9bae' }}>Check browser console (F12) for details</p>
+                <p style={{ fontSize: 12, color: '#8c9bae' }}>Please try again</p>
               </div>
             ) : snapshot ? (
               <div className="modal-body">
@@ -855,7 +853,7 @@ export default function EmployerApplicants() {
                   </section>
                 )}
 
-                  <section className="modal-section">
+                <section className="modal-section">
                   <h3><BarChart3 size={16} /> Update Status</h3>
                   <div className="modal-status-row">
                     {['applied', 'reviewing', 'interview', 'rejected'].map((s) => {

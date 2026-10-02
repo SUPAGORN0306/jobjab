@@ -8,6 +8,8 @@
  * - cookies ส่งอัตโนมัติ (withCredentials)
  * - auto-refresh เมื่อ 401
  * - error format มาตรฐาน
+ *
+ * ⭐ v2 — fix: updateApplicationStatus รับ interviewDate + notes
  */
 import apiClient from '../lib/apiClient';
 
@@ -161,10 +163,37 @@ export const fetchApplicationSnapshot = async (applicationId) => {
   return data;
 };
 
-export const updateApplicationStatus = async (applicationId, newStatus) => {
+/**
+ * updateApplicationStatus — อัปเดต status ของผู้สมัคร
+ *
+ * @param {number} applicationId
+ * @param {string} newStatus     — 'applied' | 'reviewing' | 'interview' | 'rejected'
+ * @param {string|null} interviewDate — ISO 8601 string (ส่งเฉพาะตอน status=interview)
+ * @param {string|null} notes    — บันทึกเพิ่มเติม (optional)
+ *
+ * ⭐ fix: ส่ง interview_date + notes ไป backend ด้วย
+ */
+export const updateApplicationStatus = async (
+  applicationId,
+  newStatus,
+  interviewDate = null,
+  notes = null
+) => {
+  const payload = { status: newStatus };
+
+  // ⭐ ส่ง interview_date เฉพาะตอน status = interview และมีค่า
+  if (newStatus === 'interview' && interviewDate) {
+    payload.interview_date = interviewDate;
+  }
+
+  // ⭐ ส่ง notes ถ้ามี (ไม่ใช่ null/undefined)
+  if (notes !== null && notes !== undefined) {
+    payload.notes = notes;
+  }
+
   const { data } = await apiClient.put(
     `/api/employer/applications/${applicationId}/status`,
-    { status: newStatus }
+    payload
   );
   return data;
 };
