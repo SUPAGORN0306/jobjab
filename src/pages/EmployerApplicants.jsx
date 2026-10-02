@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   BarChart3,
@@ -20,6 +20,7 @@ import {
   XCircle,
   Zap,
   ArrowRight,
+  Calendar as CalendarIcon,
 } from 'lucide-react';
 import EmptyState from "../components/EmptyState";
 import { toast } from 'sonner';
@@ -110,9 +111,16 @@ export default function EmployerApplicants() {
 
   const navigate = useNavigate();
   const { applications: all, jobs = [], loading } = useEmployerData();
-  const [filter, setFilter] = useState('all');
+
   const [searchParams, setSearchParams] = useSearchParams();
   const jobFilter = searchParams.get('job');
+  const statusFilterFromUrl = searchParams.get('status');   // ⭐ NEW
+
+  const [filter, setFilter] = useState(
+    statusFilterFromUrl && STATUS_CONFIG[statusFilterFromUrl]
+      ? statusFilterFromUrl
+      : 'all'
+  );
 
   const [selectedApp, setSelectedApp] = useState(null);
   const [snapshot, setSnapshot] = useState(null);
@@ -122,6 +130,38 @@ export default function EmployerApplicants() {
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [resumeUrl, setResumeUrl] = useState(null);
   const [resumeApplicantName, setResumeApplicantName] = useState('');
+
+  // Interview picker state
+  const [interviewDraft, setInterviewDraft] = useState('');
+
+  // Sync filter with URL
+  useEffect(() => {
+    if (statusFilterFromUrl && STATUS_CONFIG[statusFilterFromUrl]) {
+      setFilter(statusFilterFromUrl);
+    }
+  }, [statusFilterFromUrl]);
+
+  // Reset interview draft when opening new applicant
+  useEffect(() => {
+    if (snapshot?.application) {
+      setInterviewDraft(
+        snapshot.application.interview_date
+          ? snapshot.application.interview_date.slice(0, 16)
+          : ''
+      );
+    } else {
+      setInterviewDraft('');
+    }
+  }, [snapshot?.application?.id]);
+
+  // Filter change → sync URL
+  const handleFilterChange = (key) => {
+    setFilter(key);
+    const params = new URLSearchParams(searchParams);
+    if (key === 'all') params.delete('status');
+    else params.set('status', key);
+    setSearchParams(params);
+  };
 
   const handleViewDetail = async (app) => {
     console.log('🔍 [1] View clicked, app:', app);
@@ -147,17 +187,24 @@ export default function EmployerApplicants() {
     }
   };
 
-  const handleStatusChange = async (applicationId, newStatus) => {
+  const handleStatusChange = async (applicationId, newStatus, interviewDate = null) => {
     setUpdating(true);
     try {
-      await updateApplicationStatus(applicationId, newStatus);
+      await updateApplicationStatus(applicationId, newStatus, interviewDate);
+
       if (selectedApp?.id === applicationId) {
         setSelectedApp((prev) => ({ ...prev, status: newStatus }));
       }
       if (snapshot?.application?.id === applicationId) {
         setSnapshot((prev) => ({
           ...prev,
-          application: { ...prev.application, status: newStatus },
+          application: {
+            ...prev.application,
+            status: newStatus,
+            interview_date:
+              interviewDate ||
+              (newStatus === 'interview' ? prev.application.interview_date : null),
+          },
         }));
       }
       toast.success(`Status updated to ${newStatus}`);
@@ -166,6 +213,16 @@ export default function EmployerApplicants() {
     } finally {
       setUpdating(false);
     }
+  };
+
+  // Save interview date
+  const handleSaveInterview = async () => {
+    if (!snapshot?.application?.id) return;
+    if (!interviewDraft) {
+      toast.error('Please pick a date & time');
+      return;
+    }
+    await handleStatusChange(snapshot.application.id, 'interview', interviewDraft);
   };
 
   const handleViewResume = (url, applicantName = '') => {
@@ -358,31 +415,43 @@ export default function EmployerApplicants() {
                       <span><MapPin size={12} />{app.location || 'N/A'}</span>
                       <span><Briefcase size={12} />{app.job_title}</span>
                     </div>
-                    <div className="app-progress-track">
-                      {['applied', 'reviewing', 'interview', 'rejected'].map((step) => {
-                        const order = ['applied', 'reviewing', 'interview', 'rejected'];
-                        const curr = order.indexOf(app.status);
-                        const idx = order.indexOf(step);
-                        const done = curr >= 0 && idx <= curr;
-                        const rej = app.status === 'rejected';
-                        return (
-                          <div
-                            key={step}
-                            className={`app-progress-node ${done ? 'done' : ''} ${rej && done ? 'rejected' : ''}`}
-                            style={{
-                              background: done ? (rej ? '#94a3b8' : '#34d399') : 'transparent',
-                              borderColor: done ? (rej ? '#94a3b8' : '#34d399') : 'rgba(255,255,255,0.15)',
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                    <div className="app-progress-labels">
-                      <span>Applied</span>
-                      <span>Review</span>
-                      <span>Interview</span>
-                      <span>Closed</span>
-                    </div>
+                    {(() => {
+                      const stages = ['applied', 'reviewing', 'interview'];
+                      const currIdx = stages.indexOf(app.status);
+                      const isRejected = app.status === 'rejected';
+                      return (
+                        <>
+                          <div className="app-progress-track">
+                            {stages.map((stage, idx) => {
+                              const done = currIdx >= 0 && idx <= currIdx;
+                              return (
+                                <div
+                                  key={stage}
+                                  className={`app-progress-node ${done ? 'done' : ''}`}
+                                  style={{
+                                    background: done ? '#34d399' : 'transparent',
+                                    borderColor: done ? '#34d399' : 'rgba(255,255,255,0.15)',
+                                  }}
+                                />
+                              );
+                            })}
+                            <div
+                              className={`app-progress-node ${isRejected ? 'rejected' : ''}`}
+                              style={{
+                                background: isRejected ? '#ef4444' : 'transparent',
+                                borderColor: isRejected ? '#ef4444' : 'rgba(255,255,255,0.15)',
+                              }}
+                            />
+                          </div>
+                          <div className="app-progress-labels">
+                            <span>Applied</span>
+                            <span>Review</span>
+                            <span>Interview</span>
+                            <span>{isRejected ? 'Rejected' : 'Done'}</span>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                   <div className="emp-job-actions">
                     <span
@@ -443,7 +512,7 @@ export default function EmployerApplicants() {
                   <button
                     key={key}
                     className={`applicants-status-item ${isActive ? 'active' : ''}`}
-                    onClick={() => setFilter(key)}
+                    onClick={() => handleFilterChange(key)}
                     style={{ '--status-color': cfg.color }}
                   >
                     <span className="applicants-status-icon">
@@ -786,7 +855,7 @@ export default function EmployerApplicants() {
                   </section>
                 )}
 
-                <section className="modal-section">
+                  <section className="modal-section">
                   <h3><BarChart3 size={16} /> Update Status</h3>
                   <div className="modal-status-row">
                     {['applied', 'reviewing', 'interview', 'rejected'].map((s) => {
@@ -809,6 +878,47 @@ export default function EmployerApplicants() {
                       );
                     })}
                   </div>
+
+                  {/* ⭐ Interview Date Picker */}
+                  {snapshot.application.status === 'interview' && (
+                    <div style={{ marginTop: 16 }}>
+                      <label className="modal-label">
+                        <CalendarIcon size={12} /> Interview Date & Time
+                      </label>
+                      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                        <input
+                          type="datetime-local"
+                          value={interviewDraft}
+                          onChange={(e) => setInterviewDraft(e.target.value)}
+                          style={{
+                            flex: 1,
+                            padding: '10px 14px',
+                            borderRadius: 10,
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                            color: '#fff',
+                            fontSize: '0.82rem',
+                          }}
+                        />
+                        <button
+                          onClick={handleSaveInterview}
+                          disabled={updating}
+                          style={{
+                            padding: '10px 18px',
+                            borderRadius: 10,
+                            background: 'rgba(52,211,153,0.15)',
+                            border: '1px solid rgba(52,211,153,0.5)',
+                            color: '#34d399',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            fontSize: '0.78rem',
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </section>
               </div>
             ) : null}

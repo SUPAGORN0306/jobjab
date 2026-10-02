@@ -2449,13 +2449,16 @@ select.emp-field option {
   transform: translateX(3px);
 }
 
-.employer-calendar-column .event-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+/* ⭐ Event icon badge (22x22) */
+.employer-calendar-column .event-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   flex-shrink: 0;
-  margin-top: 4px;
-  box-shadow: 0 0 8px currentColor;
+  margin-top: 2px;
 }
 
 .employer-calendar-column .event-info {
@@ -2731,23 +2734,46 @@ select.emp-field option {
   border-color: rgba(128, 255, 213, 0.2);
 }
 
-.emp-action-header {
+/* ⭐ Header icon (Bell, Sparkles) */
+.emp-action-header-icon {
+  color: #f0d154;
+  flex-shrink: 0;
+}
+
+/* ⭐ Task icon badge (32x32) */
+.emp-action-icon {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
-.emp-action-emoji {
-  font-size: 1.2rem;
-  line-height: 1;
+/* ⭐ "N more tasks" button */
+.emp-action-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  color: #8c9bae;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
 }
 
-.emp-action-header h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
+.emp-action-more:hover {
+  background: rgba(240, 209, 84, 0.08);
+  border-color: rgba(240, 209, 84, 0.35);
+  color: #f0d154;
 }
 
 .emp-action-list {
@@ -2771,19 +2797,6 @@ select.emp-field option {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(240, 209, 84, 0.3);
   transform: translateX(4px);
-}
-
-.emp-action-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: pulseActionDot 2s ease-in-out infinite;
-}
-
-@keyframes pulseActionDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.85); }
 }
 
 .emp-action-content {

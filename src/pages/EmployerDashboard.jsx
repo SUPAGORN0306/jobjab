@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import apiClient from '../lib/apiClient';  
+import apiClient from '../lib/apiClient';
 import { useNavigate } from 'react-router-dom';
-import { fetchEmployerJobs, createEmployerJob, fetchJobApplications } from '../utils/api';
+import { createEmployerJob } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import {
   Briefcase,
@@ -14,9 +14,6 @@ import {
   Sparkles,
   Building2,
   LogOut,
-  Target,
-  Zap,
-  BarChart3,
   ArrowRight,
   X,
 } from 'lucide-react';
@@ -28,6 +25,7 @@ import EmptyState from '../components/EmptyState';
 import useEmployerData from '../hooks/useEmployerData';
 import { EmployerHero, EmployerStat } from '../components/employer';
 import PageLoader from '../components/PageLoader';
+import ActionItems from '../components/employer/ActionItems';
 
 // ============================================
 // CONSTANTS
@@ -37,11 +35,6 @@ const JOB_TITLES = [
   'AI Product Manager', 'AI Researcher', 'Computer Vision Engineer',
   'Data Analyst', 'Data Scientist', 'ML Engineer',
   'NLP Engineer', 'Quant Researcher',
-];
-
-const INDUSTRIES = [
-  'Tech', 'Finance', 'Healthcare', 'Education',
-  'Retail', 'E-commerce', 'Automotive',
 ];
 
 const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship'];
@@ -64,93 +57,6 @@ const timeAgo = (dateStr) => {
   });
 };
 
-
-// ============================================
-// ACTION ITEMS — "Today's Tasks"
-// ============================================
-
-function ActionItems({ applications, jobs, onNavigate }) {
-  //  applications  (status = applied)  2 
-  const pendingApps = applications.filter((a) => {
-    if (a.status !== 'applied') return false;
-    if (!a.applied_date) return false;
-    const days = Math.floor(
-      (new Date() - new Date(a.applied_date)) / (1000 * 60 * 60 * 24)
-    );
-    return days >= 2;
-  });
-
-  //  jobs no applicants yet
-  const emptyJobs = jobs.filter(
-    (j) => (j.applicant_count || 0) === 0 && (j.status_key || 'active') === 'active'
-  );
-
-  const items = [];
-
-  if (pendingApps.length > 0) {
-    items.push({
-      icon: 'bell',
-      color: '#f0d154',
-      title: `Reply to ${pendingApps.length} applicant${pendingApps.length > 1 ? 's' : ''}`,
-      subtitle: `Pending more than 2 days`,
-      action: 'Review now',
-      onClick: () => onNavigate('/employer/applicants'),
-    });
-  }
-
-  if (emptyJobs.length > 0) {
-    items.push({
-      icon: 'briefcase',
-      color: '#38bdf8',
-      title: `${emptyJobs.length} job${emptyJobs.length > 1 ? 's' : ''} have no applicants yet`,
-      subtitle: `Try promoting or reviewing the description`,
-      action: 'View jobs',
-      onClick: () => onNavigate('/employer/jobs'),
-    });
-  }
-
-  if (items.length === 0) {
-    return (
-      <section className="emp-action-items emp-action-items-empty">
-        <div className="emp-action-header">
-          <span className="emp-action-emoji">✨</span>
-          <h3>All caught up</h3>
-        </div>
-        <p className="emp-action-empty-text">
-          Nothing needs your attention — take a break!
-        </p>
-      </section>
-    );
-  }
-
-  return (
-    <section className="emp-action-items">
-      <div className="emp-action-header">
-        <span className="emp-action-emoji">🔔</span>
-        <h3>Today's Tasks ({items.length})</h3>
-      </div>
-
-      <div className="emp-action-list">
-        {items.map((item, i) => (
-          <div className="emp-action-card" key={i}>
-            <div
-              className="emp-action-dot"
-              style={{ background: item.color, boxShadow: `0 0 12px ${item.color}` }}
-            />
-            <div className="emp-action-content">
-              <h4>{item.title}</h4>
-              <p>{item.subtitle}</p>
-            </div>
-            <button className="emp-action-cta" onClick={item.onClick}>
-              {item.action} →
-            </button>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 // ============================================
 // POST JOB MODAL
 // ============================================
@@ -169,12 +75,10 @@ function PostJobModal({ user, onClose, onPosted }) {
     about_role: '',
     responsibilities: '',
     requirements: '',
-    // ⭐ ไม่มี company_name / industry — backend ดึงจาก profile
   });
   const [submitting, setSubmitting] = useState(false);
   const [companyProfile, setCompanyProfile] = useState(null);
 
-  // ⭐ โหลด company profile มาแสดง readonly
   useEffect(() => {
     apiClient.get('/api/employer/profile')
       .then((r) => setCompanyProfile(r.data?.profile || null))
@@ -231,7 +135,6 @@ function PostJobModal({ user, onClose, onPosted }) {
                 </select>
               </div>
 
-              {/* ⭐ Company — readonly จาก profile */}
               <div className="form-field">
                 <label className="form-field-label">
                   Company <span className="required">*</span>
@@ -245,7 +148,6 @@ function PostJobModal({ user, onClose, onPosted }) {
                 />
               </div>
 
-              {/* ⭐ Industry — readonly จาก profile */}
               <div className="form-field">
                 <label className="form-field-label">Industry</label>
                 <input
@@ -506,7 +408,6 @@ export default function EmployerDashboard() {
         />
       </section>
 
-      {/* ⭐ Grid: Jobs + Calendar */}
       <div className="employer-dashboard-grid">
         <section className="emp-section">
           <div className="emp-section-header">
@@ -579,7 +480,6 @@ export default function EmployerDashboard() {
           )}
         </section>
 
-        {/* ⭐ Calendar */}
         <EmployerCalendar applications={applications} jobs={jobs} />
       </div>
 

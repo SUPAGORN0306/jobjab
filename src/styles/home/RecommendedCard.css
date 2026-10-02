@@ -103,18 +103,27 @@
 }
 
 .Recommended-favorite-btn {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: #8c9bae; 
 }
 
 .Recommended-favorite-btn:hover {
-  color: #ef4444;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .Recommended-favorite-btn.is-favorited {
-  color: #ef4444;
+  color: #ef4444;   /* สีแดงตอน favorite */
+}
+
+.Recommended-favorite-btn.is-favorited svg {
+  fill: currentColor;   /* ⭐ ให้หัวใจทึบ */
 }
 
 .Recommended-tags {

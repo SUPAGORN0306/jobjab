@@ -75,7 +75,7 @@
 
 .progress-steps {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);   /* ⭐ 3 คอลัมน์เท่ากัน */
+  grid-template-columns: repeat(3, 1fr);   /* 3 คอลัมน์เท่ากัน */
   align-items: center;
   position: relative;
   width: 100%;
@@ -96,7 +96,7 @@
   transition: all 0.3s ease;
   z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  margin: 0 auto;                          /* ⭐ จัด dot กลางคอลัมน์ */
+  margin: 0 auto;                          /* จัด dot กลางคอลัมน์ */
 }
 
 .progress-dot.active {
@@ -541,7 +541,7 @@
 
 .password-input-wrapper input {
   width: 100%;
-  padding: 11px 45px 11px 18px;   /* ⭐ padding-right เผื่อปุ่มตา */
+  padding: 11px 45px 11px 18px;   /* padding-right เผื่อปุ่มตา */
   font-size: 0.82rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 14px;
