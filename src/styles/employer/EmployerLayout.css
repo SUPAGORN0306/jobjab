@@ -2734,6 +2734,24 @@ select.emp-field option {
   border-color: rgba(128, 255, 213, 0.2);
 }
 
+
+/* ⭐ FIX: Header wrapper (Bell + Title) — หายไป */
+.emp-action-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+/* ⭐ FIX: Title ใน header */
+.emp-action-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+}
+
 /* ⭐ Header icon (Bell, Sparkles) */
 .emp-action-header-icon {
   color: #f0d154;

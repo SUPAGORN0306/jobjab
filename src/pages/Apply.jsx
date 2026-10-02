@@ -87,9 +87,15 @@ export default function Apply() {
             resumeUrl: pending.formData.resumeUrl || null,
             coverLetter: pending.formData.coverLetter || '',
             avatar: pending.formData.avatar || null,
-            skills: pending.formData.skills || [],
-            experiences: pending.formData.experiences || [],
-            educations: pending.formData.educations || [],
+            skills: (pending.formData.skills?.length > 0)
+              ? pending.formData.skills
+              : (profileData.skills || []),
+            experiences: (pending.formData.experiences?.length > 0)
+              ? pending.formData.experiences
+              : (profileData.experiences || []),
+            educations: (pending.formData.educations?.length > 0)
+              ? pending.formData.educations
+              : (profileData.educations || []),
           });
         } else {
           const p = profileData.profile || {};
