@@ -802,7 +802,6 @@ export default function EmployerApplicants() {
                       {snapshot.skills.map((s, i) => (
                         <span className="skill-tag" key={i}>
                           {s.skill_name}
-                          {s.skill_level && <span className="skill-level"> · {s.skill_level}</span>}
                         </span>
                       ))}
                     </div>

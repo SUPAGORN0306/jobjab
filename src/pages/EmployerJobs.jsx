@@ -40,8 +40,10 @@ const INDUSTRIES = [
   'Retail', 'E-commerce', 'Automotive',
 ];
 
-const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship'];
-const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior', 'Lead'];
+const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote'];
+const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior'];
+const COMPANY_SIZES = ['Small', 'Mid', 'Large'];   
+const VISA_SPONSORSHIP_OPTIONS = ['No', 'Yes']; 
 
 // ============================================
 // EDIT MODAL
@@ -56,12 +58,13 @@ function EditJobModal({ job, onClose, onSaved }) {
     salary_min: job.salary_min || '',
     salary_max: job.salary_max || '',
     skills_required: job.skills_required || '',
-    tools_preferred: job.tools_preferred || '',
+    team_size: job.team_size || '',                       
+    visa_sponsorship: job.visa_sponsorship || 'No',       
     company_size: job.company_size || '',
     about_role: job.about_role || '',
     responsibilities: job.responsibilities || '',
     requirements: job.requirements || '',
-    // ⭐ ไม่มี company_name / industry — backend ดึงจาก profile
+    //ไม่มี company_name / industry — backend ดึงจาก profile
   });
   const [saving, setSaving] = useState(false);
 
@@ -118,7 +121,7 @@ function EditJobModal({ job, onClose, onSaved }) {
               />
             </div>
 
-            {/* ⭐ Industry — readonly */}
+            {/* Industry — readonly */}
             <div className="form-field">
               <label className="form-field-label">Industry</label>
               <input
@@ -161,17 +164,43 @@ function EditJobModal({ job, onClose, onSaved }) {
 
             <div className="form-field">
               <label className="form-field-label">Company Size</label>
-              <input type="text" value={form.company_size} onChange={(e) => handleChange('company_size', e.target.value)} placeholder="50-100" />
+              <select value={form.company_size} onChange={(e) => handleChange('company_size', e.target.value)}>
+                <option value="">Select Company Size</option>
+                {COMPANY_SIZES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Team Size */}
+            <div className="form-field">
+              <label className="form-field-label">Team Size</label>
+              <input
+                type="number"
+                value={form.team_size}
+                onChange={(e) => handleChange('team_size', e.target.value)}
+                placeholder="10"
+                min="1"
+                max="500"
+              />
+            </div>
+
+            {/* Visa Sponsorship */}
+            <div className="form-field">
+              <label className="form-field-label">Visa Sponsorship</label>
+              <select
+                value={form.visa_sponsorship}
+                onChange={(e) => handleChange('visa_sponsorship', e.target.value)}
+              >
+                {VISA_SPONSORSHIP_OPTIONS.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
             </div>
 
             <div className="form-field form-field-full">
               <label className="form-field-label">Skills Required (comma separated)</label>
               <input type="text" value={form.skills_required} onChange={(e) => handleChange('skills_required', e.target.value)} placeholder="Python, SQL" />
-            </div>
-
-            <div className="form-field form-field-full">
-              <label className="form-field-label">Tools Preferred</label>
-              <input type="text" value={form.tools_preferred} onChange={(e) => handleChange('tools_preferred', e.target.value)} placeholder="Docker, Git" />
             </div>
 
             <div className="form-field form-field-full">

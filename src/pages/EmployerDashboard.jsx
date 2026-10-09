@@ -38,7 +38,9 @@ const JOB_TITLES = [
 ];
 
 const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Contract', 'Internship'];
-const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior', 'Lead'];
+const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior'];
+const COMPANY_SIZES = ['Small', 'Mid', 'Large'];
+const VISA_SPONSORSHIP_OPTIONS = ['No', 'Yes'];
 
 // ============================================
 // TIME AGO
@@ -70,8 +72,9 @@ function PostJobModal({ user, onClose, onPosted }) {
     salary_min: '',
     salary_max: '',
     skills_required: '',
-    tools_preferred: '',
     company_size: '',
+    team_size: '',
+    visa_sponsorship: 'No',
     about_role: '',
     responsibilities: '',
     requirements: '',
@@ -195,7 +198,7 @@ function PostJobModal({ user, onClose, onPosted }) {
                   type="number"
                   value={form.salary_min}
                   onChange={(e) => handleChange('salary_min', e.target.value)}
-                  placeholder="50000"
+                  placeholder="0"
                 />
               </div>
 
@@ -205,18 +208,48 @@ function PostJobModal({ user, onClose, onPosted }) {
                   type="number"
                   value={form.salary_max}
                   onChange={(e) => handleChange('salary_max', e.target.value)}
-                  placeholder="100000"
+                  placeholder="250000"
                 />
               </div>
 
+              {/* Company Size */}
               <div className="form-field">
                 <label className="form-field-label">Company Size</label>
-                <input
-                  type="text"
+                <select
                   value={form.company_size}
                   onChange={(e) => handleChange('company_size', e.target.value)}
-                  placeholder="50-100"
+                >
+                  <option value="">Select Company Size</option>
+                  {COMPANY_SIZES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Team Size */}
+              <div className="form-field">
+                <label className="form-field-label">Team Size</label>
+                <input
+                  type="number"
+                  value={form.team_size}
+                  onChange={(e) => handleChange('team_size', e.target.value)}
+                  placeholder="10"
+                  min="1"
+                  max="500"
                 />
+              </div>
+
+              {/* Visa Sponsorship */}
+              <div className="form-field">
+                <label className="form-field-label">Visa Sponsorship</label>
+                <select
+                  value={form.visa_sponsorship}
+                  onChange={(e) => handleChange('visa_sponsorship', e.target.value)}
+                >
+                  {VISA_SPONSORSHIP_OPTIONS.map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-field form-field-full">
@@ -226,16 +259,6 @@ function PostJobModal({ user, onClose, onPosted }) {
                   value={form.skills_required}
                   onChange={(e) => handleChange('skills_required', e.target.value)}
                   placeholder="Python, SQL, React"
-                />
-              </div>
-
-              <div className="form-field form-field-full">
-                <label className="form-field-label">Tools Preferred</label>
-                <input
-                  type="text"
-                  value={form.tools_preferred}
-                  onChange={(e) => handleChange('tools_preferred', e.target.value)}
-                  placeholder="Docker, Git"
                 />
               </div>
 
@@ -317,6 +340,13 @@ export default function EmployerDashboard() {
   } = useEmployerData();
 
   const [showPostForm, setShowPostForm] = useState(false);
+  const [companyProfile, setCompanyProfile] = useState(null);
+
+  useEffect(() => {
+    apiClient.get('/api/employer/profile')
+      .then((r) => setCompanyProfile(r.data?.profile || null))
+      .catch(() => setCompanyProfile(null));
+  }, []);
 
   const handleLogout = () => {
     if (window.confirm('Logout?')) {
@@ -347,7 +377,7 @@ export default function EmployerDashboard() {
         title={<>Welcome back, <span>{user?.name || user?.full_name || 'Recruiter'}</span></>}
         subtitle={
           <>
-            {user?.company || 'Your Company'}
+            {companyProfile?.company_name || user?.company || 'Your Company'}
             {user?.industry && ` · ${user.industry}`}
           </>
         }

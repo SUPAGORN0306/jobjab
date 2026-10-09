@@ -124,7 +124,7 @@ function Home() {
     }
   };
 
-  // ⭐ Trending chip → navigate ไป AllJobs (preserve q)
+  // Trending chip → navigate ไป AllJobs (preserve q)
   const handleTrendingClick = (position) => {
     const params = new URLSearchParams();
     if (urlQ) params.set("q", urlQ);

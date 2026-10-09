@@ -142,7 +142,7 @@ export default function Edit() {
     }
     setSkills((prev) => [
       ...prev,
-      { skill_name: trimmed, skill_level: 'Intermediate' },
+      { skill_name: trimmed},
     ]);
     setNewSkill('');
   };
@@ -250,7 +250,6 @@ export default function Edit() {
         profile_image: profile.profile_image,
         skills: skills.map((s) => ({
           name: s.skill_name,
-          level: s.skill_level,
         })),
         experiences: experiences
           .filter((e) => e.job_title?.trim() || e.company_name?.trim())

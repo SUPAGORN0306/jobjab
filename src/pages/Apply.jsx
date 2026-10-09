@@ -208,10 +208,10 @@ export default function Apply() {
     }
     setFormData((prev) => ({
       ...prev,
-      skills: [...prev.skills, { skill_name: trimmed, skill_level: 'Intermediate' }],
+      skills: [...prev.skills, { skill_name: trimmed }],
     }));
-    setNewSkill('');
-  };
+    setNewSkill('');   
+  };                     
 
   const handleRemoveSkill = (idx) => {
     setFormData((prev) => ({
@@ -364,7 +364,6 @@ export default function Apply() {
         coverLetter: formData.coverLetter,
         skills: formData.skills.map((s) => ({
           name: s.skill_name,
-          level: s.skill_level,
         })),
         experiences: formData.experiences
           .filter((e) => e.job_title?.trim() || e.company_name?.trim())
