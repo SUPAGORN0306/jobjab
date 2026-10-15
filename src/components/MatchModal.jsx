@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import '../styles/components/MatchModal.css';
 
-// ⭐ helper — กัน object ถูก render เป็น JSX (Error: Cannot convert object to primitive value)
+// ⭐ helper
 const safeStr = (v) => {
   if (v === null || v === undefined) return '';
   if (typeof v === 'string') return v;
@@ -23,68 +23,137 @@ const safeStr = (v) => {
   return String(v);
 };
 
-// ⭐ helper — กัน array ที่อาจารย์ไม่ใช่ array
 const safeArr = (v) => (Array.isArray(v) ? v : []);
+
+const parseScore = (v) => {
+  if (v === null || v === undefined) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+};
+
+const DEFAULT_WEIGHTS = {
+  skills: 0.5,
+  experience: 0.3,
+  industry: 0.2,
+};
 
 export default function MatchModal({ job, onClose }) {
   const navigate = useNavigate();
 
   if (!job) return null;
 
-  // ⭐ ปลอดภัย — แปลงเป็น number
   const score = Number(job.match_score) || Number(job.match) || 0;
 
   const breakdown = job.match_breakdown && typeof job.match_breakdown === 'object'
     ? {
-        skills: Number(job.match_breakdown.skills) || 0,
-        experience: Number(job.match_breakdown.experience) || 0,
-        industry: Number(job.match_breakdown.industry) || 0,
+        skills: parseScore(job.match_breakdown.skills),
+        experience: parseScore(job.match_breakdown.experience),
+        industry: parseScore(job.match_breakdown.industry),
       }
-    : { skills: 0, experience: 0, industry: 0 };
+    : { skills: null, experience: null, industry: null };
+
+  // ⭐ detail จาก backend
+  const industryDetail = job.match_breakdown?.industry_detail || {};
+  const experienceDetail = job.match_breakdown?.experience_detail || {};
+  const skillsDetail = job.match_breakdown?.skills_detail || {};
+
+  const hasSkills = breakdown.skills !== null;
 
   const matchedSkills = safeArr(job.matched_skills);
   const missingSkills = safeArr(job.missing_skills);
-
-  // ⭐ แปลงเป็น string ล่วงหน้า
   const matchedSkillStrings = matchedSkills.map(safeStr).filter(Boolean);
   const missingSkillStrings = missingSkills.map(safeStr).filter(Boolean);
 
-  // ─── Suggestions ───
-  const suggestions = [];
-  if (breakdown.skills < 100 && missingSkillStrings.length > 0) {
-    suggestions.push({
-      icon: Wrench,
-      title: 'Add missing skills',
-      detail: `Add ${missingSkillStrings.slice(0, 3).join(', ')}`,
-      impact: '+15%',
-    });
-  }
-  if (breakdown.experience < 100) {
-    suggestions.push({
-      icon: Briefcase,
-      title: 'Add more experience',
-      detail: 'More years or detailed descriptions',
-      impact: '+10%',
-    });
-  }
-  if (breakdown.industry < 100) {
-    suggestions.push({
-      icon: Building2,
-      title: 'Update your industry',
-      detail: 'Match your industry to this job',
-      impact: '+10%',
-    });
+  const weights = job.match_breakdown?.weights || DEFAULT_WEIGHTS;
+
+  function calcImpact(component, currentValue) {
+    if (currentValue === null || currentValue === undefined) return 0;
+    if (currentValue >= 100) return 0;
+    const w = weights[component] || 0;
+    return Math.round((100 - currentValue) * w);
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // ⭐ Suggestions — พร้อม detail ที่ชัดเจน
+  // ═══════════════════════════════════════════════════════════════
+  const suggestions = [];
+
+  // ── Skills ──
+  if (hasSkills && breakdown.skills < 100 && missingSkillStrings.length > 0) {
+    const impact = calcImpact('skills', breakdown.skills);
+    if (impact > 0) {
+      suggestions.push({
+        icon: Wrench,
+        title: 'Add missing skills',
+        detail: `Add ${missingSkillStrings.slice(0, 3).join(', ')}`,
+        impact: `+${impact}%`,
+      });
+    }
+  }
+
+  // ── Experience ──
+  if (breakdown.experience !== null && breakdown.experience < 100) {
+    const impact = calcImpact('experience', breakdown.experience);
+    const userYears = experienceDetail.user_years;
+    const reqYears = experienceDetail.required_years;
+
+    if (impact > 0) {
+      const detailText = (userYears !== undefined && reqYears !== undefined)
+        ? `You have ${userYears} yrs, need ${reqYears} yrs`
+        : 'Add more years or detailed descriptions';
+
+      suggestions.push({
+        icon: Briefcase,
+        title: 'Add more experience',
+        detail: detailText,
+        impact: `+${impact}%`,
+      });
+    }
+  }
+
+  // ── Industry ──
+  if (breakdown.industry !== null && breakdown.industry < 100) {
+    const impact = calcImpact('industry', breakdown.industry);
+    const userInd = industryDetail.user_industry;
+    const jobInd = industryDetail.job_industry;
+
+    if (impact > 0) {
+      let detailText = 'Match your industry to this job';
+      if (userInd && jobInd) {
+        detailText = `Change from "${userInd}" to "${jobInd}"`;
+      } else if (jobInd && !userInd) {
+        detailText = `Set your industry to "${jobInd}"`;
+      } else if (!jobInd && userInd) {
+        detailText = 'Job does not specify industry';
+      }
+
+      suggestions.push({
+        icon: Building2,
+        title: 'Update your industry',
+        detail: detailText,
+        impact: `+${impact}%`,
+      });
+    }
+  }
+
+  suggestions.sort((a, b) => {
+    const ia = parseInt(a.impact.replace('+', '')) || 0;
+    const ib = parseInt(b.impact.replace('+', '')) || 0;
+    return ib - ia;
+  });
+
   const getScoreColor = (s) => {
+    if (s === null || s === undefined) return '#94a3b8';
     if (s >= 70) return '#80ffd5';
     if (s >= 40) return '#f0d154';
     return '#f472b6';
   };
 
   const getScoreMessage = (s) => {
+    if (s >= 85) return { title: 'Excellent Match!', desc: "You're a top candidate for this role" };
     if (s >= 70) return { title: 'Great Match!', desc: "You're a strong candidate for this role" };
-    if (s >= 40) return { title: 'Good Match', desc: 'You match several requirements' };
+    if (s >= 55) return { title: 'Good Match', desc: 'You match several requirements' };
+    if (s >= 40) return { title: 'Fair Match', desc: 'Some gaps to fill' };
     return { title: "Let's Improve", desc: 'Add more info to boost your match' };
   };
 
@@ -137,38 +206,54 @@ export default function MatchModal({ job, onClose }) {
                 <Wrench size={14} />
                 Skills Match
               </span>
-              <span className="breakdown-value" style={{ color: getScoreColor(breakdown.skills) }}>
-                {breakdown.skills}%
-              </span>
+              {hasSkills ? (
+                <span className="breakdown-value" style={{ color: getScoreColor(breakdown.skills) }}>
+                  {breakdown.skills}%
+                </span>
+              ) : (
+                <span className="breakdown-value" style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+                  Not specified
+                </span>
+              )}
             </div>
-            <div className="breakdown-bar">
-              <div
-                className="breakdown-fill"
-                style={{
-                  width: `${breakdown.skills}%`,
-                  background: getScoreColor(breakdown.skills),
-                }}
-              ></div>
-            </div>
-            {matchedSkillStrings.length > 0 && (
-              <div className="breakdown-details">
-                <span className="detail-label">Matched:</span>
-                <div className="skill-chips">
-                  {matchedSkillStrings.slice(0, 4).map((s, i) => (
-                    <span className="skill-chip green" key={i}>{s}</span>
-                  ))}
+
+            {hasSkills ? (
+              <>
+                <div className="breakdown-bar">
+                  <div
+                    className="breakdown-fill"
+                    style={{
+                      width: `${breakdown.skills}%`,
+                      background: getScoreColor(breakdown.skills),
+                    }}
+                  />
                 </div>
-              </div>
-            )}
-            {missingSkillStrings.length > 0 && (
-              <div className="breakdown-details">
-                <span className="detail-label">Missing:</span>
-                <div className="skill-chips">
-                  {missingSkillStrings.slice(0, 4).map((s, i) => (
-                    <span className="skill-chip red" key={i}>{s}</span>
-                  ))}
-                </div>
-              </div>
+
+                {matchedSkillStrings.length > 0 && (
+                  <div className="breakdown-details">
+                    <span className="detail-label">Matched:</span>
+                    <div className="skill-chips">
+                      {matchedSkillStrings.slice(0, 4).map((s, i) => (
+                        <span className="skill-chip green" key={i}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {missingSkillStrings.length > 0 && (
+                  <div className="breakdown-details">
+                    <span className="detail-label">Missing:</span>
+                    <div className="skill-chips">
+                      {missingSkillStrings.slice(0, 4).map((s, i) => (
+                        <span className="skill-chip red" key={i}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-400 text-sm italic mt-2">
+                This job doesn't specify required skills.
+              </p>
             )}
           </div>
 
@@ -180,18 +265,28 @@ export default function MatchModal({ job, onClose }) {
                 Experience Match
               </span>
               <span className="breakdown-value" style={{ color: getScoreColor(breakdown.experience) }}>
-                {breakdown.experience}%
+                {breakdown.experience !== null ? `${breakdown.experience}%` : '—'}
               </span>
             </div>
             <div className="breakdown-bar">
               <div
                 className="breakdown-fill"
                 style={{
-                  width: `${breakdown.experience}%`,
+                  width: `${breakdown.experience ?? 0}%`,
                   background: getScoreColor(breakdown.experience),
                 }}
-              ></div>
+              />
             </div>
+            {/* ⭐ detail */}
+            {experienceDetail.required_years !== undefined && (
+              <div className="breakdown-details">
+                <span className="detail-label">
+                  {experienceDetail.required_years === 0
+                    ? 'Entry level — no experience required'
+                    : `${experienceDetail.user_years} yrs of ${experienceDetail.required_years} yrs required`}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Industry */}
@@ -202,18 +297,26 @@ export default function MatchModal({ job, onClose }) {
                 Industry Fit
               </span>
               <span className="breakdown-value" style={{ color: getScoreColor(breakdown.industry) }}>
-                {breakdown.industry}%
+                {breakdown.industry !== null ? `${breakdown.industry}%` : '—'}
               </span>
             </div>
             <div className="breakdown-bar">
               <div
                 className="breakdown-fill"
                 style={{
-                  width: `${breakdown.industry}%`,
+                  width: `${breakdown.industry ?? 0}%`,
                   background: getScoreColor(breakdown.industry),
                 }}
-              ></div>
+              />
             </div>
+            {/* ⭐ detail */}
+            {industryDetail.user_industry && industryDetail.job_industry && (
+              <div className="breakdown-details">
+                <span className="detail-label">
+                  You: "{industryDetail.user_industry}" · Job: "{industryDetail.job_industry}"
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

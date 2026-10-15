@@ -1,11 +1,7 @@
 /**
  * usePageTitle — ตั้งชื่อหน้า + meta description อัตโนมัติ
- *
  * @param {string} title - ชื่อหน้า (ไม่ต้องรวม "JobJab")
  * @param {object} options - { description }
- *
- * ตัวอย่าง:
- *   usePageTitle("หน้าหลัก", { description: "ค้นหางานที่ใช่สำหรับคุณ" });
  */
 import { useEffect } from 'react';
 

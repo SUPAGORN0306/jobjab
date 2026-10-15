@@ -182,11 +182,11 @@ function JobDetail() {
             </div>
             <div className="quick-fact-row">
               <span className="quick-fact-label">Team size</span>
-              <span className="quick-fact-value">{job.team_size || 'TBD'}</span>
+               <span className="quick-fact-value">{job.team_size ?? '—'}</span>
             </div>
             <div className="quick-fact-row">
               <span className="quick-fact-label">Visa sponsorship</span>
-              <span className="quick-fact-value">{job.visa_sponsorship || 'TBD'}</span>
+              <span className="quick-fact-value">{job.visa_sponsorship ?? '—'}</span>
             </div>
           </div>
         </div>
