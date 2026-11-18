@@ -2,19 +2,18 @@ import React from 'react';
 import useCountUp from '../../hooks/useCountUp';
 
 /**
- * EmployerStat — Stat component 3 variants
- * คงสไตล์แก้ว (glass card) เดิมไว้
+ * Stat component with 3 variants, preserving the glass card style.
  *
- * @param variant  — 'card' (default) | 'pill' | 'mini'
- * @param icon     — Lucide icon component
- * @param label    — label ใต้/บนตัวเลข
- * @param value    — ค่าที่จะโชว์ (number หรือ string)
- * @param detail   — คำอธิบายเพิ่มเติม (เฉพาะ card)
- * @param color    — 'yellow' | 'mint' | 'blue' | 'purple' | 'success' | 'red'
- *                   หรือ status: 'total' | 'applied' | 'reviewing' | 'interview' | 'rejected'
- * @param active   — pill: active state
- * @param onClick  — pill: click handler
- * @param animate  — count-up animation (default true)
+ * @param variant  'card' (default) | 'pill' | 'mini'
+ * @param icon     Lucide icon component
+ * @param label    Label above or below the value
+ * @param value    Value to display (number or string)
+ * @param detail   Additional description (card variant only)
+ * @param color    'yellow' | 'mint' | 'blue' | 'purple' | 'success' | 'red'
+ *                 or status: 'total' | 'applied' | 'reviewing' | 'interview' | 'rejected'
+ * @param active   Active state for pill variant
+ * @param onClick  Click handler for pill variant
+ * @param animate  Enable count-up animation (default true)
  */
 export default function EmployerStat({
   variant = 'card',
@@ -27,7 +26,7 @@ export default function EmployerStat({
   onClick,
   animate = true,
 }) {
-  // ── Count-up ──
+  // Count-up animation
   const numericValue = typeof value === 'number'
     ? value
     : parseInt(String(value).replace(/[^0-9]/g, ''), 10) || 0;

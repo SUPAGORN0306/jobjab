@@ -1,27 +1,25 @@
 /**
- * api.js — API functions
+ * api.js: API helper functions.
  *
- * ทุก call ใช้ apiClient (axios + cookies + auto-refresh)
+ * All requests use apiClient (axios with cookies and automatic token refresh).
  *
  * Changes from v1:
- * - ใช้ apiClient แทน fetch
- * - cookies ส่งอัตโนมัติ (withCredentials)
- * - auto-refresh เมื่อ 401
- * - error format มาตรฐาน
+ * - Uses apiClient instead of fetch
+ * - Cookies are sent automatically via withCredentials
+ * - Automatic token refresh on 401 responses
+ * - Standardized error format
  *
- * ⭐ v2 — fix: updateApplicationStatus รับ interviewDate + notes
+ * v2: updateApplicationStatus now accepts interviewDate and notes.
  */
 import apiClient from '../lib/apiClient';
 
-// ============================================================
-// MODULE-LEVEL USER STATE
-// ============================================================
-// sync จาก AuthContext — ใช้สำหรับ api.js ที่ไม่ใช่ React component
+// Module-level user state
+// Synced from AuthContext for use outside React components.
 
 let _currentUser = null;
 
 /**
- * setCurrentUser — เรียกจาก AuthContext ทุกครั้งที่ user เปลี่ยน
+ * Update the cached current user from AuthContext whenever the user changes.
  * @param {object|null} user
  */
 export const setCurrentUser = (user) => {
@@ -40,9 +38,7 @@ export const getCurrentUserName = () => {
   return _currentUser?.full_name ?? '';
 };
 
-// ============================================================
-// PROFILE
-// ============================================================
+// Profile
 
 export const fetchFullProfile = async (userId) => {
   const uid = userId ?? getCurrentUserId();
@@ -61,9 +57,7 @@ export const updateProfile = async (data, userId) => {
   return response;
 };
 
-// ============================================================
-// JOBS
-// ============================================================
+// Jobs
 
 export const fetchJobs = async () => {
   const { data } = await apiClient.get('/api/jobs');
@@ -75,12 +69,10 @@ export const fetchJobDetail = async (jobId) => {
   return data;
 };
 
-// ============================================================
-// APPLICATIONS
-// ============================================================
+// Applications
 
 export const submitApplication = async (data) => {
-  // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
+  // user_id is omitted because the backend reads g.user_id from the cookie
   const { data: response } = await apiClient.post('/api/applications', data);
   return response;
 };
@@ -97,9 +89,7 @@ export const fetchApplicationDetail = async (applicationId) => {
   return data;
 };
 
-// ============================================================
-// AUTH
-// ============================================================
+// Auth
 
 export const register = async (data) => {
   const { data: response } = await apiClient.post('/api/auth/register', data);
@@ -111,7 +101,7 @@ export const login = async (data) => {
   return response;
 };
 
-// ⭐ ใหม่ — Sprint 1
+// Added in Sprint 1
 export const logout = async () => {
   const { data } = await apiClient.post('/api/auth/logout');
   return data;
@@ -127,31 +117,27 @@ export const refreshToken = async () => {
   return data;
 };
 
-//เปลี่ยน active role (multi-role user)
+// Switch active role for multi-role users
 export const switchRoleApi = async ({ role }) => {
   const { data } = await apiClient.post('/api/auth/switch-role', { role });
   return data;
 };
 
-// ============================================================
-// EMPLOYER
-// ============================================================
+// Employer
 
 export const fetchEmployerJobs = async () => {
-  // ⭐ backend ใช้ g.user_id
+  // Backend reads g.user_id from the session cookie
   const { data } = await apiClient.get('/api/employer/jobs');
   return data;
 };
 
 export const createEmployerJob = async (data) => {
-  // ⭐ user_id ไม่ต้องส่ง
+  // user_id is omitted because the backend reads it from the session cookie
   const { data: response } = await apiClient.post('/api/employer/jobs', data);
   return response;
 };
 
-// ============================================================
-// EMPLOYER: APPLICATIONS
-// ============================================================
+// Employer applications
 
 export const fetchJobApplications = async (jobId) => {
   const { data } = await apiClient.get(`/api/employer/jobs/${jobId}/applications`);
@@ -164,14 +150,12 @@ export const fetchApplicationSnapshot = async (applicationId) => {
 };
 
 /**
- * updateApplicationStatus — อัปเดต status ของผู้สมัคร
+ * Update an applicant's application status.
  *
  * @param {number} applicationId
- * @param {string} newStatus     — 'applied' | 'reviewing' | 'interview' | 'rejected'
- * @param {string|null} interviewDate — ISO 8601 string (ส่งเฉพาะตอน status=interview)
- * @param {string|null} notes    — บันทึกเพิ่มเติม (optional)
- *
- * ⭐ fix: ส่ง interview_date + notes ไป backend ด้วย
+ * @param {string} newStatus - 'applied' | 'reviewing' | 'interview' | 'rejected'
+ * @param {string|null} interviewDate - ISO 8601 string (sent only when status is 'interview')
+ * @param {string|null} notes - Optional notes
  */
 export const updateApplicationStatus = async (
   applicationId,
@@ -181,12 +165,12 @@ export const updateApplicationStatus = async (
 ) => {
   const payload = { status: newStatus };
 
-  // ⭐ ส่ง interview_date เฉพาะตอน status = interview และมีค่า
+  // Send interview_date only when status is 'interview' and a value is provided
   if (newStatus === 'interview' && interviewDate) {
     payload.interview_date = interviewDate;
   }
 
-  // ⭐ ส่ง notes ถ้ามี (ไม่ใช่ null/undefined)
+  // Send notes when provided (not null or undefined)
   if (notes !== null && notes !== undefined) {
     payload.notes = notes;
   }
@@ -198,22 +182,18 @@ export const updateApplicationStatus = async (
   return data;
 };
 
-// ============================================================
-// SKILLS
-// ============================================================
+// Skills
 
 export const fetchSkills = async () => {
   const { data } = await apiClient.get('/api/skills');
   return data;
 };
 
-// ============================================================
-// MATCH SCORE
-// ============================================================
+// Match score
 
 export const fetchJobsWithMatch = async (userId) => {
   const uid = userId ?? getCurrentUserId();
-  // uid = null ได้ → /api/jobs ไม่มี match score
+  // uid may be null, in which case /api/jobs returns jobs without match scores
   const { data } = await apiClient.get(`/api/jobs${uid ? `?user_id=${uid}` : ''}`);
   return data;
 };
@@ -262,36 +242,30 @@ export const fetchMatchScore = async (jobId, userId) => {
   return data;
 };
 
-// ============================================================
-// FAVORITES (⭐ ใหม่ — ส่งผ่าน apiClient)
-// ============================================================
+// Favorites (via apiClient)
 
 export const fetchFavorites = async () => {
-  // ⭐ backend ใช้ g.user_id จาก cookie
+  // Backend reads g.user_id from the session cookie
   const { data } = await apiClient.get('/api/favorites');
   return data;
 };
 
 export const toggleFavorite = async (jobId) => {
-  // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id
+  // user_id is omitted because the backend reads g.user_id from the session cookie
   const { data } = await apiClient.post('/api/favorites/toggle', {
     job_id: jobId,
   });
   return data;
 };
 
-// ============================================================
-// EMPLOYER: ANALYTICS
-// ============================================================
+// Employer analytics
 
 export const fetchEmployerAnalytics = async ({ period = '30' } = {}) => {
   const { data } = await apiClient.get(`/api/employer/analytics?period=${period}`);
   return data;
 };
 
-// ============================================================
-// EMPLOYER: JOB MANAGEMENT (Sprint 11)
-// ============================================================
+// Employer job management (Sprint 11)
 
 export const updateEmployerJob = async (jobId, data) => {
   const { data: response } = await apiClient.put(
@@ -314,19 +288,19 @@ export const updateJobStatus = async (jobId, status) => {
   return data;
 };
 
-// ─── Export analytics with full applicant details ───
+// Export analytics with full applicant details
 export const exportEmployerAnalytics = async ({ period = '30' } = {}) => {
   const { data } = await apiClient.get(`/api/employer/analytics/export?period=${period}`);
   return data;
 };
 
-// ─── Analytics widgets (Top Matches / Funnel / Activity) ───
+// Analytics widgets (Top Matches, Funnel, Activity)
 export const fetchAnalyticsWidgets = async ({ period = '30' } = {}) => {
   const { data } = await apiClient.get(`/api/employer/analytics/widgets?period=${period}`);
   return data;
 };
 
-// ─── BFF: All applications in 1 call ───
+// BFF: fetch all applications in a single request
 export const fetchAllEmployerApplications = async () => {
   const { data } = await apiClient.get('/api/employer/applications/all');
   return data;

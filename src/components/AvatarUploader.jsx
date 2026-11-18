@@ -23,26 +23,26 @@ export default function AvatarUploader({
   const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
   const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-  // === เลือกไฟล์ ===
+  // File selection
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     setError(null);
 
     if (!file) return;
 
-    // ตรวจสอบ type
+    // Validate file type
     if (!ALLOWED_TYPES.includes(file.type)) {
       setError('Invalid file type. Allowed: JPG, PNG, GIF, WEBP');
       return;
     }
 
-    // ตรวจสอบขนาด
+    // Validate file size
     if (file.size > MAX_SIZE) {
       setError(`File too large (${(file.size / 1024 / 1024).toFixed(2)} MB). Max: 5 MB`);
       return;
     }
 
-    // อ่านไฟล์เป็น data URL
+    // Read file as data URL
     const reader = new FileReader();
     reader.onload = () => {
       setImageSrc(reader.result);
@@ -55,30 +55,30 @@ export default function AvatarUploader({
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  // === ยืนยัน crop + upload ===
+  // Confirm crop and upload
   const handleCropConfirm = async () => {
     try {
       setIsUploading(true);
       setError(null);
 
-      // Crop รูป
+      // Crop image
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
 
       if (!croppedBlob) {
         throw new Error('Failed to crop image');
       }
 
-      // สร้าง FormData
+      // Build FormData
       const formData = new FormData();
       formData.append('avatar', croppedBlob, 'avatar.jpg');
-      // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
+      // user_id is omitted because the backend reads g.user_id from the cookie
 
-      // Upload — ใช้ apiClient (cookies อัตโนมัติ)
+      // Upload using apiClient (cookies included automatically)
       const { data } = await apiClient.post('/api/upload/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // สำเร็จ
+      // Upload succeeded
       setIsCropping(false);
       setImageSrc(null);
 
@@ -105,7 +105,7 @@ export default function AvatarUploader({
 
   return (
     <div className="avatar-uploader">
-      {/* ปุ่มอัปโหลด */}
+      {/* Upload button */}
       {!isCropping && (
         <>
           <div className="avatar-preview-wrapper">

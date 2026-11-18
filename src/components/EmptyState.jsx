@@ -1,8 +1,3 @@
-/**
- * EmptyState.jsx — Beautiful empty state component
- * ใช้เมื่อไม่มีข้อมูล + optional action button
- * ใช้ Lucide icons เท่านั้น (ไม่ใช้ emoji)
- */
 import { Briefcase } from 'lucide-react';
 
 export default function EmptyState({

@@ -18,7 +18,7 @@ const INDUSTRIES = [
 
 const TOTAL_STEPS = 3;
 
-// ⭐ คำนวณ password strength
+// Calculate password strength
 const getPasswordStrength = (pwd) => {
   if (!pwd) return { level: 0, label: '', color: '' };
 
@@ -39,7 +39,7 @@ export default function Signup() {
   usePageTitle("Sign Up", { description: "Create your free JobJab account" });
 
   const navigate = useNavigate();
-  // ⭐ ต้องใช้ทั้ง register + login
+  // Both register and login are required
   const { register, login: authLogin } = useAuth();
 
   const [step, setStep] = useState(1);
@@ -136,13 +136,13 @@ export default function Signup() {
         }),
       };
 
-      // ⭐ 1. Register
+      // 1. Register
       await register(payload);
 
-      // ⭐ 2. Auto-login (สร้าง cookies)
+      // 2. Auto-login (set auth cookies)
       await authLogin(formData.email, formData.password, role);
 
-      // ⭐ 3. Redirect ตาม role
+      // 3. Redirect based on role
       if (userType === 'employer') {
         navigate('/employer/dashboard');
       } else {
@@ -172,7 +172,7 @@ export default function Signup() {
         <p>Create your account in a few easy steps</p>
       </div>
 
-      {/* ⭐ PROGRESS BAR */}
+      {/* PROGRESS BAR */}
       <div className="signup-progress">
         <div className="progress-steps">
           {[1, 2, 3].map((s) => (
@@ -205,7 +205,7 @@ export default function Signup() {
         </div>
       </div>
 
-      {/* ⭐ CARD */}
+      {/* CARD */}
       <div className="signup-card">
         {/* Error */}
         {error && <div className="signup-error">{error}</div>}
@@ -275,7 +275,7 @@ export default function Signup() {
               />
             </div>
 
-            {/* ⭐ Password + Show/Hide + Strength */}
+            {/* Password input with show/hide toggle and strength meter */}
             <div className="input-group">
               <label>Password</label>
               <div className="password-input-wrapper">

@@ -20,7 +20,7 @@ import { timeAgo } from '../utils/timeAgo';
 
 const MAX_SALARY = 250000;
 
-// ⭐ helper — กัน object ถูก render
+// Helper to prevent objects from being rendered directly
 const safeStr = (v) => {
   if (v === null || v === undefined) return '';
   if (typeof v === 'string') return v;
@@ -40,7 +40,7 @@ function AllJobs() {
   const { user } = useAuth();
   const [selectedJobForMatch, setSelectedJobForMatch] = useState(null);
 
-  // ─── Read filters from URL ───
+  // Read filters from URL
   const urlQ = searchParams.get("q") || "";
   const urlPosition = searchParams.get("position") || "all";
   const urlLevel = searchParams.get("level") || "all";
@@ -50,11 +50,11 @@ function AllJobs() {
   const urlSalaryMax = parseInt(searchParams.get("salary_max") || String(MAX_SALARY), 10);
   const urlSort = searchParams.get("sort") || "match";
 
-  // ─── Local input state ───
+  // Local input state
   const [searchInput, setSearchInput] = useState(urlQ);
   const debouncedSearch = useDebounce(searchInput, 400);
 
-  // ─── Helper: update URL ───
+  // Helper: update URL
   function updateUrl(patch = {}) {
     const next = new URLSearchParams(searchParams);
     Object.entries(patch).forEach(([key, value]) => {
@@ -67,7 +67,7 @@ function AllJobs() {
     setSearchParams(next, { replace: true });
   }
 
-  // ─── Sync search → URL ───
+  // Sync search with URL
   useEffect(() => {
     if (debouncedSearch !== urlQ) {
       updateUrl({ q: debouncedSearch });
@@ -75,7 +75,7 @@ function AllJobs() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  // ─── useInfiniteQuery ───
+  // Infinite query for jobs
   const {
     data,
     isLoading,
@@ -103,7 +103,7 @@ function AllJobs() {
   const pagination = firstPage.pagination || {};
   const total = pagination.total || 0;
 
-  // ─── Handlers ───
+  // Handlers
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
       updateUrl({ q: searchInput.trim() });
@@ -417,7 +417,7 @@ function AllJobs() {
         </p>
       )}
 
-      {/* ⭐ MATCH MODAL */}
+      {/* MATCH MODAL */}
       {selectedJobForMatch && (
         <MatchModal
           job={selectedJobForMatch}

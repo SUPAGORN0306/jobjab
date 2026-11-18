@@ -1,7 +1,6 @@
-cat > /mnt/d/JobMarket/frontend/README.md << 'README_EOF'
-# JOBJAB — Job Matching Platform
+# JOBJAB — Job Matching Platform (Frontend)
 
-React frontend for the JOBJAB job matching platform. Handles user interface, authentication flows, profile management, job browsing, application submission, and the employer dashboard.
+React frontend for the **JOBJAB** job matching platform. Connects **Candidates** and **Employers** with personalized match scoring, application tracking, and an employer analytics/applicant management workspace.
 
 ## Live Application
 
@@ -10,237 +9,135 @@ React frontend for the JOBJAB job matching platform. Handles user interface, aut
 
 ## Overview
 
-This is the frontend application for JOBJAB, a job matching platform connecting job seekers with employers in the technology industry. The application provides an intuitive interface for browsing jobs, managing profiles, submitting applications, and viewing personalized match scores.
-
-The interface features a dark mode design optimized for extended use, responsive layouts supporting desktop and mobile devices, and real-time match score visualization.
+Built with **React 19**, **Vite 8 (Rolldown)**, **TailwindCSS v4**, **React Router v7**, and **TanStack React Query v5**, featuring lazy-loaded route splitting, `httpOnly` cookie-authenticated API calls via Axios, and a dark-mode UI.
 
 ## Features
 
-### Authentication
+### Authentication & Role Switching
+- Sign up and login with `httpOnly` cookie session handling (`AuthContext.jsx`)
+- Protected routes separated by role (`candidate` and `employer`)
+- Multi-role support for switching between Candidate and Employer views
 
-- User registration with role selection (candidate or employer)
-- Login with email and password
-- Multi-role support allowing users to switch between candidate and employer modes
-- Persistent session via localStorage
-
-### Job Seeker Interface
-
-- Job browsing with personalized match scores
-- Detailed job view with matched and missing skills highlighted
-- Profile management with skills, experience, and education
-- Resume and profile image upload
-- Job application submission with editable cover letter
-- Application tracking with status indicators
-- Favorites management
+### Candidate Interface
+- **Home & All Jobs:** Browse recommended and filterable jobs with personalized Match Score badges, salary popover, and filter sheets/chips
+- **Job Detail:** View responsibilities, requirements, and matched vs. missing skill breakdown (`MatchModal`)
+- **Apply:** Submit job applications with editable profile/cover letter and resume upload (`ResumeUploader`)
+- **Application Status:** Track submitted application progress and interview dates
+- **Profile & Favorites:** Manage skills, experience, education, cropped avatar (`AvatarUploader`), and saved jobs
 
 ### Employer Interface
-
-- Job posting form with structured fields
-- Employer dashboard with job statistics
-- Applicant viewing with full candidate profiles
-- Application status management
-- Resume access for candidates
+- **Dashboard:** Overview cards, today's tasks/action items, and interactive schedule (`EmployerCalendar`)
+- **My Jobs:** Create, edit, toggle status, and manage job postings
+- **Applicants:** Two-column applicant review workspace with candidate profile details, match scores, resume access, and status updates
+- **Analytics:** Visual hiring metrics and charts (`Recharts`)
+- **Company Profile:** Manage employer info and company logo (`CompanyLogoUploader`)
 
 ## Technology Stack
 
-### Core
-
-- React 18
-- Vite build tool
-- React Router for client-side navigation
-- Context API for state management
-
-### UI
-
-- CSS Modules for component-scoped styling
-- Lucide React for iconography
-- Custom dark mode design system
-
-### Utilities
-
-- Axios-free fetch API with centralized client functions
-- Environment-based API URL resolution
-- Client-side image cropping for avatars
-
-### Infrastructure
-
-- Vercel for hosting with automatic HTTPS and edge CDN
-- Automatic deployments from GitHub main branch
-
-## Match Score Display
-
-Each job listing displays a personalized match score calculated by the backend.
-
-Overall Score = (Skills Match x 0.50) + (Experience Match x 0.30) + (Industry Match x 0.20)
-
-### Score Presentation
-
-- Overall score displayed as a percentage badge on each job card
-- Detailed breakdown modal showing three component scores
-- Matched skills highlighted in green
-- Missing skills highlighted in red
-- Skill gap analysis to guide learning priorities
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18 or higher
-- Backend API running (see backend repository)
-
-### Installation
-
-Clone the repository and install dependencies:
-
-    git clone https://github.com/SUPAGORN0306/jobjab.git
-    cd jobjab
-    npm install
-
-### Configuration
-
-Create a .env file in the project root:
-
-    VITE_API_URL=http://localhost:5000
-
-### Running the Development Server
-
-Start the Vite development server:
-
-    npm run dev
-
-The application will be available at http://localhost:5173.
-
-### Building for Production
-
-Create an optimized production build:
-
-    npm run build
-
-Preview the production build locally:
-
-    npm run preview
-
-## Production Deployment
-
-Pushing to the main branch triggers automatic deployment on Vercel.
-
-Environment variables must be configured in the Vercel dashboard:
-
-| Variable     | Value                           |
-|--------------|---------------------------------|
-| VITE_API_URL | https://jobjab-api.onrender.com |
+- **Core:** React 19.2, Vite 8.0 (Rolldown bundler with `advancedChunks`), React Router v7 (`react-router-dom`)
+- **Data & State:** TanStack React Query v5 (`@tanstack/react-query`), Axios (`src/lib/apiClient.js`), React Context (`AuthContext`, `FavoritesContext`)
+- **Styling & UI:** TailwindCSS v4 (`@tailwindcss/vite`), Shadcn / Radix UI (`@radix-ui/react-select`, `radix-ui`), CSS stylesheets (`src/styles/`)
+- **Visualization & Media:** Recharts, Lucide React, Sonner (toasts), `react-calendar`, `react-easy-crop`
+- **Deployment & Telemetry:** Vercel (`vercel.json`), `@vercel/speed-insights`
 
 ## Application Routes
 
 ### Public Routes
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | `Landing` | Landing page |
+| `/login` | `Login` | User sign in |
+| `/signup` | `Signup` | New account registration |
+| `/about` | `About` | Platform information |
 
-| Route      | Component | Description                        |
-|------------|-----------|------------------------------------|
-| /          | Landing   | Welcome page with login and signup |
-| /login     | Login     | User authentication                |
-| /signup    | Signup    | New user registration              |
+### Candidate Routes (`ProtectedRoute requiredRole="candidate"`)
+| Route | Page | Description |
+|-------|------|-------------|
+| `/home` | `Home` | Personalized job recommendations |
+| `/all-jobs` | `AllJobs` | Full job catalog with filters |
+| `/favorite` | `Favorite` | Saved jobs |
+| `/status` | `AppStatus` | Submitted application tracker |
+| `/profile` | `Profile` | Candidate profile overview |
+| `/profile/edit` | `Edit` | Edit profile, skills, experience, education |
+| `/job/:id` | `JobDetail` | Job details & match score breakdown |
+| `/job/:id/apply` | `Apply` | Job application form |
 
-### Authenticated Routes (Job Seeker)
-
-| Route          | Component | Description                               |
-|----------------|-----------|-------------------------------------------|
-| /home          | Home      | Personalized job recommendations          |
-| /jobs          | AllJobs   | Full job listing with filters             |
-| /job/:id       | JobDetail | Detailed job view with match breakdown    |
-| /apply/:id     | Apply     | Application form with editable profile    |
-| /profile       | Profile   | User profile overview                     |
-| /profile/edit  | Edit      | Profile editing interface                 |
-| /status        | AppStatus | Application tracking                      |
-| /favorites     | Favorite  | Saved jobs                                |
-
-### Authenticated Routes (Employer)
-
-| Route                    | Component          | Description                    |
-|--------------------------|--------------------|--------------------------------|
-| /employer/dashboard      | EmployerDashboard  | Job statistics and overview    |
-| /employer/post-job       | EmployerApp        | Create new job posting         |
-| /employer/jobs/:id       | ViewApplicants     | View applicants for a job      |
-
-## Technical Highlights
-
-### Centralized API Client
-
-All backend communication is handled through a single module that exports typed functions for each endpoint. This pattern ensures consistent error handling and simplifies the process of updating endpoints or adding authentication headers in the future.
-
-### Environment-Based Configuration
-
-The API base URL is resolved at build time from the VITE_API_URL environment variable, allowing the same codebase to work in development (localhost) and production (Vercel deployment) without modification.
-
-### Image Handling
-
-Profile images are processed client-side using the react-easy-crop library before upload, allowing users to crop and position their avatar. The backend then stores the optimized image on Cloudinary.
-
-### Match Score Visualization
-
-Match scores are visualized through a combination of percentage badges, color coding (green for high matches, yellow for medium, red for low), and a detailed breakdown modal. Matched and missing skills are shown side by side to help candidates understand their fit for each role.
-
-### Responsive Design
-
-All pages use CSS Grid and Flexbox layouts that adapt from desktop (three-column layouts) to tablet (two-column) to mobile (single-column). The navigation collapses into a hamburger menu on smaller screens.
+### Employer Routes (`ProtectedRoute requiredRole="employer"`)
+| Route | Page | Description |
+|-------|------|-------------|
+| `/employer/dashboard` | `EmployerDashboard` | Employer overview & tasks |
+| `/employer/jobs` | `EmployerJobs` | Manage job postings |
+| `/employer/applicants` | `EmployerApplicants` | Review applicants across jobs |
+| `/employer/analytics` | `EmployerAnalytics` | Hiring analytics & charts |
+| `/employer/profile` | `EmployerProfile` | Company profile view |
+| `/employer/profile/edit` | `EmployerProfileEdit` | Edit company profile & logo |
+| `/employer/about` | `EmployerAbout` | Employer platform info |
+| `/employer/jobs/:jobId/applicants` | `JobApplicantsRedirect` | Redirects to `/employer/applicants?job=:jobId` |
 
 ## Project Structure
 
-    jobjab/
-    ├── public/                    # Static assets
-    │   ├── home.svg
-    │   ├── heart.svg
-    │   └── human.svg
-    ├── src/
-    │   ├── api.js                 # Centralized API client functions
-    │   ├── components/            # Reusable UI components
-    │   │   ├── AvatarUploader.jsx
-    │   │   ├── MatchModal.jsx
-    │   │   ├── ProtectedRoute.jsx
-    │   │   └── ResumeUploader.jsx
-    │   ├── context/
-    │   │   └── AuthContext.jsx    # Authentication state provider
-    │   ├── pages/                 # Route-level components
-    │   │   ├── AllJobs.jsx
-    │   │   ├── Apply.jsx
-    │   │   ├── AppStatus.jsx
-    │   │   ├── Edit.jsx
-    │   │   ├── EmployerDashboard.jsx
-    │   │   ├── Favorite.jsx
-    │   │   ├── Home.jsx
-    │   │   ├── JobDetail.jsx
-    │   │   ├── Login.jsx
-    │   │   ├── Profile.jsx
-    │   │   └── ViewApplicants.jsx
-    │   └── utils/
-    │       ├── apiUrl.js          # API URL resolution helper
-    │       └── cropImage.js       # Image cropping utility
-    ├── .env.example
-    ├── index.html
-    ├── package.json
-    └── vite.config.js
+```text
+frontend/
+├── public/                        # Static images and SVG assets
+├── src/
+│   ├── App.jsx                    # Candidate layout & tabbar
+│   ├── EmployerApp.jsx            # Employer layout & tabbar
+│   ├── main.jsx                   # Router, lazy-loaded routes, providers
+│   ├── components/                # Shared UI, uploaders, modals, employer widgets, ui/
+│   ├── context/                   # AuthContext, FavoritesContext
+│   ├── hooks/                     # Custom hooks & React Query hooks
+│   ├── lib/                       # apiClient.js (Axios), queryClient.js, utils.js
+│   ├── pages/                     # Route-level page components
+│   ├── styles/                    # Global, candidate, employer, and component CSS
+│   └── utils/                     # API helpers, image cropping, formatting utilities
+├── .env.example
+├── index.html
+├── package.json
+├── vercel.json
+└── vite.config.js
+```
 
-## Environment Variables
+## Getting Started
 
-| Variable     | Description                    | Example                |
-|--------------|--------------------------------|------------------------|
-| VITE_API_URL | Backend API base URL           | http://localhost:5000  |
+### Prerequisites
+- Node.js 18+
+- Backend API running locally or accessible via `VITE_API_URL`
+
+### Installation
+
+```bash
+git clone https://github.com/SUPAGORN0306/jobjab.git
+cd jobjab
+npm install
+```
+
+### Configuration
+
+Create a `.env` file in `frontend/`:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+> In development, `vite.config.js` also proxies `/api` requests to `http://localhost:5000`.
+
+### Available Scripts
+
+```bash
+npm run dev      # Start Vite dev server (http://localhost:5173)
+npm run build    # Production build to dist/
+npm run preview  # Preview production build locally
+npm run lint     # Run ESLint
+```
+
+## Production Deployment
+
+Pushing to `main` triggers automatic deployment on Vercel. Set `VITE_API_URL=https://jobjab-api.onrender.com` in the Vercel project environment variables.
 
 ## Author
 
-Supagorn
-
-- GitHub: @SUPAGORN0306
-- Frontend Repository: jobjab
-- Backend Repository: jobjab-backend
+Supagorn — [@SUPAGORN0306](https://github.com/SUPAGORN0306)
 
 ## License
 
 This project is licensed under the MIT License.
-README_EOF
-
-echo ""
-echo "=== File created ==="
-wc -l /mnt/d/JobMarket/frontend/README.md
-echo ""
-echo "=== First 5 lines ==="
-head -5 /mnt/d/JobMarket/frontend/README.md

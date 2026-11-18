@@ -10,9 +10,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
-// ═══════════════════════════════════════════════════════════════════
-// Status colors (ตรงกับ EmployerApplicants)
-// ═══════════════════════════════════════════════════════════════════
+// Status colors (aligned with EmployerApplicants)
 const STATUS_COLORS = {
   applied:   '#38bdf8',
   reviewing: '#f472b6',
@@ -20,12 +18,10 @@ const STATUS_COLORS = {
   rejected:  '#94a3b8',
 };
 
-// ═══════════════════════════════════════════════════════════════════
-// Event meta — 5 types with icons
-// ═══════════════════════════════════════════════════════════════════
+// Event metadata for 5 event types with icons
 const EVENT_META = {
   applied:       { label: 'Applied',       icon: Download,    color: '#38bdf8' },
-  status_change: { label: 'Status change', icon: RefreshCw,   color: '#f472b6' },  // จะ override ตาม status
+  status_change: { label: 'Status change', icon: RefreshCw,   color: '#f472b6' },  // Overridden per status
   interview:     { label: 'Interview',     icon: Target,      color: '#34d399' },
   job_posted:    { label: 'Job posted',    icon: Megaphone,   color: '#f0d154' },
   job_expiring:  { label: 'Job expiring',  icon: AlertCircle, color: '#fca5a5' },
@@ -34,9 +30,7 @@ const EVENT_META = {
 export default function EmployerCalendar({ applications = [], jobs = [] }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // ═══════════════════════════════════════════════════════════════════
-  // GET EVENTS
-  // ═══════════════════════════════════════════════════════════════════
+  // Get events for a given date
   const getEventsForDate = (date) => {
     const target = date.toDateString();
     const events = [];
@@ -63,7 +57,7 @@ export default function EmployerCalendar({ applications = [], jobs = [] }) {
         });
       }
 
-      // 2. Status change (ข้ามถ้า applied_date = วันเดียวกัน)
+      // 2. Status change (skip if applied_date is on the same day)
       if (
         changedStr === target &&
         app.status !== 'applied' &&
@@ -113,9 +107,7 @@ export default function EmployerCalendar({ applications = [], jobs = [] }) {
     return events;
   };
 
-  // ═══════════════════════════════════════════════════════════════════
-  // Helper: get color for event (status_change → ตาม status ปลายทาง)
-  // ═══════════════════════════════════════════════════════════════════
+  // Helper: get color for event (status_change uses the target status color)
   const getEventColor = (ev) => {
     if (ev.eventType === 'status_change') {
       return STATUS_COLORS[ev.status] || EVENT_META.status_change.color;
@@ -123,9 +115,7 @@ export default function EmployerCalendar({ applications = [], jobs = [] }) {
     return EVENT_META[ev.eventType]?.color || '#8c9bae';
   };
 
-  // ═══════════════════════════════════════════════════════════════════
-  // Tile — colored dots (dedupe by color)
-  // ═══════════════════════════════════════════════════════════════════
+  // Tile colored dots (deduplicated by color)
   const tileContent = ({ date, view }) => {
     if (view !== 'month') return null;
     const events = getEventsForDate(date);

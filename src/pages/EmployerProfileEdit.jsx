@@ -32,12 +32,12 @@ export default function EmployerProfileEdit() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  // ⭐ logo state
+  // Logo state
   const [pendingLogoUrl, setPendingLogoUrl] = useState(null);
   const [logoChanged, setLogoChanged] = useState(false);
 
   const [form, setForm] = useState({
-    company_name: '',    // ⭐ ใหม่
+    company_name: '',
     full_name: '',
     phone: '',
     location: '',
@@ -104,7 +104,7 @@ export default function EmployerProfileEdit() {
         industry: form.industry,
       };
       if (logoChanged) {
-        payload.company_logo = pendingLogoUrl;   // URL ใหม่ หรือ null
+        payload.company_logo = pendingLogoUrl;   // New URL or null
       }
 
       await apiClient.put('/api/employer/profile', payload);
@@ -187,7 +187,7 @@ export default function EmployerProfileEdit() {
           </h2>
 
           <div className="form-grid">
-            {/* ⭐ NEW — Company Name */}
+            {/* Company Name */}
             <div className="form-field form-field-full">
               <label className="form-field-label">
                 <Building2 size={12} />

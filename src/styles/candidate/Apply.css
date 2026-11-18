@@ -1,6 +1,4 @@
-/* ============================================ */
-/* Container                                     */
-/* ============================================ */
+/* Container */
 
 .apply-container {
   display: flex;
@@ -34,9 +32,7 @@
   padding: 20px 0;
 }
 
-/* ============================================ */
-/* Nav / Header                                  */
-/* ============================================ */
+/* Nav / Header */
 
 .apply-nav-row {
   margin-bottom: 20px;
@@ -86,9 +82,7 @@
   font-weight: 600;
 }
 
-/* ============================================ */
-/* Grid Layout                                   */
-/* ============================================ */
+/* Grid Layout */
 
 .apply-grid {
   display: grid;
@@ -97,9 +91,7 @@
   align-items: start;
 }
 
-/* ============================================ */
-/* Left Card (Preview)                           */
-/* ============================================ */
+/* Left Card (Preview) */
 
 .apply-card-left {
   background: rgba(220, 220, 220, 0.1);
@@ -235,9 +227,7 @@
   padding: 4px 8px;
 }
 
-/* ============================================ */
-/* Right Column                                  */
-/* ============================================ */
+/* Right Column */
 
 .apply-right-column {
   display: flex;
@@ -283,9 +273,7 @@
   gap: 12px;
 }
 
-/* ============================================ */
-/* Contact Grid                                  */
-/* ============================================ */
+/* Contact Grid */
 
 .contact-grid {
   display: grid;
@@ -309,9 +297,7 @@
   font-weight: 500;
 }
 
-/* ============================================ */
-/* Form Fields                                   */
-/* ============================================ */
+/* Form Fields */
 
 .field-input-editable {
   background: rgba(255, 255, 255, 0.95);
@@ -402,9 +388,7 @@
   cursor: pointer;
 }
 
-/* ============================================ */
-/* Skill Input + Chip Suggestions                */
-/* ============================================ */
+/* Skill Input + Chip Suggestions */
 
 .skill-input-wrapper {
   width: 100%;
@@ -522,9 +506,7 @@
   font-style: italic;
 }
 
-/* ============================================ */
-/* Add Item Button                               */
-/* ============================================ */
+/* Add Item Button */
 
 .add-item-btn {
   background: rgba(128, 255, 213, 0.1);
@@ -544,9 +526,7 @@
   border-color: rgba(128, 255, 213, 0.5);
 }
 
-/* ============================================ */
-/* Empty State Card                              */
-/* ============================================ */
+/* Empty State Card */
 
 .empty-state-card {
   display: flex;
@@ -571,9 +551,7 @@
   margin: 0;
 }
 
-/* ============================================ */
-/* Item Card (Experience / Education)            */
-/* ============================================ */
+/* Item Card (Experience / Education) */
 
 .items-list {
   display: flex;
@@ -684,9 +662,7 @@
   height: 15px;
 }
 
-/* ============================================ */
-/* Actions Row                                   */
-/* ============================================ */
+/* Actions Row */
 
 .apply-actions-row {
   display: flex;
@@ -735,9 +711,7 @@
   cursor: not-allowed;
 }
 
-/* ============================================ */
-/* Responsive                                    */
-/* ============================================ */
+/* Responsive */
 
 @media (max-width: 768px) {
   .apply-grid {
@@ -773,9 +747,7 @@
   }
 }
 
-/* ============================================ */
-/* Required / Optional Markers                   */
-/* ============================================ */
+/* Required / Optional Markers */
 
 .required {
   color: #f472b6;
@@ -794,9 +766,7 @@
   letter-spacing: 0.3px;
 }
 
-/* ============================================ */
-/* Disabled Button                               */
-/* ============================================ */
+/* Disabled Button */
 
 .skill-add-btn.disabled,
 .add-item-btn.disabled {
@@ -820,9 +790,7 @@
   cursor: not-allowed;
 }
 
-/* ============================================ */
-/* Field Wrap (with mini label)                  */
-/* ============================================ */
+/* Field Wrap (with mini label) */
 
 .field-wrap {
   display: flex;
@@ -838,9 +806,7 @@
   letter-spacing: 0.3px;
 }
 
-/* ============================================ */
-/* Empty State Enhancement                       */
-/* ============================================ */
+/* Empty State Enhancement */
 
 .empty-state-card {
   display: flex;
@@ -873,9 +839,7 @@
   line-height: 1.4;
 }
 
-/* ============================================ */
-/* Lucide Icons — Adjustments                    */
-/* ============================================ */
+/* Lucide Icon Adjustments */
 
 /* File name with icon */
 .field-box .file-name {
@@ -939,9 +903,7 @@
   font-size: 0.85rem;
 }
 
-/* ============================================ */
-/* Resume Display                                */
-/* ============================================ */
+/* Resume Display */
 
 .resume-display {
   display: flex;
@@ -989,9 +951,7 @@
   flex-shrink: 0;
 }
 
-/* ============================================ */
-/* ⭐ Guest Banner ⭐                             */
-/* ============================================ */
+/* Guest Banner */
 
 .guest-banner {
   display: flex;
@@ -1019,9 +979,7 @@
   }
 }
 
-/* ============================================ */
-/* ⭐ RESUME UPLOAD ⭐                            */
-/* ============================================ */
+/* Resume Upload */
 
 .resume-upload-box {
   display: flex;

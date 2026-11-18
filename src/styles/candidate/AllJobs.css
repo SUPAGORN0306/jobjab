@@ -1,6 +1,4 @@
-/* ============================================ */
-/* ALLJOBS.CSS — Session 8 (Compact filter bar)  */
-/* ============================================ */
+/* AllJobs Styles (Compact filter bar) */
 
 .all-jobs-container {
   display: flex;
@@ -29,9 +27,7 @@
   .all-jobs-filter-card { padding: 16px; border-radius: 20px; }
 }
 
-/* ============================================ */
-/* HEADER                                        */
-/* ============================================ */
+/* Header */
 
 .all-jobs-header {
   margin-bottom: 20px;
@@ -80,9 +76,7 @@
   margin: 0;
 }
 
-/* ============================================ */
-/* FILTER CARD — Compact (2 rows)                */
-/* ============================================ */
+/* Filter Card (compact, 2 rows) */
 
 .all-jobs-filter-card {
   background: linear-gradient(
@@ -138,7 +132,7 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Filter row — 6 items: 4 dropdowns + salary + sort */
+/* Filter row (6 items: 4 dropdowns, salary, and sort) */
 .all-jobs-filter-card .filter-navbar {
   display: flex;
   flex-wrap: wrap;
@@ -157,7 +151,7 @@
   min-width: 0;
 }
 
-/* Filter dropdown trigger — compact */
+/* Compact filter dropdown trigger */
 .all-jobs-filter-card .filter-trigger {
   background: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -181,9 +175,7 @@
   font-size: 0.78rem !important;
 }
 
-/* ============================================ */
-/* RESULT BAR                                    */
-/* ============================================ */
+/* Result Bar */
 
 .all-jobs-result-bar {
   display: flex;
@@ -211,9 +203,7 @@
   font-weight: 700;
 }
 
-/* ============================================ */
-/* JOB GRID                                      */
-/* ============================================ */
+/* Job Grid */
 
 .all-jobs-grid {
   display: grid;
@@ -236,9 +226,7 @@
   .all-jobs-grid { grid-template-columns: 1fr; }
 }
 
-/* ============================================ */
-/* LOAD MORE                                     */
-/* ============================================ */
+/* Load More */
 
 .all-jobs-load-more-wrapper {
   display: flex;
@@ -278,9 +266,7 @@
   border-left: 1px solid rgba(240, 209, 84, 0.4);
 }
 
-/* ============================================ */
-/* END MESSAGE                                   */
-/* ============================================ */
+/* End Message */
 
 .all-jobs-end-message {
   text-align: center;
@@ -291,12 +277,10 @@
   border-top: 1px dashed rgba(255, 255, 255, 0.08);
 }
 
-/* ============================================ */
-/* MOBILE (max-width: 768px)                    */
-/* ============================================ */
+/* Mobile (max-width: 768px) */
 
 @media (max-width: 768px) {
-  /* Filter bar — stack */
+  /* Stacked filter bar */
   .all-jobs-filter-card .filter-navbar {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -307,7 +291,7 @@
     min-width: 0;
   }
 
-  /* Filter dropdown — small */
+  /* Small filter dropdown */
   .all-jobs-filter-card .filter-trigger {
     padding: 8px 12px !important;
     font-size: 0.72rem !important;

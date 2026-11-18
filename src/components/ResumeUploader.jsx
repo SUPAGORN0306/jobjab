@@ -41,7 +41,7 @@ export default function ResumeUploader({
 
       const formData = new FormData();
       formData.append('resume', file);
-      // ⭐ user_id ไม่ต้องส่ง — backend ใช้ g.user_id จาก cookie
+      // user_id is omitted because the backend reads g.user_id from the cookie
 
       const { data } = await apiClient.post('/api/upload/resume', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -99,7 +99,7 @@ export default function ResumeUploader({
     ? (currentFilename || 'resume.pdf')
     : null;
 
-  // ⭐ Google Docs Viewer URL
+  // Google Docs Viewer URL
   const googleDocsUrl = currentResume
     ? `https://docs.google.com/viewer?url=${encodeURIComponent(currentResume)}&embedded=true`
     : null;
@@ -201,7 +201,7 @@ export default function ResumeUploader({
         </div>
       )}
 
-      {/* ⭐ Resume Modal — Google Docs Viewer */}
+      {/* Resume modal using Google Docs Viewer */}
       {showResumeModal && googleDocsUrl && (
         <div
           onClick={() => setShowResumeModal(false)}
@@ -254,7 +254,7 @@ export default function ResumeUploader({
               </button>
             </div>
 
-            {/* ⭐ Google Docs Viewer */}
+            {/* Google Docs Viewer */}
             <iframe
               src={googleDocsUrl}
               title="Resume Preview"

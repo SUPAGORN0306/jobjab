@@ -25,9 +25,7 @@ import { getJobLogoClass } from '../utils/jobLogo';
 import PageLoader from '../components/PageLoader';
 import { EmployerHero } from '../components/employer';
 
-// ============================================
 // CONSTANTS
-// ============================================
 
 const JOB_TITLES = [
   'AI Product Manager', 'AI Researcher', 'Computer Vision Engineer',
@@ -45,9 +43,7 @@ const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior'];
 const COMPANY_SIZES = ['Small', 'Mid', 'Large'];   
 const VISA_SPONSORSHIP_OPTIONS = ['No', 'Yes']; 
 
-// ============================================
 // EDIT MODAL
-// ============================================
 
 function EditJobModal({ job, onClose, onSaved }) {
   const [form, setForm] = useState({
@@ -64,7 +60,7 @@ function EditJobModal({ job, onClose, onSaved }) {
     about_role: job.about_role || '',
     responsibilities: job.responsibilities || '',
     requirements: job.requirements || '',
-    //ไม่มี company_name / industry — backend ดึงจาก profile
+    // Omit company_name and industry; backend pulls them from the profile
   });
   const [saving, setSaving] = useState(false);
 
@@ -109,7 +105,7 @@ function EditJobModal({ job, onClose, onSaved }) {
               </select>
             </div>
 
-            {/* Company Name — readonly */}
+            {/* Company Name (readonly) */}
             <div className="form-field">
               <label className="form-field-label">Company Name</label>
               <input
@@ -121,7 +117,7 @@ function EditJobModal({ job, onClose, onSaved }) {
               />
             </div>
 
-            {/* Industry — readonly */}
+            {/* Industry (readonly) */}
             <div className="form-field">
               <label className="form-field-label">Industry</label>
               <input
@@ -233,9 +229,7 @@ function EditJobModal({ job, onClose, onSaved }) {
   );
 }
 
-// ============================================
 // MAIN COMPONENT
-// ============================================
 
 export default function EmployerJobs() {
   usePageTitle("My Jobs", { description: "Your posted jobs" });

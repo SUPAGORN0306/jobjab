@@ -1,13 +1,11 @@
-/* ════════════════════════════════════════════════════════════
-   EMPLOYER ABOUT — Match font sizes กับ EmployerHero/Analytics
-   ════════════════════════════════════════════════════════════ */
+/* Employer About (font sizes matched to EmployerHero and EmployerAnalytics) */
 
 .emp-about-page {
   animation: fadeSlideUp 0.4s ease both;
   padding-bottom: 40px;
 }
 
-/* ─── HERO (เหมือน .emp-hero ใน EmployerLayout.css) ─── */
+/* Hero (matches .emp-hero in EmployerLayout.css) */
 .emp-about-hero {
   text-align: left;
   padding: 40px 0 20px 0;
@@ -19,7 +17,7 @@
   align-items: center;
   gap: 6px;
   color: #f0d154;
-  font-size: 0.7rem;              /* ⭐ เท่า .emp-hero-tag */
+  font-size: 0.7rem;              /* Matches .emp-hero-tag */
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -28,7 +26,7 @@
 }
 
 .emp-about-hero h1 {
-  font-size: 2rem;                 /* ⭐ เท่า .emp-hero h1 */
+  font-size: 2rem;                 /* Matches .emp-hero h1 */
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
@@ -41,7 +39,7 @@
 }
 
 .emp-about-hero p {
-  font-size: 0.88rem;              /* ⭐ เท่า .emp-hero-subtitle */
+  font-size: 0.88rem;              /* Matches .emp-hero-subtitle */
   color: #b6b6b6;
   line-height: 1.6;
   margin: 0 0 20px 0;
@@ -56,7 +54,7 @@
   margin-top: 12px;
 }
 
-/* ─── CTA BUTTONS (เหมือน .emp-btn-primary + .emp-btn-glass) ─── */
+/* CTA Buttons (matches .emp-btn-primary and .emp-btn-glass) */
 .emp-about-cta {
   display: inline-flex;
   align-items: center;
@@ -64,7 +62,7 @@
   padding: 12px 22px;
   border-radius: 14px;
   font-family: inherit;
-  font-size: 0.82rem;              /* ⭐ เท่า .emp-btn-primary */
+  font-size: 0.82rem;              /* Matches .emp-btn-primary */
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -104,11 +102,11 @@
   border-color: rgba(255, 255, 255, 0.55);
 }
 
-/* ─── SECTIONS (เหมือน .emp-section) ─── */
+/* Sections (matches .emp-section) */
 .emp-about-section {
   width: 100%;
   margin-top: 0;
-  padding: 28px;                    /* ⭐ เท่า .emp-section */
+  padding: 28px;                    /* Matches .emp-section */
   border-radius: 24px;
   background: linear-gradient(
     145deg,
@@ -130,7 +128,7 @@
 }
 
 .emp-about-section-header {
-  margin-bottom: 20px;              /* ⭐ เพิ่มจาก 14 → 20 */
+  margin-bottom: 20px;              /* Increased from 14px */
 }
 
 .emp-about-tag {
@@ -138,7 +136,7 @@
   align-items: center;
   gap: 6px;
   color: #f0d154;
-  font-size: 0.7rem;                /* ⭐ ใหญ่ขึ้น */
+  font-size: 0.7rem;                /* Scaled up */
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -146,7 +144,7 @@
 }
 
 .emp-about-section-header h2 {
-  font-size: 1.3rem;                /* ⭐ ใหญ่ขึ้นมาก (จาก 0.95) */
+  font-size: 1.3rem;                /* Scaled up from 0.95rem */
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 6px 0;
@@ -157,13 +155,13 @@
 }
 
 .emp-about-section-header p {
-  font-size: 0.88rem;               /* ⭐ ใหญ่ขึ้น (จาก 0.72) */
+  font-size: 0.88rem;               /* Scaled up from 0.72rem */
   color: #b6b6b6;
   margin: 0;
   line-height: 1.55;
 }
 
-/* ─── CARDS GRID ─── */
+/* Cards Grid */
 .emp-about-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -171,7 +169,7 @@
 }
 
 .emp-about-card {
-  padding: 20px;                    /* ⭐ ใหญ่ขึ้น (จาก 14) */
+  padding: 20px;                    /* Scaled up from 14px */
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -186,7 +184,7 @@
 }
 
 .emp-about-icon {
-  width: 42px;                      /* ⭐ เท่า .emp-stat-icon */
+  width: 42px;                      /* Matches .emp-stat-icon */
   height: 42px;
   display: flex;
   align-items: center;
@@ -196,7 +194,7 @@
 }
 
 .emp-about-icon svg {
-  width: 20px;                      /* ⭐ ใหญ่ขึ้น */
+  width: 20px;                      /* Scaled up */
   height: 20px;
 }
 
@@ -208,20 +206,20 @@
 .emp-about-icon.amber  { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); color: #fbbf24; }
 
 .emp-about-card h3 {
-  font-size: 0.95rem;               /* ⭐ ใหญ่ขึ้น (จาก 0.85) */
+  font-size: 0.95rem;               /* Scaled up from 0.85rem */
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 8px 0;
 }
 
 .emp-about-card p {
-  font-size: 0.82rem;               /* ⭐ ใหญ่ขึ้น (จาก 0.72) */
+  font-size: 0.82rem;               /* Scaled up from 0.72rem */
   color: #8c9bae;
   line-height: 1.55;
   margin: 0;
 }
 
-/* ─── STEPS ─── */
+/* Steps */
 .emp-about-steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -230,7 +228,7 @@
 
 .emp-about-step {
   position: relative;
-  padding: 22px 20px;               /* ⭐ ใหญ่ขึ้น */
+  padding: 22px 20px;               /* Scaled up */
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -247,7 +245,7 @@
   position: absolute;
   top: 16px;
   right: 18px;
-  font-size: 1.5rem;                /* ⭐ ใหญ่ขึ้น (จาก 1.1) */
+  font-size: 1.5rem;                /* Scaled up from 1.1rem */
   font-weight: 700;
   color: rgba(240, 209, 84, 0.25);
   letter-spacing: -0.5px;
@@ -255,7 +253,7 @@
 }
 
 .emp-about-step .step-icon {
-  width: 40px;                      /* ⭐ ใหญ่ขึ้น (จาก 34) */
+  width: 40px;                      /* Scaled up from 34px */
   height: 40px;
   display: flex;
   align-items: center;
@@ -268,29 +266,29 @@
 }
 
 .emp-about-step .step-icon svg {
-  width: 20px;                      /* ⭐ ใหญ่ขึ้น */
+  width: 20px;                      /* Scaled up */
   height: 20px;
 }
 
 .emp-about-step h4 {
-  font-size: 0.9rem;                /* ⭐ ใหญ่ขึ้น (จาก 0.82) */
+  font-size: 0.9rem;                /* Scaled up from 0.82rem */
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 6px 0;
 }
 
 .emp-about-step p {
-  font-size: 0.78rem;               /* ⭐ ใหญ่ขึ้น (จาก 0.7) */
+  font-size: 0.78rem;               /* Scaled up from 0.7rem */
   color: #8c9bae;
   line-height: 1.55;
   margin: 0;
 }
 
-/* ─── CTA SECTION ─── */
+/* CTA Section */
 .emp-about-cta-section {
   width: 100%;
   margin-top: 0;
-  padding: 40px 32px;               /* ⭐ ใหญ่ขึ้น (เหมือน .emp-cta) */
+  padding: 40px 32px;               /* Scaled up (matches .emp-cta) */
   border-radius: 24px;
   background: linear-gradient(
     135deg,
@@ -338,7 +336,7 @@
   flex-wrap: wrap;
 }
 
-/* ─── RESPONSIVE ─── */
+/* Responsive */
 @media (max-width: 1100px) {
   .emp-about-grid { grid-template-columns: repeat(2, 1fr); }
   .emp-about-steps { grid-template-columns: repeat(2, 1fr); }

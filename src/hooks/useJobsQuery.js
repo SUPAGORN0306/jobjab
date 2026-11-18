@@ -1,4 +1,3 @@
-// src/hooks/useJobsQuery.js
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchJobsFiltered } from '../utils/api';
 
@@ -12,7 +11,7 @@ export default function useJobsQuery({
   salary_max = 250000,
   sort = "newest",
   userId = null,
-  limit = 24,        // ⭐ ใหม่ — override ได้ (Home ใช้ 20, AllJobs ใช้ 24)
+  limit = 24,        // Can be overridden (Home uses 20, AllJobs uses 24)
 } = {}) {
   return useInfiniteQuery({
     queryKey: [

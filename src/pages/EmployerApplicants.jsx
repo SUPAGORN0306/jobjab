@@ -32,9 +32,7 @@ import useEmployerData from '../hooks/useEmployerData';
 import { fetchApplicationSnapshot, updateApplicationStatus } from '../utils/api';
 import { formatPhone } from '../utils/phone';
 
-// ============================================
 // CONFIG
-// ============================================
 
 const STATUS_CONFIG = {
   all:       { icon: Users,         label: 'Total',     color: '#f0d154' },
@@ -54,9 +52,7 @@ const getStatusColor = (status) => {
   }
 };
 
-// ============================================
 // MINI BAR CHART (SVG-based, lightweight)
-// ============================================
 
 function MiniBarChart({ data = [], height = 48 }) {
   if (!data.length) {
@@ -102,9 +98,7 @@ function MiniBarChart({ data = [], height = 48 }) {
   );
 }
 
-// ============================================
 // MAIN
-// ============================================
 
 export default function EmployerApplicants() {
   usePageTitle("Applicants", { description: "Review job applicants" });
@@ -154,7 +148,7 @@ export default function EmployerApplicants() {
     }
   }, [snapshot?.application?.id]);
 
-  // Filter change → sync URL
+  // Sync URL when filter changes
   const handleFilterChange = (key) => {
     setFilter(key);
     const params = new URLSearchParams(searchParams);
@@ -190,7 +184,7 @@ export default function EmployerApplicants() {
         setSelectedApp((prev) => ({ ...prev, status: newStatus }));
       }
 
-      // Update snapshot — sync interview_date ให้ตรงกับ backend
+      // Update snapshot to keep interview_date in sync with the backend
       if (snapshot?.application?.id === applicationId) {
         setSnapshot((prev) => ({
           ...prev,
@@ -234,7 +228,7 @@ export default function EmployerApplicants() {
     setShowResumeModal(true);
   };
 
-  // ═══════ FILTER ═══════
+  // FILTER
   const filtered =
     filter === 'all'
       ? (jobFilter ? all.filter((a) => String(a.job_id) === String(jobFilter)) : all)
@@ -253,7 +247,7 @@ export default function EmployerApplicants() {
     rejected: baseSet.filter((a) => a.status === 'rejected').length,
   };
 
-  // ═══════ ANALYTICS — Last 7 days ═══════
+  // ANALYTICS (last 7 days)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -301,7 +295,7 @@ export default function EmployerApplicants() {
 
   const trendUp = trendPct >= 0;
 
-  // ═══════ RESPONSE RATE ═══════
+  // RESPONSE RATE
   const responded = baseSet.filter(
     (a) => a.status === 'reviewing' || a.status === 'interview'
   ).length;
@@ -341,9 +335,9 @@ export default function EmployerApplicants() {
         }
       />
 
-      {/* ═══════ TWO-COLUMN LAYOUT ═══════ */}
+      {/* TWO-COLUMN LAYOUT */}
       <div className="applicants-layout">
-        {/* ═══ MAIN (Left) ═══ */}
+        {/* MAIN (Left) */}
         <div className="applicants-main">
           <div className="applicants-toolbar">
             <h2 className="applicants-toolbar-title">
@@ -494,7 +488,7 @@ export default function EmployerApplicants() {
           )}
         </div>
 
-        {/* ═══ SIDEBAR (Right) ═══ */}
+        {/* SIDEBAR (Right) */}
         <aside className="applicants-sidebar">
           {/* Filter by Status */}
           <div className="applicants-sidebar-card">
@@ -581,7 +575,7 @@ export default function EmployerApplicants() {
         </aside>
       </div>
 
-      {/* ═══════ DETAIL MODAL ═══════ */}
+      {/* DETAIL MODAL */}
       {selectedApp && (
         <div className="modal-overlay" onClick={() => setSelectedApp(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -646,7 +640,7 @@ export default function EmployerApplicants() {
                   </div>
                 </section>
 
-                {/* ⭐ MATCH SCORE */}
+                {/* MATCH SCORE */}
                 {snapshot.match && (
                   <section className="modal-section">
                     <h3><Target size={16} /> Match Score</h3>
@@ -876,7 +870,7 @@ export default function EmployerApplicants() {
                     })}
                   </div>
 
-                  {/* ⭐ Interview Date Picker */}
+                  {/* Interview Date Picker */}
                   {snapshot.application.status === 'interview' && (
                     <div style={{ marginTop: 16 }}>
                       <label className="modal-label">
@@ -923,7 +917,7 @@ export default function EmployerApplicants() {
         </div>
       )}
 
-      {/* ═══════ RESUME MODAL ═══════ */}
+      {/* RESUME MODAL */}
       {showResumeModal && resumeUrl && (
         <div
           className="modal-overlay"

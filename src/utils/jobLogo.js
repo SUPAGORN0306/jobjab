@@ -1,9 +1,9 @@
 /**
- * jobLogo.js — Job logo class + color mapping
- * ใช้ร่วมกันหลายไฟล์ (Home, AllJobs, JobDetail, Favorite, Employer*, etc.)
+ * jobLogo.js: Job logo class and color mappings.
+ * Shared across Home, AllJobs, JobDetail, Favorite, Employer pages, etc.
  */
 
-// ─── Class mapping (สำหรับ CSS) ───
+// Class mapping (for CSS)
 export const getJobLogoClass = (title) => {
   switch (title) {
     case "AI Product Manager":       return "logo-ai-product-manager";
@@ -18,8 +18,8 @@ export const getJobLogoClass = (title) => {
   }
 };
 
-// ─── Color mapping (สำหรับ Recharts / inline styles) ───
-// ใช้สี "เริ่มต้น" ของ gradient เดียวกับ JobDetail.css
+// Color mapping (for Recharts and inline styles)
+// Uses the starting gradient color from JobDetail.css
 const JOB_LOGO_COLORS = {
   "AI Product Manager":       "#3b82f6",  // blue
   "AI Researcher":            "#8b5cf6",  // violet

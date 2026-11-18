@@ -24,7 +24,7 @@ export default function EmployerAbout() {
 
   return (
     <div className="employer-container emp-about-page">
-      {/* ⭐ HERO */}
+      {/* HERO */}
       <div className="emp-about-hero">
         <span className="emp-about-hero-tag">
           <Building2 size={14} />
@@ -50,7 +50,7 @@ export default function EmployerAbout() {
         </div>
       </div>
 
-      {/* ⭐ WHY JOBJAB */}
+      {/* WHY JOBJAB */}
       <section className="emp-about-section">
         <div className="emp-about-section-header">
           <span className="emp-about-tag">
@@ -112,7 +112,7 @@ export default function EmployerAbout() {
         </div>
       </section>
 
-      {/* ⭐ HOW IT WORKS */}
+      {/* HOW IT WORKS */}
       <section className="emp-about-section">
         <div className="emp-about-section-header">
           <span className="emp-about-tag">
@@ -161,7 +161,7 @@ export default function EmployerAbout() {
         </div>
       </section>
 
-      {/* ⭐ CTA */}
+      {/* CTA */}
       <section className="emp-about-cta-section">
         <div className="emp-about-cta-content">
           <h2>Ready to find your next hire?</h2>

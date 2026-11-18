@@ -1,6 +1,4 @@
-/* ============================================ */
-/* Avatar Uploader                               */
-/* ============================================ */
+/* Avatar Uploader */
 
 .avatar-uploader {
   display: flex;
@@ -71,9 +69,7 @@
   text-align: center;
 }
 
-/* ============================================ */
-/* Crop Modal                                    */
-/* ============================================ */
+/* Crop Modal */
 
 .crop-modal-overlay {
   position: fixed;

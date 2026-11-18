@@ -23,7 +23,7 @@ export default function EmployerProfile() {
   usePageTitle("Company Profile", { description: "Your company profile" });
 
   const navigate = useNavigate();
-  const location = useLocation();   // ⭐ ใหม่
+  const location = useLocation();
   const { user, logout, switchRole } = useAuth();
 
   const { jobs, loading: jobsLoading, totalApplicants, activeJobs } = useEmployerData();
@@ -57,7 +57,7 @@ export default function EmployerProfile() {
       }
     };
     load();
-  }, [location.key]);   // ⭐ refetch ทุกครั้งที่ navigate เข้าหน้านี้
+  }, [location.key]);   // Refetch every time this page is navigated to
 
   const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -105,7 +105,7 @@ export default function EmployerProfile() {
 
   return (
     <div className="employer-container employer-profile-page">
-      {/* ============ HERO ============ */}
+      {/* HERO */}
       <EmployerHero
         tag="COMPANY PROFILE"
         tagIcon={Building2}
@@ -160,7 +160,7 @@ export default function EmployerProfile() {
         }
       />
 
-      {/* ============ PROFILE CONTENT — 2-Column Flex ============ */}
+      {/* PROFILE CONTENT (2-Column Flex) */}
       <div className="emp-profile-bento">
         {/* LEFT COLUMN */}
         <div className="emp-profile-col">

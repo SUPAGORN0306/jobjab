@@ -27,9 +27,7 @@ import { EmployerHero, EmployerStat } from '../components/employer';
 import PageLoader from '../components/PageLoader';
 import ActionItems from '../components/employer/ActionItems';
 
-// ============================================
 // CONSTANTS
-// ============================================
 
 const JOB_TITLES = [
   'AI Product Manager', 'AI Researcher', 'Computer Vision Engineer',
@@ -42,9 +40,7 @@ const EXPERIENCE_LEVELS = ['Entry', 'Mid', 'Senior'];
 const COMPANY_SIZES = ['Small', 'Mid', 'Large'];
 const VISA_SPONSORSHIP_OPTIONS = ['No', 'Yes'];
 
-// ============================================
 // TIME AGO
-// ============================================
 
 const timeAgo = (dateStr) => {
   if (!dateStr) return 'N/A';
@@ -59,9 +55,7 @@ const timeAgo = (dateStr) => {
   });
 };
 
-// ============================================
 // POST JOB MODAL
-// ============================================
 
 function PostJobModal({ user, onClose, onPosted }) {
   const [form, setForm] = useState({
@@ -317,9 +311,7 @@ function PostJobModal({ user, onClose, onPosted }) {
   );
 }
 
-// ============================================
 // MAIN COMPONENT
-// ============================================
 
 export default function EmployerDashboard() {
   usePageTitle("Employer Dashboard", { description: "Manage your job postings" });

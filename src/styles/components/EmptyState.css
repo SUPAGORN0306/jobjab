@@ -1,6 +1,4 @@
-/* ============================================ */
-/* EMPTY STATE — JobJab Theme (Dark + Yellow)    */
-/* ============================================ */
+/* Empty State (JobJab dark and yellow theme) */
 
 .empty-state-component {
   display: flex;
@@ -19,9 +17,7 @@
   gap: 10px;
 }
 
-/* ============================================ */
-/* ICON WRAPPER — Glass circle (yellow accent)   */
-/* ============================================ */
+/* Icon Wrapper (glass circle with yellow accent) */
 
 .empty-state-icon-wrap {
   display: flex;
@@ -83,9 +79,7 @@
   height: 72px;
 }
 
-/* ============================================ */
-/* TITLE                                         */
-/* ============================================ */
+/* Title */
 
 .empty-state-title {
   font-size: 1.15rem;
@@ -99,9 +93,7 @@
   font-size: 1rem;
 }
 
-/* ============================================ */
-/* DESCRIPTION                                   */
-/* ============================================ */
+/* Description */
 
 .empty-state-description {
   font-size: 0.9rem;
@@ -111,9 +103,7 @@
   line-height: 1.6;
 }
 
-/* ============================================ */
-/* ACTION BUTTON — Yellow gradient               */
-/* ============================================ */
+/* Action Button (yellow gradient) */
 
 .empty-state-action {
   margin-top: 12px;
@@ -167,9 +157,7 @@
   transform: translateY(0) scale(0.97);
 }
 
-/* ============================================ */
-/* RESPONSIVE                                    */
-/* ============================================ */
+/* Responsive */
 
 @media (max-width: 500px) {
   .empty-state-component {

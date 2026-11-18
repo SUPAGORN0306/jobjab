@@ -1,18 +1,18 @@
 /**
- * phone.js — Phone formatting utilities
+ * phone.js: Phone formatting utilities.
  *
  * Format: +<country_code> <digits>
  * Examples:
- *   +66891234567     → +66 912345678
- *   +66 91 234 5678  → +66 912345678
- *   +66 638211862    → +66 638211862
- *   +1-789-012-3456  → +1 7890123456
+ *   +66891234567     -> +66 912345678
+ *   +66 91 234 5678  -> +66 912345678
+ *   +66 638211862    -> +66 638211862
+ *   +1-789-012-3456  -> +1 7890123456
  */
 
 const COUNTRY_CODES = ['66', '1', '65', '60', '84', '81', '86', '44', '61'];
 
 /**
- * formatPhone — แสดงผลแบบ +<cc> <digits>
+ * Format a phone number as +<cc> <digits>.
  */
 export function formatPhone(phone) {
   if (!phone) return '';
@@ -31,7 +31,7 @@ export function formatPhone(phone) {
 }
 
 /**
- * normalizePhone — normalize เป็น +<cc><digits> (สำหรับ save DB)
+ * Normalize a phone number to +<cc><digits> for database storage.
  */
 export function normalizePhone(phone) {
   if (!phone) return '';
@@ -41,7 +41,7 @@ export function normalizePhone(phone) {
 }
 
 /**
- * isValidPhone — ตรวจ 8-15 หลักหลัง country code
+ * Validate that a phone number contains 8 to 15 digits.
  */
 export function isValidPhone(phone) {
   if (!phone) return false;

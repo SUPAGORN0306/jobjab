@@ -1,6 +1,4 @@
-/* ============================================ */
-/* Container                                     */
-/* ============================================ */
+/* Container */
 
 .edit-container {
   display: flex;
@@ -47,9 +45,7 @@
   flex-shrink: 0;
 }
 
-/* ============================================ */
-/* Header                                        */
-/* ============================================ */
+/* Header */
 
 .edit-header {
   display: flex;
@@ -116,9 +112,7 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* ============================================ */
-/* Grid Layout (2 columns)                       */
-/* ============================================ */
+/* Grid Layout (2 columns) */
 
 .edit-grid {
   display: grid;
@@ -127,9 +121,7 @@
   align-items: start;
 }
 
-/* ============================================ */
-/* Left Card                                     */
-/* ============================================ */
+/* Left Card */
 
 .edit-card-left {
   background: rgba(220, 220, 220, 0.1);
@@ -147,9 +139,7 @@
   top: 90px;
 }
 
-/* ============================================ */
-/* Edit Field                                    */
-/* ============================================ */
+/* Edit Field */
 
 .edit-field {
   display: flex;
@@ -203,9 +193,7 @@ textarea.field-input {
   min-height: 70px;
 }
 
-/* ============================================ */
-/* Right Column                                  */
-/* ============================================ */
+/* Right Column */
 
 .edit-right-column {
   display: flex;
@@ -225,9 +213,7 @@ textarea.field-input {
   gap: 14px;
 }
 
-/* ============================================ */
-/* Section Header                                */
-/* ============================================ */
+/* Section Header */
 
 .section-header-row {
   display: flex;
@@ -265,9 +251,7 @@ textarea.field-input {
   text-transform: lowercase;
 }
 
-/* ============================================ */
-/* Add Item Button                               */
-/* ============================================ */
+/* Add Item Button */
 
 .add-item-btn {
   background: rgba(128, 255, 213, 0.1);
@@ -296,9 +280,7 @@ textarea.field-input {
   color: #697382;
 }
 
-/* ============================================ */
-/* Skill Input + Chip Suggestions                */
-/* ============================================ */
+/* Skill Input + Chip Suggestions */
 
 .skill-input-wrapper {
   width: 100%;
@@ -420,9 +402,7 @@ textarea.field-input {
   font-style: italic;
 }
 
-/* ============================================ */
-/* Item Card (Experience / Education)            */
-/* ============================================ */
+/* Item Card (Experience / Education) */
 
 .items-list {
   display: flex;
@@ -501,9 +481,7 @@ textarea.field-input {
   letter-spacing: 0.3px;
 }
 
-/* ============================================ */
-/* Date Range                                    */
-/* ============================================ */
+/* Date Range */
 
 .date-range {
   display: flex;
@@ -535,9 +513,7 @@ textarea.field-input {
   flex-shrink: 0;
 }
 
-/* ============================================ */
-/* Checkbox Row                                  */
-/* ============================================ */
+/* Checkbox Row */
 
 .checkbox-row {
   display: flex;
@@ -556,9 +532,7 @@ textarea.field-input {
   height: 15px;
 }
 
-/* ============================================ */
-/* Textarea / Input Editable                     */
-/* ============================================ */
+/* Textarea / Input Editable */
 
 .field-textarea-editable {
   background: rgba(255, 255, 255, 0.95);
@@ -606,9 +580,7 @@ textarea.field-input {
   cursor: not-allowed;
 }
 
-/* ============================================ */
-/* Empty State Card                              */
-/* ============================================ */
+/* Empty State Card */
 
 .empty-state-card {
   display: flex;
@@ -649,9 +621,7 @@ textarea.field-input {
   line-height: 1.4;
 }
 
-/* ============================================ */
-/* ⭐ RESUME UPLOADER STYLES (merged in)         */
-/* ============================================ */
+/* Resume Uploader Styles (merged) */
 
 .resume-uploader {
   display: flex;
@@ -865,9 +835,7 @@ textarea.field-input {
   align-items: center;
 }
 
-/* ============================================ */
-/* Responsive                                    */
-/* ============================================ */
+/* Responsive */
 
 @media (max-width: 900px) {
   .edit-grid {

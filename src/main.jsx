@@ -3,15 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider, Navigate, useParams } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
-// ============================================
-// EAGER LOAD (above the fold)
-// ============================================
+// Eager load (above the fold)
 import App from './App.jsx';
 import EmployerApp from './EmployerApp.jsx';
 
-// ============================================
-// LAZY LOAD (route-based code splitting)
-// ============================================
+// Lazy load (route-based code splitting)
 
 // Public
 const Landing = lazy(() => import('./pages/Landing.jsx'));
@@ -38,17 +34,13 @@ const EmployerProfile = lazy(() => import('./pages/EmployerProfile.jsx'));
 const EmployerProfileEdit = lazy(() => import('./pages/EmployerProfileEdit.jsx'));
 const EmployerAbout = lazy(() => import('./pages/EmployerAbout.jsx'));
 
-// ============================================
-// CONTEXT + COMPONENTS
-// ============================================
+// Context and components
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 
-// ============================================
-// STYLES
-// ============================================
+// Styles
 import './styles/global.css';
 import './styles/tabbar.css';
 import './styles/components/ErrorBoundary.css';
@@ -62,17 +54,13 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from './lib/queryClient.js';
 
 
-// ============================================
-// REDIRECT HELPER
-// ============================================
+// Redirect helper
 function JobApplicantsRedirect() {
   const { jobId } = useParams();
   return <Navigate to={`/employer/applicants?job=${jobId}`} replace />;
 }
 
-// ============================================
-// PAGE FALLBACK (Suspense)
-// ============================================
+// Page fallback (Suspense)
 function PageLoader() {
   return (
     <div
@@ -103,17 +91,15 @@ function PageLoader() {
   );
 }
 
-// ============================================
-// ROUTER
-// ============================================
+// Router
 const router = createBrowserRouter([
-  // ─── Public ───
+  // Public
   { path: '/', element: <Landing /> },
   { path: '/login', element: <Login /> },
   { path: '/signup', element: <Signup /> },
   { path: '/about', element: <About /> },
 
-  // ─── Candidate (protected) ───
+  // Candidate (protected)
   {
     path: '/',
     element: (
@@ -133,7 +119,7 @@ const router = createBrowserRouter([
     ],
   },
 
-  // ─── Employer (protected) ───
+  // Employer (protected)
   {
     path: '/employer',
     element: (
@@ -154,9 +140,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-// ============================================
-// RENDER
-// ============================================
+// Render
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
@@ -172,7 +156,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               closeButton
               duration={3000}
             />
-            {/* DevTools — แสดงเฉพาะ dev */}
+            {/* DevTools (shown only in dev) */}
             {import.meta.env.DEV && (
               <ReactQueryDevtools initialIsOpen={false} position="bottom" />
             )}

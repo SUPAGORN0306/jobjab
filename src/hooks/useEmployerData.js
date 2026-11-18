@@ -1,8 +1,6 @@
-// src/hooks/useEmployerData.js
-//
-// Backward-compatible hook — ใช้ React Query ภายใน
-// (API เหมือนเดิม → Component ไม่ต้องแก้)
-import { useEmployerApplications } from './queries/useEmployerApplications';
+// Backward-compatible hook powered by React Query internally
+// (keeps the existing API so components do not need changes)
+import { useEmployerApplications } from './useEmployerApplications';
 
 export default function useEmployerData() {
   const {
@@ -16,7 +14,7 @@ export default function useEmployerData() {
   const jobs = data?.jobs || [];
   const applications = data?.applications || [];
 
-  // ── Computed stats (เหมือนเดิม) ──
+  // Computed stats
   const totalApplicants = jobs.reduce(
     (sum, j) => sum + (j.applicant_count || 0),
     0
@@ -38,7 +36,7 @@ export default function useEmployerData() {
   return {
     jobs,
     applications,
-    loading: isLoading,      // ← map API เดิม
+    loading: isLoading,      // Maps to the legacy loading API
     refreshing: isFetching && !isLoading,
     error: error?.message || null,
     reload: refetch,

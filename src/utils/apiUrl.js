@@ -1,24 +1,23 @@
 // src/utils/apiUrl.js
 
 /**
- * Dev  → relative path → Vite proxy (same-origin → cookie ทำงาน)
- * Prod → relative path → Vercel rewrite (same-origin → cookie ทำงาน)
+ * Dev: relative path via Vite proxy (same-origin so cookies work)
+ * Prod: relative path via Vercel rewrite (same-origin so cookies work)
  *
- * ⭐ API_ORIGIN = '' + API_BASE = '' → ทุก call ใช้ relative path
- * → same-origin → cookie ทำงานบน iOS Safari
+ * API_ORIGIN and API_BASE are empty strings so all calls use relative paths,
+ * keeping requests same-origin for cookie support on iOS Safari.
  */
 
 export const API_ORIGIN = '';
 
 /**
- * ⭐ API_BASE = '' (ไม่ใช่ '/api')
- * เพราะ call ทุกที่ใช้ '/api/...' อยู่แล้ว
- * ถ้า API_BASE = '/api' → จะซ้ำเป็น '/api/api/...'
+ * API_BASE is an empty string (not '/api') because all API calls already
+ * include '/api/...'. Setting API_BASE to '/api' would duplicate it to '/api/api/...'.
  */
 export const API_BASE = '';
 
 /**
- * แปลง path → full URL
+ * Convert a relative path to a full URL.
  */
 export function resolveFileUrl(pathOrUrl) {
   if (!pathOrUrl) return null;

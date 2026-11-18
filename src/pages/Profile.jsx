@@ -22,7 +22,7 @@ export default function Profile() {
   const [educations, setEducations] = useState([]);
 
   useEffect(() => {
-    // ⭐ รอ auth sync
+    // Wait for auth sync
     if (authLoading) return;
     if (!user?.id) {
       navigate('/login');
@@ -60,7 +60,7 @@ export default function Profile() {
     );
     if (!confirmed) return;
 
-    // รอ API switch-role เสร็จก่อน → cookie ใหม่ถูก set
+    // Wait for switch-role API to complete so the new cookie is set
     const ok = await switchRole(role);
     if (!ok) {
       alert('Failed to switch role. Please try again.');

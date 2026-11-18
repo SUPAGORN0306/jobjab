@@ -40,7 +40,7 @@ function JobDetail() {
     fetchJob();
   }, [id, user]);
 
-  // แปลง JSON string เป็น array
+  // Parse JSON string into an array
   const parseArray = (value) => {
     if (!value) return [];
     if (Array.isArray(value)) return value;

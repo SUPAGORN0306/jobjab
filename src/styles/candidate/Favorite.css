@@ -1,6 +1,4 @@
-/* ============================================ */
-/* Container                                     */
-/* ============================================ */
+/* Container */
 
 .status-container {
   display: flex;
@@ -21,9 +19,7 @@
   }
 }
 
-/* ============================================ */
-/* Header                                        */
-/* ============================================ */
+/* Header */
 
 .recommend-list-header {
   display: flex;
@@ -47,9 +43,7 @@
   align-self: flex-end;
 }
 
-/* ============================================ */
-/* Grid — ใช้ 3 คอลัมน์เหมือน Home                */
-/* ============================================ */
+/* Grid (3 columns matching Home) */
 
 .status-container .Recommended-cards-grid {
   display: grid;
@@ -58,9 +52,7 @@
   width: 100%;
 }
 
-/* ============================================ */
-/* Responsive                                    */
-/* ============================================ */
+/* Responsive */
 
 @media (max-width: 900px) {
   .status-container .Recommended-cards-grid {

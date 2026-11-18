@@ -13,7 +13,7 @@ import { exportEmployerAnalytics } from '../utils/api';
 import {
   useEmployerAnalytics,
   useAnalyticsWidgets,
-} from '../hooks/queries/useEmployerApplications';
+} from '../hooks/useEmployerApplications';
 import { getJobLogoClass, getJobLogoColor } from '../utils/jobLogo';
 import usePageTitle from '../hooks/usePageTitle';
 import useCountUp from '../hooks/useCountUp';
@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import '../styles/employer/EmployerAnalytics.css';
 import { formatPhone } from '../utils/phone';
 
-// ─── Constants ───
+// Constants
 const STATUS_META = {
   applied:   { label: 'Applied',   color: '#38bdf8', Icon: CircleDot },
   reviewing: { label: 'Reviewing', color: '#f472b6', Icon: Clock },
@@ -49,7 +49,7 @@ const JOB_ABBR = {
   'NLP Engineer': 'NLP',
 };
 
-// ─── Helpers ───
+// Helpers
 function timeAgo(iso) {
   if (!iso) return '';
   const d = new Date(iso);
@@ -60,7 +60,7 @@ function timeAgo(iso) {
   return `${Math.floor(sec / 86400)}d`;
 }
 
-// ─── Components ───
+// Components
 function PlainTooltip({ active, payload, label, unit = '' }) {
   if (!active || !payload?.length) return null;
   return (
@@ -104,14 +104,14 @@ function EmptyChart({ icon: Icon = Inbox, title, description, actionLabel, onAct
   );
 }
 
-// ─── Main ───
+// Main
 export default function EmployerAnalytics() {
   usePageTitle('Analytics', { description: 'Insights and performance metrics' });
   const navigate = useNavigate();
 
   const [period, setPeriod] = useState('30');
 
-  // ─── React Query (cached) ───
+  // React Query (cached)
   const {
     data,
     isLoading: loading,
@@ -310,7 +310,7 @@ export default function EmployerAnalytics() {
           value={interviewRate} detail={`${summary.interviews || 0} interviews`} />
       </section>
 
-      {/* BENTO — 3 col × 2 row */}
+      {/* Bento grid: 3 columns by 2 rows */}
       <div className="ax-bento">
         {/* ROW 1: Timeline | Pie | Top Matches */}
         <section className="ax-card ax-bento-timeline">

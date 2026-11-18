@@ -49,11 +49,11 @@ function Home() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // ─── Read filters from URL (minimal) ───
+  // Read filters from URL (minimal)
   const urlQ = searchParams.get("q") || "";
   const urlSort = searchParams.get("sort") || "match";
 
-  // ─── Local input state ───
+  // Local input state
   const [searchInput, setSearchInput] = useState(urlQ);
   const debouncedSearch = useDebounce(searchInput, 400);
 
@@ -72,7 +72,7 @@ function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // ─── Helper: update URL ───
+  // Helper: update URL
   function updateUrl(patch = {}) {
     const next = new URLSearchParams(searchParams);
     Object.entries(patch).forEach(([key, value]) => {
@@ -85,7 +85,7 @@ function Home() {
     setSearchParams(next, { replace: true });
   }
 
-  // ─── Sync search → URL (debounced) ───
+  // Sync search to URL (debounced)
   useEffect(() => {
     if (debouncedSearch !== urlQ) {
       updateUrl({ q: debouncedSearch });
@@ -93,7 +93,7 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  // ─── useJobsQuery (preview 20) ───
+  // Jobs query (preview 20)
   const { data, isLoading } = useJobsQuery({
     q: urlQ,
     sort: urlSort,
@@ -101,7 +101,7 @@ function Home() {
     limit: PREVIEW_LIMIT,
   });
 
-  // ─── Derived data ───
+  // Derived data
   const jobs = useMemo(() => {
     if (!data?.pages) return [];
     return data.pages.flatMap((page) => page?.jobs || []);
@@ -112,19 +112,19 @@ function Home() {
   const totalCompanies = pagination.total_companies || 0;
   const totalApplicants = pagination.total_applicants || 0;
 
-  // Desktop: ไม่มี featured, grid = jobs ทั้งหมด
+  // Desktop: no featured card, grid shows all jobs
   // Mobile: featured = jobs[0], grid = jobs[1..]
   const featuredJob = isDesktop ? null : jobs[0];
   const gridJobs = isDesktop ? jobs : jobs.slice(1);
 
-  // ─── Handlers ───
+  // Handlers
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
       updateUrl({ q: searchInput.trim() });
     }
   };
 
-  // Trending chip → navigate ไป AllJobs (preserve q)
+  // Trending chip: navigate to AllJobs while preserving q
   const handleTrendingClick = (position) => {
     const params = new URLSearchParams();
     if (urlQ) params.set("q", urlQ);
@@ -134,7 +134,7 @@ function Home() {
 
   const hasActiveFilters = () => urlQ !== "";
 
-  // ─── "See all" URL (preserve q + sort) ───
+  // "See all" URL (preserve q and sort)
   const seeAllUrl = useMemo(() => {
     const params = new URLSearchParams();
     if (urlQ) params.set("q", urlQ);
@@ -143,7 +143,7 @@ function Home() {
     return qs ? `/all-jobs?${qs}` : "/all-jobs";
   }, [urlQ, urlSort]);
 
-  // ─── Carousel scroll ───
+  // Carousel scroll
   const updateScrollButtons = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -227,7 +227,7 @@ function Home() {
           </div>
         )}
 
-        {/* TRENDING (navigate ไป AllJobs) */}
+        {/* TRENDING (navigate to AllJobs) */}
         <div className="trending-section">
           <span className="trending-label">
             <Flame size={16} />
@@ -247,7 +247,7 @@ function Home() {
           </div>
         </div>
 
-        {/* SEARCH (Desktop only — minimal) */}
+        {/* SEARCH (Desktop only, minimal) */}
         <div className="search-filter-section">
           <div className="search-box">
             <div className="search-input-container">

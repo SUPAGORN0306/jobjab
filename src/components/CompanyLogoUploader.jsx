@@ -55,7 +55,7 @@ export default function CompanyLogoUploader({
       setIsUploading(true);
       setError(null);
 
-      // ⭐ crop 512x512
+      // Crop to 512x512
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
 
       if (!croppedBlob) {
@@ -65,7 +65,7 @@ export default function CompanyLogoUploader({
       const formData = new FormData();
       formData.append('logo', croppedBlob, 'logo.jpg');
 
-      // ⭐ upload ไปที่ storage — backend return URL เท่านั้น (ไม่ UPDATE DB)
+      // Upload to storage; backend returns the URL only without updating the DB
       const { data } = await apiClient.post(
         '/api/upload/company-logo',
         formData,
@@ -75,7 +75,7 @@ export default function CompanyLogoUploader({
       setIsCropping(false);
       setImageSrc(null);
 
-      // ⭐ เก็บ URL ไว้ preview — รอ Save Changes
+      // Keep URL for preview until Save Changes is clicked
       setPreview(data.image_url);
       onUploadSuccess?.(data.image_url);
 
@@ -158,7 +158,7 @@ export default function CompanyLogoUploader({
         </>
       )}
 
-      {/* Crop Modal — ⭐ cropShape="rect" (ไม่ใช่ round) */}
+      {/* Crop Modal using rectangular cropShape */}
       {isCropping && (
         <div className="crop-modal-overlay">
           <div className="crop-modal">

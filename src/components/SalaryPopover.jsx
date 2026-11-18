@@ -1,9 +1,8 @@
-// src/components/SalaryPopover.jsx
 import { useState, useEffect } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { Slider } from '@/components/ui/slider';
 import { DollarSign, X } from 'lucide-react';
-import './SalaryPopover.css';
+import '../styles/components/SalaryPopover.css';
 
 const MAX_SALARY = 250000;
 
@@ -16,7 +15,7 @@ export default function SalaryPopover({
   const [open, setOpen] = useState(false);
   const [range, setRange] = useState([salaryMin, salaryMax]);
 
-  // Sync กับ props เมื่อเปิด popover
+  // Sync with props when opening the popover
   useEffect(() => {
     if (open) {
       setRange([salaryMin, salaryMax]);

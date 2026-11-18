@@ -1,6 +1,4 @@
-/* ============================================ */
-/* GLOBAL — Reset + Theme + Shared Components    */
-/* ============================================ */
+/* Global Reset, Theme, and Shared Components */
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -99,9 +97,7 @@
   }
 }
 
-/* ============================================ */
-/* PAGE BACKGROUND — Global (ใช้ทุกหน้า)         */
-/* ============================================ */
+/* Global Page Background (used across all pages) */
 
 .page-background {
   position: fixed;
@@ -118,9 +114,7 @@
   z-index: -1;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SKELETON — Global styles (dark theme + shimmer)
-   ════════════════════════════════════════════════════════════ */
+/* Skeleton Global Styles (dark theme with shimmer) */
 
 .skel-base {
   background: linear-gradient(
@@ -229,9 +223,7 @@
   user-select: none;
 }
 
-/* ════════════════════════════════════════════════════════════
-   PAGE LOADER — Spinner กลางจอ
-   ════════════════════════════════════════════════════════════ */
+/* Page Loader (centered spinner) */
 
 .page-loader {
   min-height: 60vh;

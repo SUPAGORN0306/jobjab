@@ -1,18 +1,16 @@
-// src/lib/queryClient.js
-//
-// QueryClient config — Session 5 Phase 3
-// - staleTime ตรงกับ backend cache TTL
-// - refetchOnWindowFocus: false (ปิดเพื่อไม่ refetch ตอนสลับ tab)
+// QueryClient configuration
+// - staleTime matches the backend cache TTL
+// - refetchOnWindowFocus is disabled to avoid refetching when switching tabs
 import { QueryClient } from '@tanstack/react-query';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60_000,           // 60s (ตรงกับ backend jobs cache)
-      gcTime: 5 * 60_000,          // 5 min (เก็บใน memory — v5 ใช้ gcTime)
-      refetchOnWindowFocus: false, // ไม่ refetch ตอนสลับ tab
-      refetchOnReconnect: true,    // refetch ตอน internet กลับมา
-      retry: 1,                    // retry 1 ครั้ง
+      staleTime: 60_000,           // 60s (matches backend jobs cache)
+      gcTime: 5 * 60_000,          // 5 min (in-memory cache; v5 uses gcTime)
+      refetchOnWindowFocus: false, // Do not refetch when switching tabs
+      refetchOnReconnect: true,    // Refetch when network reconnects
+      retry: 1,                    // Retry once
       retryDelay: 1000,
     },
     mutations: {
@@ -21,8 +19,8 @@ export const queryClient = new QueryClient({
   },
 });
 
-// ─── Query Keys (centralized) ───
-// ใช้ pattern นี้เพื่อ invalidate ได้ตรง
+// Centralized query keys
+// Use this pattern for accurate cache invalidation
 export const queryKeys = {
   // filtered jobs
   jobsFiltered: (params) => [

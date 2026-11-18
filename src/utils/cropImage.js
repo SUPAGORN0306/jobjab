@@ -1,5 +1,5 @@
 /**
- * แปลง Crop Area เป็น Blob
+ * Convert a cropped image area to a Blob.
  */
 export const getCroppedImg = async (imageSrc, pixelCrop) => {
   const image = await createImage(imageSrc);
@@ -8,12 +8,12 @@ export const getCroppedImg = async (imageSrc, pixelCrop) => {
 
   if (!ctx) return null;
 
-  // ขนาด output (500x500)
+  // Output dimensions (500x500)
   const outputSize = 500;
   canvas.width = outputSize;
   canvas.height = outputSize;
 
-  // วาดรูปที่ crop
+  // Draw the cropped image
   ctx.drawImage(
     image,
     pixelCrop.x,
@@ -26,7 +26,7 @@ export const getCroppedImg = async (imageSrc, pixelCrop) => {
     outputSize
   );
 
-  // แปลงเป็น Blob
+  // Convert canvas to Blob
   return new Promise((resolve) => {
     canvas.toBlob(
       (blob) => {
@@ -39,7 +39,7 @@ export const getCroppedImg = async (imageSrc, pixelCrop) => {
 };
 
 /**
- * โหลดรูปเป็น HTMLImageElement
+ * Load an image URL into an HTMLImageElement.
  */
 const createImage = (url) =>
   new Promise((resolve, reject) => {

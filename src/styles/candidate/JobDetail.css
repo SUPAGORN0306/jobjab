@@ -166,7 +166,7 @@
   padding-left: 0px;
 }
 
-/* --- Sidebar (ฝั่งขวา) --- */
+/* Right Sidebar */
 .job-sidebar {
   display: flex;
   flex-direction: column;
@@ -248,7 +248,7 @@
   font-weight: 600;
 }
 
-/* ============ Job Logo Colors ============ */
+/* Job Logo Colors */
 .logo-ai-product-manager { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
 .logo-ai-researcher { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
 .logo-computer-vision { background: linear-gradient(135deg, #ec4899, #be185d); }
@@ -258,7 +258,7 @@
 .logo-nlp-engineer { background: linear-gradient(135deg, #6366f1, #4338ca); }
 .logo-quant-researcher { background: linear-gradient(135deg, #ef4444, #b91c1c); }
 
-/* --- Responsive: จอแคบ ให้ sidebar ตกลงมาด้านล่าง --- */
+/* Responsive: stack sidebar below content on narrow screens */
 @media (max-width: 1000px) {
   .job-detail-grid {
     grid-template-columns: 1fr;

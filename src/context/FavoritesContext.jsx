@@ -10,9 +10,7 @@ export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ============================================================
-  // LOAD FAVORITES
-  // ============================================================
+  // Load favorites
   useEffect(() => {
     let cancelled = false;
 
@@ -67,25 +65,19 @@ export function FavoritesProvider({ children }) {
     };
   }, [user]);
 
-  // ============================================================
-  // SET for O(1) isFavorited lookup
-  // ============================================================
+  // Set for O(1) isFavorited lookup
   const favoriteIds = useMemo(
     () => new Set(favorites.map((f) => f.id)),
     [favorites]
   );
 
-  // ============================================================
-  // isFavorited — memoized
-  // ============================================================
+  // Memoized isFavorited helper
   const isFavorited = useCallback(
     (jobId) => favoriteIds.has(jobId),
     [favoriteIds]
   );
 
-  // ============================================================
-  // toggleFavorite — memoized
-  // ============================================================
+  // Memoized toggleFavorite handler
   const toggleFavorite = useCallback(
     async (job) => {
       if (!user) {
@@ -111,9 +103,7 @@ export function FavoritesProvider({ children }) {
     [user]
   );
 
-  // ============================================================
-  // CONTEXT VALUE — memoized
-  // ============================================================
+  // Memoized context value
   const value = useMemo(
     () => ({
       favorites,

@@ -15,9 +15,7 @@
   position: relative;
 }
 
-/* ============================================ */
-/* HERO                                          */
-/* ============================================ */
+/* Hero */
 
 .about-hero {
   text-align: center;
@@ -58,9 +56,7 @@
   margin: 0;
 }
 
-/* ============================================ */
-/* LANDING SECTIONS (ย้ายมาจาก Home)             */
-/* ============================================ */
+/* Landing Sections (moved from Home) */
 
 .landing-section {
   width: 100%;
@@ -404,9 +400,7 @@
   transform: translateY(-2px);
 }
 
-/* ============================================ */
-/* RESPONSIVE — TABLET (max-width: 900px)       */
-/* ============================================ */
+/* Responsive: Tablet (max-width: 900px) */
 
 @media (max-width: 900px) {
   .about-container {
@@ -462,9 +456,7 @@
   }
 }
 
-/* ============================================ */
-/* RESPONSIVE — MOBILE (max-width: 430px)       */
-/* ============================================ */
+/* Responsive: Mobile (max-width: 430px) */
 
 @media (max-width: 430px) {
   .about-container {

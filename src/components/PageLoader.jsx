@@ -1,6 +1,5 @@
 /**
- * PageLoader.jsx — Loading spinner component
- * แสดงกลางจอ พร้อมข้อความ
+ * PageLoader.jsx: Loading spinner component displayed centered with a message.
  *
  * @example
  *   if (loading) return <PageLoader message="Loading analytics..." />;

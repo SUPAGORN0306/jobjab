@@ -1,23 +1,22 @@
 /**
- * apiClient.js — Axios instance with cookie support + auto-refresh
+ * apiClient.js: Axios instance with cookie support and automatic token refresh.
  *
  * Features:
- * - withCredentials: true → ส่ง cookies อัตโนมัติ
- * - Response interceptor → auto-refresh เมื่อ 401
+ * - withCredentials: true sends cookies automatically
+ * - Response interceptor refreshes the session on 401
  * - Helper: getErrorMessage()
  *
- * ⭐ baseURL = '' → call ใช้ '/api/...' (relative) → same-origin → cookie ทำงานบน iOS
+ * baseURL is empty so calls use relative '/api/...' paths, keeping requests
+ * same-origin for cookie support on iOS.
  */
 import axios from 'axios';
 
 import { API_BASE } from '../utils/apiUrl';   // = ''
 
-// ============================================================
-// AXIOS INSTANCE
-// ============================================================
+// Axios instance
 
 const apiClient = axios.create({
-  baseURL: API_BASE,   // ⭐ = '' → call '/api/auth/me' → '/api/auth/me' ✅
+  baseURL: API_BASE,   // Empty string so '/api/auth/me' stays relative
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -25,9 +24,7 @@ const apiClient = axios.create({
   timeout: 30000,
 });
 
-// ============================================================
-// RESPONSE INTERCEPTOR — AUTO REFRESH ON 401
-// ============================================================
+// Response interceptor for automatic refresh on 401
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -75,9 +72,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-// ============================================================
-// HELPER — ERROR MESSAGE
-// ============================================================
+// Error message helper
 
 export function getErrorMessage(error) {
   if (error?.isRateLimit) {

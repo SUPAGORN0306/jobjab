@@ -1,6 +1,4 @@
-/* ============================================ */
-/* GLOBAL ANIMATIONS                             */
-/* ============================================ */
+/* Global Animations */
 
 /* Fade + Slide Up */
 @keyframes fadeSlideUp {
@@ -71,9 +69,7 @@
   }
 }
 
-/* ============================================ */
-/* APPLY TO PAGE CONTAINERS                      */
-/* ============================================ */
+/* Apply to Page Containers */
 
 .employer-container > *,
 .employer-edit-container > * {
@@ -88,9 +84,7 @@
 .employer-container > *:nth-child(6) { animation-delay: 0.3s; }
 .employer-container > *:nth-child(7) { animation-delay: 0.35s; }
 
-/* ============================================ */
-/* CARD HOVER LIFT                               */
-/* ============================================ */
+/* Card Hover Lift */
 
 .emp-job-card,
 .applicant-card,
@@ -114,9 +108,7 @@
     0 0 0 1px rgba(240, 209, 84, 0.15);
 }
 
-/* ============================================ */
-/* BUTTON ACTIVE SCALE                           */
-/* ============================================ */
+/* Button Active Scale */
 
 .emp-btn-primary:active:not(:disabled),
 .emp-btn-glass:active:not(:disabled),
@@ -127,9 +119,7 @@
   transition: transform 0.1s ease;
 }
 
-/* ============================================ */
-/* ICON SPIN (for loading)                       */
-/* ============================================ */
+/* Icon Spin (for loading) */
 
 .spin {
   animation: spin 1s linear infinite;
@@ -140,9 +130,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ============================================ */
-/* STAT VALUE SHIMMER (when loading)             */
-/* ============================================ */
+/* Stat Value Shimmer (when loading) */
 
 .stat-shimmer {
   background: linear-gradient(
@@ -155,17 +143,13 @@
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* ============================================ */
-/* TIMELINE PULSE                                */
-/* ============================================ */
+/* Timeline Pulse */
 
 .timeline-dot {
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* ============================================ */
-/* STATUS BADGE PULSE (for active)               */
-/* ============================================ */
+/* Status Badge Pulse (for active) */
 
 .emp-job-status-badge.active,
 .emp-badge-active {
@@ -184,9 +168,7 @@
   pointer-events: none;
 }
 
-/* ============================================ */
-/* REDUCE MOTION (accessibility)                 */
-/* ============================================ */
+/* Reduce Motion (accessibility) */
 
 @media (prefers-reduced-motion: reduce) {
   .employer-container > *,

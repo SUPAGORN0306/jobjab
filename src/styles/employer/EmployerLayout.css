@@ -1,6 +1,4 @@
-/* ============================================ */
-/* DESIGN TOKENS                                 */
-/* ============================================ */
+/* DESIGN TOKENS */
 
 :root {
   --emp-glass-bg: rgba(255, 255, 255, 0.03);
@@ -16,9 +14,7 @@
   --emp-text-dim: #697382;
 }
 
-/* ============================================ */
-/* TABBAR                                        */
-/* ============================================ */
+/* TABBAR */
 
 .employer-tabbar {
   position: fixed;
@@ -123,9 +119,7 @@
   width: 100%;
 }
 
-/* ============================================ */
-/* CONTAINER                                     */
-/* ============================================ */
+/* CONTAINER */
 
 .employer-container {
   display: flex;
@@ -150,9 +144,7 @@
   font-size: 0.9rem;
 }
 
-/* ============================================ */
-/* HERO                                          */
-/* ============================================ */
+/* HERO */
 
 .emp-hero {
   width: 100%;
@@ -207,9 +199,7 @@
   margin-top: 12px;
 }
 
-/* ============================================ */
-/* BUTTONS — Premium Glass                       */
-/* ============================================ */
+/* Buttons (Premium Glass) */
 
 .emp-btn-glass {
   display: inline-flex;
@@ -368,9 +358,7 @@
   justify-content: center;
 }
 
-/* ============================================ */
-/* ERROR                                         */
-/* ============================================ */
+/* ERROR */
 
 .emp-error {
   width: 100%;
@@ -383,9 +371,7 @@
   box-sizing: border-box;
 }
 
-/* ============================================ */
-/* STATS                                         */
-/* ============================================ */
+/* STATS */
 
 .emp-stats-grid {
   width: 100%;
@@ -420,7 +406,7 @@
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Top highlight — glass shine */
+/* Top glass shine highlight */
 .emp-stat-card::before {
   content: '';
   position: absolute;
@@ -437,7 +423,7 @@
   pointer-events: none;
 }
 
-/* Glow effect on hover — colored */
+/* Colored glow effect on hover */
 .emp-stat-card::after {
   content: '';
   position: absolute;
@@ -524,9 +510,7 @@
   margin-top: 2px;
 }
 
-/* ============================================ */
-/* SECTION                                       */
-/* ============================================ */
+/* SECTION */
 
 .emp-section {
   width: 100%;
@@ -605,9 +589,7 @@
   color: #f0d154;
 }
 
-/* ============================================ */
-/* FORM                                          */
-/* ============================================ */
+/* FORM */
 
 .emp-form {
   display: flex;
@@ -678,9 +660,7 @@ select.emp-field option {
   margin-top: 6px;
 }
 
-/* ============================================ */
-/* EMPTY STATE                                   */
-/* ============================================ */
+/* EMPTY STATE */
 
 .emp-empty {
   display: flex;
@@ -712,9 +692,7 @@ select.emp-field option {
   color: #8c9bae;
 }
 
-/* ============================================ */
-/* JOB LIST                                      */
-/* ============================================ */
+/* JOB LIST */
 
 .emp-job-list {
   display: flex;
@@ -762,7 +740,7 @@ select.emp-field option {
     0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Left accent stripe — colored */
+/* Colored left accent stripe */
 .emp-job-card::before {
   content: '';
   position: absolute;
@@ -779,7 +757,7 @@ select.emp-field option {
   transition: opacity 0.35s ease;
 }
 
-/* Shimmer — on hover */
+/* Hover shimmer */
 .emp-job-card::after {
   content: '';
   position: absolute;
@@ -872,7 +850,7 @@ select.emp-field option {
   flex-wrap: wrap;
 }
 
-/* ⭐ Generic badge — ใช้กับ status ที่ไม่ระบุ (fallback) */
+/* Generic badge fallback for unspecified status */
 .emp-badge-active {
   background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
@@ -886,9 +864,7 @@ select.emp-field option {
   white-space: nowrap;
 }
 
-/* ============================================ */
-/* LANDING                                       */
-/* ============================================ */
+/* LANDING */
 
 .emp-landing {
   width: 100%;
@@ -1033,9 +1009,7 @@ select.emp-field option {
   line-height: 1.5;
 }
 
-/* ============================================ */
-/* CTA                                           */
-/* ============================================ */
+/* CTA */
 
 .emp-cta {
   width: 100%;
@@ -1074,9 +1048,7 @@ select.emp-field option {
   max-width: 500px;
 }
 
-/* ============================================ */
-/* PROFILE                                       */
-/* ============================================ */
+/* PROFILE */
 
 .employer-profile-header {
   width: 100%;
@@ -1123,13 +1095,13 @@ select.emp-field option {
   align-items: start;
 }
 
-/* Left column — company info */
+/* Left column: company info */
 .employer-profile-left {
   position: sticky;
   top: 20px;
 }
 
-/* Right column — stack cards */
+/* Right column: stacked cards */
 .employer-profile-right {
   display: flex;
   flex-direction: column;
@@ -1336,9 +1308,7 @@ select.emp-field option {
   margin: 0;
 }
 
-/* ============================================ */
-/* RESPONSIVE                                    */
-/* ============================================ */
+/* RESPONSIVE */
 
 @media (max-width: 1100px) {
   
@@ -1456,9 +1426,7 @@ select.emp-field option {
   }
 }
 
-/* ============================================ */
-/* FILTER CHIP                                   */
-/* ============================================ */
+/* FILTER CHIP */
 
 .emp-filter-chip {
   display: inline-flex;
@@ -1484,9 +1452,7 @@ select.emp-field option {
 .emp-filter-chip:active {
   transform: translateY(0);
 }
-/* ============================================ */
-/* SPRINT 11: JOB ACTIONS                        */
-/* ============================================ */
+/* SPRINT 11: JOB ACTIONS */
 
 .emp-job-title-row {
   display: flex;
@@ -1512,7 +1478,7 @@ select.emp-field option {
   white-space: nowrap;
 }
 
-/* ⭐ active → green + glow */
+/* Active status: green with glow */
 .emp-job-status-badge.active {
   background: rgba(52, 211, 153, 0.15);
   border: 1px solid rgba(52, 211, 153, 0.4);
@@ -1540,7 +1506,7 @@ select.emp-field option {
   50% { opacity: 0.5; transform: translateY(-50%) scale(0.8); }
 }
 
-/* ⭐ paused → gray */
+/* Paused status: gray */
 .emp-job-status-badge.paused {
   background: rgba(148, 163, 184, 0.12);
   border: 1px solid rgba(148, 163, 184, 0.3);
@@ -1628,9 +1594,7 @@ select.emp-field option {
   color: #ffffff;
 }
 
-/* ============================================ */
-/* SPRINT 11: EDIT MODAL                         */
-/* ============================================ */
+/* SPRINT 11: EDIT MODAL */
 
 .job-edit-modal-overlay {
   position: fixed;
@@ -1862,9 +1826,7 @@ select.emp-field option {
   }
 }
 
-/* ============================================ */
-/* SPRINT 12: APPLICANT STAT CARDS               */
-/* ============================================ */
+/* SPRINT 12: APPLICANT STAT CARDS */
 
 .emp-stat-row {
   display: grid;
@@ -1955,7 +1917,7 @@ select.emp-field option {
     0 0 24px rgba(148, 163, 184, 0.25);
 }
 
-/* Active state — glow */
+/* Active state glow */
 .emp-stat-pill.active {
   border-color: currentColor;
   background:
@@ -2044,7 +2006,7 @@ select.emp-field option {
   color: #38bdf8;
 }
 
-/* ⭐ reviewing → pink (ตรงกับ Candidate) */
+/* Reviewing status: pink (matches Candidate) */
 .emp-stat-pill.reviewing { color: #f472b6; }
 .emp-stat-pill.reviewing .emp-stat-pill-icon {
   background: rgba(244, 114, 182, 0.12);
@@ -2052,7 +2014,7 @@ select.emp-field option {
   color: #f472b6;
 }
 
-/* ⭐ interview → green (ตรงกับ Candidate) */
+/* Interview status: green (matches Candidate) */
 .emp-stat-pill.interview { color: #34d399; }
 .emp-stat-pill.interview .emp-stat-pill-icon {
   background: rgba(52, 211, 153, 0.12);
@@ -2060,7 +2022,7 @@ select.emp-field option {
   color: #34d399;
 }
 
-/* ⭐ rejected → gray (ตรงกับ Candidate) */
+/* Rejected status: gray (matches Candidate) */
 .emp-stat-pill.rejected { color: #94a3b8; }
 .emp-stat-pill.rejected .emp-stat-pill-icon {
   background: rgba(148, 163, 184, 0.12);
@@ -2087,9 +2049,7 @@ select.emp-field option {
   }
 }
 
-/* ============================================ */
-/* SPRINT 12: CARD HOVER ENHANCEMENTS            */
-/* ============================================ */
+/* SPRINT 12: CARD HOVER ENHANCEMENTS */
 
 .emp-job-card {
   position: relative;
@@ -2149,9 +2109,7 @@ select.emp-field option {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ============================================ */
-/* SPRINT 12: ACTION BUTTON ENHANCEMENTS         */
-/* ============================================ */
+/* SPRINT 12: ACTION BUTTON ENHANCEMENTS */
 
 .emp-action-btn {
   position: relative;
@@ -2189,9 +2147,7 @@ select.emp-field option {
   transform: scale(1.1);
 }
 
-/* ============================================ */
-/* SPRINT 15: EMPLOYER CALENDAR                  */
-/* ============================================ */
+/* SPRINT 15: EMPLOYER CALENDAR */
 
 .employer-calendar-column {
   display: flex;
@@ -2227,7 +2183,7 @@ select.emp-field option {
     0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
-/* React Calendar — dark theme */
+/* React Calendar (dark theme) */
 .employer-calendar-column .react-calendar {
   background: transparent !important;
   border: none !important;
@@ -2374,7 +2330,7 @@ select.emp-field option {
   flex-shrink: 0;
 }
 
-/* More indicator (ถ้ามี > 3 events) */
+/* More indicator when more than 3 events exist */
 .employer-calendar-column .calendar-dot-more {
   font-size: 0.5rem;
   font-weight: 700;
@@ -2449,7 +2405,7 @@ select.emp-field option {
   transform: translateX(3px);
 }
 
-/* ⭐ Event icon badge (22x22) */
+/* Event icon badge (22x22) */
 .employer-calendar-column .event-icon {
   display: flex;
   align-items: center;
@@ -2507,9 +2463,7 @@ select.emp-field option {
 }
 
 
-/* ============================================ */
-/* SPRINT 15: APPLICANT TIMELINE (Progress)     */
-/* ============================================ */
+/* SPRINT 15: APPLICANT TIMELINE (Progress) */
 
 .app-progress-track {
   display: flex;
@@ -2566,9 +2520,7 @@ select.emp-field option {
   color: #b6b6b6;
 }
 
-/* ============================================ */
-/* SPRINT 15: FILTER BUTTONS                    */
-/* ============================================ */
+/* SPRINT 15: FILTER BUTTONS */
 
 .emp-filter-btn {
   padding: 8px 16px;
@@ -2631,10 +2583,7 @@ select.emp-field option {
     0 8px 24px rgba(240, 209, 84, 0.35);
 }
 
-/* ============================================ */
-/* SPRINT 15: JOB LOGO GRADIENTS (Employer)      */
-/* ⭐ Match Candidate (RecommendedCard.css)       */
-/* ============================================ */
+/* Job Logo Gradients for Employer (matches Candidate RecommendedCard.css) */
 
 .emp-job-logo.logo-ai-product-manager {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -2682,9 +2631,7 @@ select.emp-field option {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
 
-/* ============================================ */
-/* SPRINT 14: Calendar Section Header           */
-/* ============================================ */
+/* SPRINT 14: Calendar Section Header */
 
 .employer-calendar-column .section-header {
   display: flex;
@@ -2700,9 +2647,7 @@ select.emp-field option {
   color: #f0d154;
 }
 
-/* ============================================ */
-/* PHASE 5: ACTION ITEMS                         */
-/* ============================================ */
+/* PHASE 5: ACTION ITEMS */
 
 .emp-action-items {
   width: 100%;
@@ -2735,7 +2680,7 @@ select.emp-field option {
 }
 
 
-/* ⭐ FIX: Header wrapper (Bell + Title) — หายไป */
+/* Fix: restored header wrapper (Bell and Title) */
 .emp-action-header {
   display: flex;
   align-items: center;
@@ -2743,7 +2688,7 @@ select.emp-field option {
   margin-bottom: 18px;
 }
 
-/* ⭐ FIX: Title ใน header */
+/* Fix: header title */
 .emp-action-header h3 {
   font-size: 1.05rem;
   font-weight: 700;
@@ -2752,13 +2697,13 @@ select.emp-field option {
   line-height: 1.2;
 }
 
-/* ⭐ Header icon (Bell, Sparkles) */
+/* Header icon (Bell, Sparkles) */
 .emp-action-header-icon {
   color: #f0d154;
   flex-shrink: 0;
 }
 
-/* ⭐ Task icon badge (32x32) */
+/* Task icon badge (32x32) */
 .emp-action-icon {
   display: flex;
   align-items: center;
@@ -2769,7 +2714,7 @@ select.emp-field option {
   flex-shrink: 0;
 }
 
-/* ⭐ "N more tasks" button */
+/* "N more tasks" button */
 .emp-action-more {
   display: flex;
   align-items: center;
@@ -2865,9 +2810,7 @@ select.emp-field option {
   padding: 4px 0;
 }
 
-/* ============================================ */
-/* PHASE 5C: PROFILE INLINE EDIT                 */
-/* ============================================ */
+/* PHASE 5C: PROFILE INLINE EDIT */
 
 .employer-section-header-row {
   display: flex;
@@ -2929,9 +2872,7 @@ select.emp-field option {
   cursor: not-allowed;
 }
 
-/* ============================================ */
-/* PHASE 5D: APPLICANTS POLISH                   */
-/* ============================================ */
+/* PHASE 5D: APPLICANTS POLISH */
 
 /* Empty state wrapper */
 .applicants-empty-wrapper {
@@ -2991,9 +2932,7 @@ select.emp-field option {
   color: #ffffff;
 }
 
-/* ============================================ */
-/* PHASE 5E: APPLICANTS — 2-COLUMN + ANALYTICS   */
-/* ============================================ */
+/* Phase 5E: Applicants (2-column layout and analytics) */
 
 .applicants-layout {
   display: grid;
@@ -3003,7 +2942,7 @@ select.emp-field option {
   align-items: start;
 }
 
-/* ═══ MAIN (Left) ═══ */
+/* Main (Left) */
 .applicants-main {
   display: flex;
   flex-direction: column;
@@ -3092,7 +3031,7 @@ select.emp-field option {
   min-height: 380px;
 }
 
-/* ═══ SIDEBAR (Right) ═══ */
+/* Sidebar (Right) */
 .applicants-sidebar {
   display: flex;
   flex-direction: column;
@@ -3211,7 +3150,7 @@ select.emp-field option {
   text-align: center;
 }
 
-/* ═══ Analytics Card ═══ */
+/* Analytics Card */
 .applicants-trend {
   margin-bottom: 12px;
 }
@@ -3391,7 +3330,7 @@ select.emp-field option {
   box-shadow: 0 6px 16px rgba(240, 209, 84, 0.2);
 }
 
-/* ═══ Responsive ═══ */
+/* Responsive */
 @media (max-width: 1000px) {
   .applicants-layout {
     grid-template-columns: 1fr;
@@ -3423,11 +3362,7 @@ select.emp-field option {
   }
 }
 
-/* ============================================ */
-
-
-
-/* ─── Overall circle ─── */
+/* Overall circle */
 
 
 
@@ -3457,7 +3392,7 @@ select.emp-field option {
   margin: 0;
 }
 
-/* ─── Breakdown bars ─── */
+/* Breakdown bars */
 
 
 
@@ -3485,7 +3420,7 @@ select.emp-field option {
 
 
 
-/* ─── Skills sections ─── */
+/* Skills sections */
 
 
 .match-skills-section:last-child {
@@ -3523,7 +3458,7 @@ select.emp-field option {
   transform: translateY(-1px);
 }
 
-/* ─── Weights info ─── */
+/* Weights info */
 
 
 .match-weights-info strong {
@@ -3532,7 +3467,7 @@ select.emp-field option {
   font-weight: 700;
 }
 
-/* ─── Responsive ─── */
+/* Responsive */
 @media (max-width: 500px) {
   
 
@@ -3543,9 +3478,7 @@ select.emp-field option {
   
 }
 
-/* ============================================ */
-/* MATCH SCORE CARD — Hero Circle v2             */
-/* ============================================ */
+/* Match Score Card (Hero Circle v2) */
 
 .match-score-card {
   padding: 24px 20px;
@@ -3923,9 +3856,7 @@ select.emp-field option {
   }
 }
 
-/* ============================================ */
-/* MODAL — Restored (was in ViewApplicants.css)  */
-/* ============================================ */
+/* Modal (restored from ViewApplicants.css) */
 
 .modal-overlay {
   position: fixed;
@@ -4233,9 +4164,7 @@ select.emp-field option {
   }
 }
 
-/* ════════════════════════════════════════════════════════════
-   EMPLOYER PROFILE — 2-Column Flex (compact)
-   ════════════════════════════════════════════════════════════ */
+/* Employer Profile (compact 2-column flex layout) */
 
 .emp-profile-bento {
   display: grid;
@@ -4267,7 +4196,7 @@ select.emp-field option {
   border-color: rgba(240, 209, 84, 0.2);
 }
 
-/* Info card — flex row */
+/* Info card (flex row) */
 .emp-profile-card-info {
   display: flex;
   align-items: center;
@@ -4282,26 +4211,24 @@ select.emp-field option {
   }
 }
 
-/* ════════════════════════════════════════════════════════════
-   EMPLOYER PROFILE — ลด gap Hero → Bento
-   ════════════════════════════════════════════════════════════ */
+/* Employer Profile (reduced gap between Hero and Bento) */
 
-/* ลด gap ใน container ที่มี emp-profile-bento */
+/* Reduce gap in containers with emp-profile-bento */
 .employer-container:has(.emp-profile-bento) {
   gap: 16px;
 }
 
-/* ลด padding ล่างของ Hero */
+/* Reduce bottom padding of Hero */
 .employer-container:has(.emp-profile-bento) .emp-hero {
   padding-bottom: 4px;
 }
 
-/* ลด margin-top ของ bento (ให้ชิด hero) */
+/* Reduce top margin of bento to sit closer to hero */
 .employer-container:has(.emp-profile-bento) .emp-profile-bento {
   margin-top: 0;
 }
 
-/* fallback ถ้า :has() ไม่ทำงาน */
+/* Fallback if :has() is not supported */
 .employer-profile-page {
   gap: 16px;
 }
@@ -4312,9 +4239,7 @@ select.emp-field option {
   margin-top: 0;
 }
 
-/* ════════════════════════════════════════════════════════════
-   EMPLOYER APPLICANTS — ลด gap Hero → Layout
-   ════════════════════════════════════════════════════════════ */
+/* Employer Applicants (reduced gap between Hero and Layout) */
 
 .employer-applicants-page {
   gap: 16px;
@@ -4324,7 +4249,7 @@ select.emp-field option {
   padding-bottom: 4px;
 }
 
-/* .applicants-layout margin-top ลด */
+/* Reduced top margin for .applicants-layout */
 .employer-applicants-page .applicants-layout {
   margin-top: 0;
 }

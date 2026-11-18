@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import '../styles/components/MatchModal.css';
 
-// ⭐ helper
+// Helper function
 const safeStr = (v) => {
   if (v === null || v === undefined) return '';
   if (typeof v === 'string') return v;
@@ -52,7 +52,7 @@ export default function MatchModal({ job, onClose }) {
       }
     : { skills: null, experience: null, industry: null };
 
-  // ⭐ detail จาก backend
+  // Breakdown details from backend
   const industryDetail = job.match_breakdown?.industry_detail || {};
   const experienceDetail = job.match_breakdown?.experience_detail || {};
   const skillsDetail = job.match_breakdown?.skills_detail || {};
@@ -73,12 +73,10 @@ export default function MatchModal({ job, onClose }) {
     return Math.round((100 - currentValue) * w);
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // ⭐ Suggestions — พร้อม detail ที่ชัดเจน
-  // ═══════════════════════════════════════════════════════════════
+  // Suggestions with clear details
   const suggestions = [];
 
-  // ── Skills ──
+  // Skills
   if (hasSkills && breakdown.skills < 100 && missingSkillStrings.length > 0) {
     const impact = calcImpact('skills', breakdown.skills);
     if (impact > 0) {
@@ -277,7 +275,7 @@ export default function MatchModal({ job, onClose }) {
                 }}
               />
             </div>
-            {/* ⭐ detail */}
+            {/* Experience details */}
             {experienceDetail.required_years !== undefined && (
               <div className="breakdown-details">
                 <span className="detail-label">
@@ -309,7 +307,7 @@ export default function MatchModal({ job, onClose }) {
                 }}
               />
             </div>
-            {/* ⭐ detail */}
+            {/* Industry details */}
             {industryDetail.user_industry && industryDetail.job_industry && (
               <div className="breakdown-details">
                 <span className="detail-label">

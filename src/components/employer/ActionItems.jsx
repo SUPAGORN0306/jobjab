@@ -11,9 +11,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 
-// ═══════════════════════════════════════════════════════════════════
 // Helpers
-// ═══════════════════════════════════════════════════════════════════
 const DAY_MS = 1000 * 60 * 60 * 24;
 
 const daysSince = (d) => {
@@ -39,15 +37,13 @@ const isTomorrow = (d) => {
   return isSameDay(d, tomorrow);
 };
 
-// ═══════════════════════════════════════════════════════════════════
 // Main Component
-// ═══════════════════════════════════════════════════════════════════
 export default function ActionItems({ applications = [], jobs = [], onNavigate }) {
   const navigate = useNavigate();
   const go = onNavigate || navigate;
   const items = [];
 
-  // P1: สัมภาษณ์วันนี้
+  // P1: Interviews today
   const todayInterviews = applications.filter(
     (a) => a.status === 'interview' && isSameDay(a.interview_date, new Date())
   );
@@ -63,7 +59,7 @@ export default function ActionItems({ applications = [], jobs = [], onNavigate }
     });
   }
 
-  // P2: สัมภาษณ์พรุ่งนี้
+  // P2: Interviews tomorrow
   const tomorrowInterviews = applications.filter(
     (a) => a.status === 'interview' && isTomorrow(a.interview_date)
   );
@@ -79,7 +75,7 @@ export default function ActionItems({ applications = [], jobs = [], onNavigate }
     });
   }
 
-  // P3: Interview ค้าง
+  // P3: Stale interviews without a scheduled date
   const staleInterview = applications.filter(
     (a) =>
       a.status === 'interview' &&
@@ -98,7 +94,7 @@ export default function ActionItems({ applications = [], jobs = [], onNavigate }
     });
   }
 
-  // P4: Reviewing ค้าง
+  // P4: Stale reviewing applications
   const staleReviewing = applications.filter(
     (a) =>
       a.status === 'reviewing' &&
@@ -116,7 +112,7 @@ export default function ActionItems({ applications = [], jobs = [], onNavigate }
     });
   }
 
-  // P5: Applied ค้าง
+  // P5: Stale applied applications
   const staleApplied = applications.filter(
     (a) => a.status === 'applied' && daysSince(a.applied_date) >= 2
   );
@@ -132,7 +128,7 @@ export default function ActionItems({ applications = [], jobs = [], onNavigate }
     });
   }
 
-  // P6: Job ใกล้หมดอายุ
+  // P6: Jobs expiring soon
   const expiringJobs = jobs.filter((j) => {
     if ((j.status_key || 'active') !== 'active') return false;
     if (!j.expires_at) return false;
@@ -151,7 +147,7 @@ export default function ActionItems({ applications = [], jobs = [], onNavigate }
     });
   }
 
-  // P7: Job ไม่มีคนสมัคร
+  // P7: Jobs with no applicants
   const staleJobs = jobs.filter(
     (j) =>
       (j.status_key || 'active') === 'active' &&

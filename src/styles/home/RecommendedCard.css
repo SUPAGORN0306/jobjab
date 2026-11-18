@@ -1,6 +1,4 @@
-/* ============================================ */
-/* MAIN CARD                                     */
-/* ============================================ */
+/* Main Card */
 
 .recommend-list {
   margin-top: 30px;
@@ -119,11 +117,11 @@
 }
 
 .Recommended-favorite-btn.is-favorited {
-  color: #ef4444;   /* สีแดงตอน favorite */
+  color: #ef4444;   /* Red when favorited */
 }
 
 .Recommended-favorite-btn.is-favorited svg {
-  fill: currentColor;   /* ⭐ ให้หัวใจทึบ */
+  fill: currentColor;   /* Filled heart icon */
 }
 
 .Recommended-tags {
@@ -171,9 +169,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* ============================================ */
-/* BADGE COLORS                                  */
-/* ============================================ */
+/* Badge Colors */
 
 .green-badge {
   background-color: rgba(39, 174, 96, 0.15);
@@ -199,9 +195,7 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* ============================================ */
-/* LOGO COLORS                                   */
-/* ============================================ */
+/* Logo Colors */
 
 .logo-ai-product-manager { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
 .logo-ai-researcher { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
@@ -212,9 +206,7 @@
 .logo-nlp-engineer { background: linear-gradient(135deg, #6366f1, #4338ca); }
 .logo-quant-researcher { background: linear-gradient(135deg, #ef4444, #b91c1c); }
 
-/* ============================================ */
-/* TABLET — max-width: 1080px                    */
-/* ============================================ */
+/* Tablet (max-width: 1080px) */
 
 @media (max-width: 1080px) {
   .Recommended-cards-grid {
@@ -223,9 +215,7 @@
   }
 }
 
-/* ============================================ */
-/* MOBILE — max-width: 430px                     */
-/* ============================================ */
+/* Mobile (max-width: 430px) */
 
 @media (max-width: 430px) {
   .Recommended-card {
@@ -292,9 +282,7 @@
   }
 }
 
-/* ============================================ */
-/* FEATURED CARD (Mobile Only)                   */
-/* ============================================ */
+/* Featured Card (mobile only) */
 
 .featured-card-wrapper {
   display: none;
@@ -442,9 +430,7 @@
     border-radius: 10px !important;
   }
 
-  /* ============================================ */
-  /* HORIZONTAL SCROLL                             */
-  /* ============================================ */
+  /* Horizontal Scroll */
 
   .horizontal-scroll-wrapper {
     padding: 0 !important;

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 
 /**
- * useCountUp — animate number from 0 → target
- * @param {number} target - ปลายทาง
- * @param {number} duration - milliseconds (default 800)
+ * Animate a number from 0 to target.
+ * @param {number} target - Target value
+ * @param {number} duration - Animation duration in milliseconds (default 800)
  */
 export default function useCountUp(target, duration = 800) {
   const [value, setValue] = useState(0);

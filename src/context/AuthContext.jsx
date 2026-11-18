@@ -1,12 +1,3 @@
-// src/context/AuthContext.jsx
-//
-// Sprint 1.5: ใช้ cookies + /api/auth/me แทน localStorage
-//
-// Changes:
-// - Init: ใช้ fetchMe() แทน localStorage
-// - Login: เรียก API + setUser (ไม่ต้อง localStorage)
-// - Logout: call API (revoke token) + setUser(null)
-// - SwitchRole: set state (backend ส่ง roles มา)
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 import {
@@ -25,9 +16,7 @@ export function AuthProvider({ children }) {
   const [activeRole, setActiveRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ============================================================
-  // INIT: ดึงข้อมูลจาก backend (cookies)
-  // ============================================================
+  // Init: fetch user data from backend (cookies)
   useEffect(() => {
     let cancelled = false;
 
@@ -37,13 +26,13 @@ export function AuthProvider({ children }) {
         const u = data.user;
         setUser(u);
 
-        // เลือก role เริ่มต้น
+        // Select initial role
         const initial = u.role || u.roles?.[0] || 'candidate';
         setActiveRole(initial);
       })
       .catch(() => {
         if (cancelled) return;
-        // 401 → ยังไม่ login
+        // 401 indicates user is not logged in
         setUser(null);
         setActiveRole(null);
       })
@@ -56,44 +45,36 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // ============================================================
-  // SYNC USER → api.js (module-level state)
-  // ============================================================
+  // Sync user to api.js (module-level state)
   useEffect(() => {
     setCurrentUser(user);
   }, [user]);
 
-  // ============================================================
-  // LOGIN
-  // ============================================================
+  // Login
   const login = useCallback(async (email, password, role) => {
     const data = await apiLogin({ email, password, role });
     const u = data.user;
 
     setUser(u);
 
-    // เลือก role
+    // Select role
     const initial = u.role || u.roles?.[0] || 'candidate';
     setActiveRole(initial);
 
     return u;
   }, []);
 
-  // ============================================================
-  // REGISTER
-  // ============================================================
+  // Register
   const register = useCallback(async (data) => {
     return apiRegister(data);
   }, []);
 
-  // ============================================================
-  // LOGOUT
-  // ============================================================
+  // Logout
   const logout = useCallback(async () => {
     try {
-      await apiLogout(); // ← revoke token + clear cookies
+      await apiLogout(); // Revoke token and clear cookies
     } catch (err) {
-      // ถ้า logout fail → ยัง clear state อยู่ดี
+      // Clear state even if logout fails
       console.warn('Logout API failed:', err);
     } finally {
       setUser(null);
@@ -101,19 +82,17 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // ============================================================
-  // SWITCH ROLE
-  // ============================================================
+  // Switch role
   const switchRole = useCallback(
     async (role) => {
       if (!user?.roles?.includes(role)) return false;
 
-      // ขอ JWT ใหม่ที่มี role นี้ → me() จะ return role ถูกหลัง refresh
+      // Request a new JWT with this role so me() returns the right role after refresh
       try {
         await switchRoleApi({ role });
       } catch (err) {
         console.warn('switchRole: API failed', err);
-        return false;   // อย่า setActiveRole ถ้า API fail → กัน state ไม่ตรง JWT
+        return false;   // Do not update activeRole if API fails to keep state in sync with JWT
       }
 
       setActiveRole(role);
@@ -122,9 +101,7 @@ export function AuthProvider({ children }) {
     [user]
   );
 
-  // ============================================================
-  // REFRESH USER (optional — สำหรับหลัง updateProfile)
-  // ============================================================
+  // Refresh user (optional, for after updateProfile)
   const refreshUser = useCallback(async () => {
     try {
       const data = await fetchMe();
@@ -136,9 +113,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // ============================================================
-  // CONTEXT VALUE
-  // ============================================================
+  // Context value
   const value = useMemo(
     () => ({
       // State

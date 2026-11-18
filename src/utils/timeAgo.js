@@ -1,5 +1,5 @@
 // src/utils/timeAgo.js
-// แปลง ISO date → relative time ("2d ago", "3w ago", ...)
+// Convert an ISO date string to a relative time string (e.g., "2d ago", "3w ago").
 
 export function timeAgo(dateStr) {
   if (!dateStr) return '';

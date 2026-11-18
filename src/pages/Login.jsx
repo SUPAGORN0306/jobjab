@@ -33,10 +33,10 @@ export default function Login() {
     try {
       const role = userType === 'employer' ? 'employer' : 'candidate';
 
-      // ⭐ ใช้ authLogin ใหม่ — รับ (email, password, role)
+      // Use authLogin with (email, password, role)
       await authLogin(formData.email, formData.password, role);
 
-      // ⭐ เช็ค pending application ก่อน redirect
+      // Check for a pending application before redirecting
       const pendingRaw = localStorage.getItem('pendingApplication');
       if (pendingRaw) {
         try {
@@ -58,7 +58,7 @@ export default function Login() {
         }
       }
 
-      // ⭐ Redirect ตาม role
+      // Redirect based on role
       if (userType === 'employer') {
         navigate('/employer/dashboard');
       } else {
@@ -147,7 +147,7 @@ export default function Login() {
           </div>
         </form>
 
-        {/* Link ไป Signup */}
+        {/* Link to Signup */}
         <div className="login-footer">
           <span>Don't have an account?</span>
           <Link to="/signup" className="signup-link">

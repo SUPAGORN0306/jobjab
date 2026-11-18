@@ -1,6 +1,4 @@
-/* ════════════════════════════════════════════════════════════
-   EMPLOYER ANALYTICS v4 — 3-col × 2-row Bento
-   ════════════════════════════════════════════════════════════ */
+/* Employer Analytics v4 (3-column by 2-row Bento) */
 
 .ax-page {
   animation: fadeSlideUp 0.35s ease both;
@@ -14,7 +12,7 @@
   pointer-events: none;
 }
 
-/* ───────── HERO ───────── */
+/* Hero */
 
 .ax-page .emp-hero,
 .ax-page .analytics-hero,
@@ -83,7 +81,7 @@
   flex-wrap: wrap;
 }
 
-/* ───────── SEGMENTED ───────── */
+/* Segmented Control */
 
 .ax-segmented {
   display: inline-flex;
@@ -119,7 +117,7 @@
   box-shadow: 0 2px 8px rgba(240, 209, 84, 0.35);
 }
 
-/* ───────── EXPORT ───────── */
+/* Export */
 
 .ax-export {
   display: inline-flex;
@@ -144,7 +142,7 @@
   box-shadow: 0 6px 16px rgba(240, 209, 84, 0.2);
 }
 
-/* ───────── STATS ───────── */
+/* Stats */
 
 .ax-stats {
   display: grid;
@@ -224,7 +222,7 @@
   text-overflow: ellipsis;
 }
 
-/* ───────── BENTO GRID — 3 col × 2 row ───────── */
+/* Bento Grid (3 columns by 2 rows) */
 
 .ax-bento {
   display: grid;
@@ -245,7 +243,7 @@
 .ax-bento-bar      { grid-column: 2; grid-row: 2; }
 .ax-bento-activity { grid-column: 3; grid-row: 2; }
 
-/* ───────── CARDS ───────── */
+/* Cards */
 
 .ax-card {
   width: 100%;
@@ -311,7 +309,7 @@
 
 .ax-card-link:hover { color: #f0d154; background: rgba(240,209,84,0.08); }
 
-/* ───────── CHART BODY ───────── */
+/* Chart Body */
 
 .ax-chart-body {
   width: 100%;
@@ -334,7 +332,7 @@
 .ax-list-body::-webkit-scrollbar { width: 3px; }
 .ax-list-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
-/* ───────── TOOLTIP ───────── */
+/* Tooltip */
 
 .ax-tip {
   background: #1a1f2e;
@@ -367,7 +365,7 @@
   margin-left: 3px;
 }
 
-/* ───────── EMPTY ───────── */
+/* Empty State */
 
 .ax-empty {
   display: flex;
@@ -425,7 +423,7 @@
   border-color: #f0d154;
 }
 
-/* ───────── PIE LEGEND ───────── */
+/* Pie Legend */
 
 .ax-legend {
   display: flex;
@@ -457,7 +455,7 @@
   margin-left: 2px;
 }
 
-/* ───────── TOP MATCHES ───────── */
+/* Top Matches */
 
 .ax-matches {
   display: flex;
@@ -530,7 +528,7 @@
   white-space: nowrap;
 }
 
-/* ───────── FUNNEL ───────── */
+/* Funnel */
 
 .ax-funnel {
   display: flex;
@@ -592,7 +590,7 @@
   letter-spacing: -0.2px;
 }
 
-/* ───────── ACTIVITY ───────── */
+/* Activity */
 
 .ax-activity {
   display: flex;
@@ -654,7 +652,7 @@
   flex-shrink: 0;
 }
 
-/* ───────── TABLE ───────── */
+/* Table */
 
 .ax-table-card {
   margin-top: 12px;
@@ -792,7 +790,7 @@
   color: #94a3b8;
 }
 
-/* ───────── RESPONSIVE ───────── */
+/* Responsive */
 
 @media (max-width: 1300px) {
   .ax-bento {
@@ -834,9 +832,7 @@
   .ax-page .emp-hero h1 { font-size: 1.4rem; }
 }
 
-/* ════════════════════════════════════════════════════════════
-   JOB LOGO GRADIENTS
-   ════════════════════════════════════════════════════════════ */
+/* Job Logo Gradients */
 
 .ax-row-logo.logo-ai-product-manager { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
 .ax-row-logo.logo-ai-researcher      { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }

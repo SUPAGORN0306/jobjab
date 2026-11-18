@@ -1,17 +1,16 @@
 import React from 'react';
 
 /**
- * EmployerHero — Hero block สำหรับ Employer pages
- * คงสไตล์แก้ว (glassmorphism) เดิมไว้
+ * Hero block for Employer pages, preserving the glassmorphism style.
  *
- * @param variant     — 'default' (.emp-hero) | 'analytics' (.analytics-hero)
- * @param tag         — ข้อความ tag บนสุด (uppercase)
- * @param tagIcon     — Lucide icon component
- * @param title       — หัวข้อหลัก (string หรือ node)
- * @param subtitle    — คำอธิบายใต้หัวข้อ
- * @param subtitleIcon— Lucide icon หน้า subtitle
- * @param actions     — ปุ่ม action (JSX)
- * @param children    — content อื่นๆ ก่อน actions
+ * @param variant      'default' (.emp-hero) | 'analytics' (.analytics-hero)
+ * @param tag          Top uppercase tag text
+ * @param tagIcon      Lucide icon component
+ * @param title        Main heading (string or node)
+ * @param subtitle     Subtitle text below the heading
+ * @param subtitleIcon Lucide icon before the subtitle
+ * @param actions      Action buttons (JSX)
+ * @param children     Additional content rendered before actions
  */
 export default function EmployerHero({
   variant = 'default',
@@ -23,7 +22,7 @@ export default function EmployerHero({
   actions,
   children,
 }) {
-  // ── CSS prefix ตาม variant ──
+  // CSS prefix by variant
   const prefix = variant === 'analytics' ? 'analytics' : 'emp';
 
   return (

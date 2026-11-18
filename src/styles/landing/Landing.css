@@ -1,4 +1,4 @@
-/* ===== Landing Page - Minimal Hero ===== */
+/* Landing Page (Minimal Hero) */
 
 .landing {
   min-height: 100vh;
@@ -10,7 +10,7 @@
   overflow: hidden;
 }
 
-/* Subtle radial glow - decorative only */
+/* Subtle decorative radial glow */
 .landing::before {
   content: '';
   position: absolute;
@@ -28,7 +28,7 @@
   z-index: 0;
 }
 
-/* ===== Navbar ===== */
+/* Navbar */
 .landing-nav {
   display: flex;
   justify-content: space-between;
@@ -73,7 +73,7 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* ===== Hero ===== */
+/* Hero */
 .landing-hero {
   flex: 1;
   display: flex;
@@ -120,7 +120,7 @@
   line-height: 1.5;
 }
 
-/* ===== CTA (renamed: landing-cta → landing-hero-cta) ===== */
+/* CTA (renamed from landing-cta to landing-hero-cta) */
 .landing-hero-cta {
   display: inline-flex;
   align-items: center;
@@ -154,7 +154,7 @@
   transform: translateX(4px);
 }
 
-/* ===== Stats ===== */
+/* Stats */
 .landing-stats {
   margin-top: 48px;
   display: flex;
@@ -198,7 +198,7 @@
   100% { background-position: -200% 0; }
 }
 
-/* ===== Footer ===== */
+/* Footer */
 .landing-footer {
   display: flex;
   justify-content: center;
@@ -222,7 +222,7 @@
   color: #ffffff;
 }
 
-/* ===== Mobile ===== */
+/* Mobile */
 @media (max-width: 640px) {
   .landing-nav {
     padding: 20px 20px;

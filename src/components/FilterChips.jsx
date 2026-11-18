@@ -1,9 +1,8 @@
-// src/components/FilterChips.jsx
 import { X } from 'lucide-react';
-import './FilterChips.css';
+import '../styles/components/FilterChips.css';
 
 export default function FilterChips({ filters, onRemove, onClearAll }) {
-  // Filter เฉพาะที่มีค่า
+  // Filter only non-empty values
   const activeChips = [];
 
   if (filters.position && filters.position !== 'all') {

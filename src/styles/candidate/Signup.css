@@ -58,9 +58,7 @@
   margin: 0;
 }
 
-/* ============================================ */
-/* PROGRESS BAR — จัดกลางเป๊ะด้วย grid           */
-/* ============================================ */
+/* Progress Bar (centered with CSS grid) */
 
 .signup-progress {
   width: 100%;
@@ -75,7 +73,7 @@
 
 .progress-steps {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);   /* 3 คอลัมน์เท่ากัน */
+  grid-template-columns: repeat(3, 1fr);   /* 3 equal columns */
   align-items: center;
   position: relative;
   width: 100%;
@@ -96,7 +94,7 @@
   transition: all 0.3s ease;
   z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  margin: 0 auto;                          /* จัด dot กลางคอลัมน์ */
+  margin: 0 auto;                          /* Center dot in column */
 }
 
 .progress-dot.active {
@@ -113,14 +111,14 @@
   border-color: rgba(240, 209, 84, 0.6);
 }
 
-/* เส้น progress — พอดีกับ dot 1 ถึง dot 3 */
+/* Progress line spanning from dot 1 to dot 3 */
 .progress-bar-bg {
-  width: calc(100% - 72px);                 /* ⭐ หักขนาด dot 2 ข้าง */
+  width: calc(100% - 72px);                 /* Subtract width of both outer dots */
   height: 3px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   overflow: hidden;
-  margin: -18px auto 0 auto;                 /* ⭐ จัดกลาง */
+  margin: -18px auto 0 auto;                 /* Center horizontally */
   z-index: 1;
   position: relative;
 }
@@ -147,10 +145,10 @@
   box-shadow: 0 0 10px #f0d154;
 }
 
-/* Labels — grid 3 คอลัมน์เท่ากัน */
+/* Labels in 3 equal grid columns */
 .progress-labels {
-  display: grid;                             /* ⭐ เปลี่ยนเป็น grid */
-  grid-template-columns: repeat(3, 1fr);    /* ⭐ 3 คอลัมน์เท่ากัน */
+  display: grid;                             /* Use grid layout */
+  grid-template-columns: repeat(3, 1fr);    /* 3 equal columns */
   font-size: 0.7rem;
   color: #8896a9;
   font-weight: 500;
@@ -164,9 +162,7 @@
   display: block;
 }
 
-/* ============================================ */
-/* CARD                                          */
-/* ============================================ */
+/* Card */
 
 .signup-card {
   background: linear-gradient(
@@ -223,9 +219,7 @@
   scrollbar-color: rgba(240, 209, 84, 0.4) rgba(255, 255, 255, 0.03);
 }
 
-/* ============================================ */
-/* STEP CONTENT                                  */
-/* ============================================ */
+/* Step Content */
 
 .signup-step {
   display: flex;
@@ -260,9 +254,7 @@
   text-align: center;
 }
 
-/* ============================================ */
-/* USER TYPE GRID                                */
-/* ============================================ */
+/* User Type Grid */
 
 .user-type-grid {
   display: grid;
@@ -338,9 +330,7 @@
   width: 100%;
 }
 
-/* ============================================ */
-/* FORM INPUTS                                   */
-/* ============================================ */
+/* Form Inputs */
 
 .signup-form,
 .signup-step {
@@ -411,9 +401,7 @@
   padding-left: 4px;
 }
 
-/* ============================================ */
-/* ACTIONS                                       */
-/* ============================================ */
+/* Actions */
 
 .signup-actions {
   display: flex;
@@ -467,9 +455,7 @@
   transform: none;
 }
 
-/* ============================================ */
-/* ERROR                                         */
-/* ============================================ */
+/* Error */
 
 .signup-error {
   background: rgba(239, 68, 68, 0.15);
@@ -481,9 +467,7 @@
   text-align: center;
 }
 
-/* ============================================ */
-/* FOOTER                                        */
-/* ============================================ */
+/* Footer */
 
 .signup-footer {
   text-align: center;
@@ -505,9 +489,7 @@
   text-decoration: underline;
 }
 
-/* ============================================ */
-/* RESPONSIVE                                    */
-/* ============================================ */
+/* Responsive */
 
 @media (max-width: 420px) {
   .signup-card {
@@ -530,9 +512,7 @@
   }
 }
 
-/* ============================================ */
-/* PASSWORD INPUT + TOGGLE + STRENGTH           */
-/* ============================================ */
+/* Password Input, Toggle, and Strength */
 
 .password-input-wrapper {
   position: relative;
@@ -541,7 +521,7 @@
 
 .password-input-wrapper input {
   width: 100%;
-  padding: 11px 45px 11px 18px;   /* padding-right เผื่อปุ่มตา */
+  padding: 11px 45px 11px 18px;   /* Reserve right padding for toggle button */
   font-size: 0.82rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 14px;

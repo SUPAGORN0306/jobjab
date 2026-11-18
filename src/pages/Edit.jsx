@@ -45,12 +45,12 @@ export default function Edit() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const wrapperRef = useRef(null);
 
-  // === Avatar ===
+  // Avatar
   const handleAvatarUploaded = (newImageUrl) => {
     setProfile((prev) => ({ ...prev, profile_image: newImageUrl }));
   };
 
-  // === Resume ===
+  // Resume
   const handleResumeUploaded = (newResumeUrl, newFilename) => {
     setProfile((prev) => ({
       ...prev,
@@ -67,7 +67,7 @@ export default function Edit() {
     }));
   };
 
-  // === Load ===
+  // Load profile data
   useEffect(() => {
     const load = async () => {
       try {
@@ -101,7 +101,7 @@ export default function Edit() {
     load();
   }, []);
 
-  // === Close suggestions ===
+  // Close suggestions
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -112,12 +112,12 @@ export default function Edit() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // === Profile ===
+  // Profile
   const handleProfileChange = (field, value) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  // === Skills ===
+  // Skills
   const existingSkillNames = skills.map((s) =>
     (s.skill_name || '').toLowerCase()
   );
@@ -158,7 +158,7 @@ export default function Edit() {
     }
   };
 
-  // === Experience ===
+  // Experience
   const canAddExperience = () => {
     if (experiences.length === 0) return true;
     const last = experiences[experiences.length - 1];
@@ -199,7 +199,7 @@ export default function Edit() {
     });
   };
 
-  // === Education ===
+  // Education
   const canAddEducation = () => {
     if (educations.length === 0) return true;
     const last = educations[educations.length - 1];
@@ -237,7 +237,7 @@ export default function Edit() {
     });
   };
 
-  // === Save ===
+  // Save profile changes
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -282,7 +282,7 @@ export default function Edit() {
     }
   };
 
-  // === Loading ===
+  // Loading state
   if (loading) {
     return (
       <div className="edit-container">
@@ -293,7 +293,7 @@ export default function Edit() {
 
   return (
     <div className="edit-container">
-      {/* ============ HEADER ============ */}
+      {/* HEADER */}
       <div className="edit-header">
         <div>
           <h1>Edit Profile</h1>
@@ -318,7 +318,7 @@ export default function Edit() {
       {error && <div className="edit-error">{error}</div>}
 
       <div className="edit-grid">
-        {/* ============ LEFT CARD ============ */}
+        {/* LEFT CARD */}
         <div className="edit-card-left">
           {/* Avatar */}
           <AvatarUploader
@@ -485,7 +485,7 @@ export default function Edit() {
           </div>
         </div>
 
-        {/* ============ RIGHT COLUMN ============ */}
+        {/* RIGHT COLUMN */}
         <div className="edit-right-column">
           {/* Experience */}
           <div className="edit-card-right">

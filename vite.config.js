@@ -41,7 +41,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 600,
 
-    // Rolldown syntax — ใช้ advancedChunks
+    // Rolldown syntax using advancedChunks
     rollupOptions: {
       output: {
         advancedChunks: {

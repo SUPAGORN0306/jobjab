@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
   const { user, activeRole, loading } = useAuth();
   const location = useLocation();
 
-  // ─── 1. กำลังโหลด auth state ───
+  // Loading auth state
   if (loading) {
     return (
       <div
@@ -24,12 +24,12 @@ export default function ProtectedRoute({ children, requiredRole }) {
     );
   }
 
-  // ─── 2. ยังไม่ login → redirect ไป /login (จำ path เดิม) ───
+  // Not logged in: redirect to /login and preserve original path
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  // ─── 3. ตรวจ role ───
+  // Check user role
   const effectiveRole =
     activeRole || user.role || user.roles?.[0] || 'candidate';
 
@@ -42,6 +42,6 @@ export default function ProtectedRoute({ children, requiredRole }) {
     );
   }
 
-  // ─── 4. ผ่านทุกเงื่อนไข → แสดง children ───
+  // All checks passed: render children
   return children;
 }

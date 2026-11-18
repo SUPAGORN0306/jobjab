@@ -1,6 +1,4 @@
-/* ============================================ */
-/* Container                                     */
-/* ============================================ */
+/* Container */
 
 .status-container {
   width: 100%;
@@ -36,9 +34,7 @@
   color: #e74c3c;
 }
 
-/* ============================================ */
-/* Stats Row (Horizontal)                        */
-/* ============================================ */
+/* Stats Row (Horizontal) */
 
 .stats-row {
   display: grid;
@@ -186,9 +182,7 @@
   font-weight: 400;
 }
 
-/* ============================================ */
-/* Main Grid (2 columns)                         */
-/* ============================================ */
+/* Main Grid (2 columns) */
 
 .main-grid {
   display: grid;
@@ -198,9 +192,7 @@
   animation: fadeIn 0.5s ease 0.2s both;
 }
 
-/* ============================================ */
-/* Section Header                                */
-/* ============================================ */
+/* Section Header */
 
 .section-header {
   display: flex;
@@ -236,9 +228,7 @@
   color: #38bdf8;
 }
 
-/* ============================================ */
-/* Applications Column                           */
-/* ============================================ */
+/* Applications Column */
 
 .applications-column {
   display: flex;
@@ -349,9 +339,7 @@
   box-shadow: 0 0 20px currentColor;
 }
 
-/* ============================================ */
-/* Progress Track                                */
-/* ============================================ */
+/* Progress Track */
 
 .progress-track {
   display: flex;
@@ -431,9 +419,7 @@
   color: #b6b6b6;
 }
 
-/* ============================================ */
-/* Calendar Column                               */
-/* ============================================ */
+/* Calendar Column */
 
 .calendar-column {
   display: flex;
@@ -461,9 +447,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* ============================================ */
-/* React Calendar Override                       */
-/* ============================================ */
+/* React Calendar Override */
 
 .react-calendar {
   background: transparent !important;
@@ -616,9 +600,7 @@
   }
 }
 
-/* ============================================ */
-/* Selected Day Card                             */
-/* ============================================ */
+/* Selected Day Card */
 
 .selected-day-card {
   background: linear-gradient(
@@ -711,9 +693,7 @@
   margin: 4px 0;
 }
 
-/* ============================================ */
-/* Recent Activity Section                       */
-/* ============================================ */
+/* Recent Activity Section */
 
 .recent-activity-section {
   position: relative;
@@ -830,9 +810,7 @@
   margin: 0;
 }
 
-/* ============================================ */
-/* Empty State                                   */
-/* ============================================ */
+/* Empty State */
 
 .empty-state {
   background: rgba(255, 255, 255, 0.02);
@@ -850,9 +828,7 @@
   background: rgba(56, 189, 248, 0.03);
 }
 
-/* ============================================ */
-/* Modal (Detail)                                */
-/* ============================================ */
+/* Modal (Detail) */
 
 .modal-overlay {
   position: fixed;
@@ -1162,9 +1138,7 @@
   line-height: 1.5;
 }
 
-/* ============================================ */
-/* Responsive                                    */
-/* ============================================ */
+/* Responsive */
 
 @media (max-width: 860px) {
   .status-container {

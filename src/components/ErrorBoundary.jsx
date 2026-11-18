@@ -1,6 +1,6 @@
 /**
- * ErrorBoundary.jsx — จับ React errors
- * แสดง fallback UI แทนหน้าจอขาว
+ * ErrorBoundary.jsx: Catches React errors and displays a fallback UI
+ * instead of a blank screen.
  */
 import React from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
@@ -23,7 +23,7 @@ class ErrorBoundary extends React.Component {
     console.error('ErrorBoundary caught:', error, errorInfo);
     this.setState({ errorInfo });
 
-    // ถ้ามี Sentry → log ที่นี่
+    // Log to Sentry here if configured
     // Sentry.captureException(error, { extra: errorInfo });
   }
 
